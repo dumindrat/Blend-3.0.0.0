@@ -1,0 +1,55 @@
+﻿<div>
+    <h4>Item Received Notes ({{recordCount}})</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Standard" style="width: 200px" id="search" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateView();">Create New</button>
+
+    </span>
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in data" id="{{c.Id}}" data-status="pagado">
+
+                        <td style="width: 75%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}  by : {{c.ModifiedUser}}</span>
+
+                                    <h4 class="title">
+                                        {{c.ReceiveNoteNo}}
+                                    </h4>
+                                    <p class="summary">Purchase Order : {{c.PoNumber}}</p>
+                                    <p class="summary">Create by : {{c.CreateUser}}  Create Date : {{c.AddedDate}}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td style="width: 25%">
+                            <div class="btn-group">
+
+                                <button type="button" class="btn btn-primary btn-sm" ng-disabled="accessLevels.M" ng-click="openUpdateItemView(c)" data-toggle="tooltip" data-placement="top" title="Items">Received Items</button>
+                               <!-- <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.Id)" data-toggle="tooltip" data-placement="top" title="Delete PO">Delete</button>-->
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.P" ng-click="print(c)" data-toggle="tooltip" data-placement="top" title="Print">Print</button>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

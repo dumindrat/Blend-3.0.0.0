@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="salesummary" type="Blend.BuisnessEntities.Purchase.SaleSummaryDto"/>
+    <typeAlias alias="purchasesheet" type="Blend.BuisnessEntities.Purchase.PurchaseSheetDto"/>
+    <typeAlias alias="canistersheet" type="Blend.BuisnessEntities.Purchase.CanisterSheetDto"/>
+
+  </alias>
+
+  <statements>
+
+    <procedure id="GetSalesSummay" parameterMap="get-salesummary-params"  resultMap="get-salesummary-result">
+      rpt_SalesSummary
+    </procedure>
+    <procedure id="GetPurchaseSheet" parameterMap="get-purchasesheet-params"  resultMap="get-purchasesheet-result">
+      rpt_PurchaseSheetBySaleId
+    </procedure>
+    <procedure id="GetPurchaseSheetByFilter" parameterMap="get-purchasesheetbyfilter-params"  resultMap="get-purchasesheetbyfilter-result">
+      rpt_PurchaseSheetBySaleDate
+    </procedure>
+    <procedure id="GetCanisterSheet" parameterMap="get-canistersheet-params"  resultMap="get-canistersheet-result">
+      rpt_CanisterSheetBySaleId
+    </procedure>
+    <procedure id="GetPurchaseSheetByBroker" parameterMap="get-brokersheet-params"  resultMap="get-brokersheet-result">
+      rpt_PurchaseSheetByBroker
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-salesummary-params">
+      <parameter property="SaleId" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-purchasesheet-params">
+      <parameter property="SaleId" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-purchasesheetbyfilter-params">
+      <parameter property="FromSaleDate" direction  ="Input"/>
+      <parameter property="ToSaleDate" direction  ="Input"/>
+      <parameter property="Standard" direction  ="Input"/>
+      <parameter property="Grade" direction  ="Input"/>
+      <parameter property="SaleType" direction  ="Input"/>
+      <parameter property="BrokerCode" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-canistersheet-params">
+      <parameter property="SaleId" direction  ="Input"/>
+    </parameterMap>
+  <parameterMap id="get-brokersheet-params">
+      <parameter property="FromSaleDate" direction  ="Input"/>
+      <parameter property="ToSaleDate" direction  ="Input"/>
+      <parameter property="BrokerId" direction  ="Input"/>
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-salesummary-result" class="Blend.BuisnessEntities.Purchase.SaleSummaryDto">
+      <result property="NoOfLots" column="NoOfLots" dbType="Int"/>
+      <result property="BrokerId" column="BrokerId" dbType="Int"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="NinetyPercVal" column="NinetyPercVal" dbType="Varchar"/>
+      <result property="TenPercVal" column="TenPercVal" dbType="Varchar"/>
+      <result property="HundredPercVal" column="HundredPercVal" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-purchasesheet-result" class="Blend.BuisnessEntities.Purchase.PurchaseSheetDto">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+    </resultMap>
+    <resultMap id="get-canistersheet-result" class="Blend.BuisnessEntities.Purchase.CanisterSheetDto">
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="LineQty" column="LineQty" dbType="Varchar"/>
+      <result property="RepeatedLineQty" column="RepeatedLineQty" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-purchasesheetbyfilter-result" class="Blend.BuisnessEntities.Purchase.PurchaseSheetDto">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+    </resultMap>
+   <resultMap id="get-brokersheet-result" class="Blend.BuisnessEntities.Purchase.PurchaseSheetDto">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

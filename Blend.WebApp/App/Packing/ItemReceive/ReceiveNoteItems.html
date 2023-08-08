@@ -1,0 +1,62 @@
+﻿<div modal="focusQuickSearch" close="close()">
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+           Received Items {{selectedItem.ReceiveNoteNo}}
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="div-table  " style="text-align: left">
+            <div class="div-table-row" style="width:100%">
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" ng-click="cancel();">&times;</span></button>
+                </div>
+            </div>
+            <div class="div-table-row">Items count {{recordCount}}</div>
+            <div class="div-table-row">
+                <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in itemcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in received" ng-animate=" 'animate'" style="font: small" ng-include="getTemplate(item)"></tr>
+                    </tbody>
+                </table>
+                <script type="text/ng-template" id="display">
+                    <td style="width: 10%">{{item.ItemCode}}</td>
+                    <td style="width: 10%">{{item.ItemName}}</td>
+                    <td style="width: 25%">{{item.ShortDescription}}</td>
+                    <td style="width: 5%">{{item.UomName}}</td>
+                    <td style="width: 5%">{{item.OrderQty | number: 2}}</td>
+                    <td style="width: 5%">{{item.OrderPrice | number: 2}}</td>
+                    <td style="width: 5%">{{item.ReceivedQty | number: 2}}</td>
+                    <td style="width: 5%">{{item.ReceivedPrice | number: 2}}</td>
+                    <td style="width: 20%">{{item.Comment}}</td>
+                    <td style="width: 10%">
+                        <button type="button" style="width:100%" class="btn btn-sm" data-placement="top" title="Stock Qty"> {{item.StockQty | number: 2}}    </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" ng-click="openChangeReceiveQtyView(item)">Update</button>
+                    </td>
+                </script>
+               
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="disablestatus">
+                <img class="savedata" />
+            </span>
+            <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+        </div>
+    </div>
+</div>

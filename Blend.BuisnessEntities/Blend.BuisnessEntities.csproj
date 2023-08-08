@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Blend.BuisnessEntities</RootNamespace>
+    <AssemblyName>Blend.BuisnessEntities</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccessRights\Role\RoleEntity.cs" />
+    <Compile Include="Adjustment\RejectLine.cs" />
+    <Compile Include="Approvals\Adjustments\AdjustmentCancelReq.cs" />
+    <Compile Include="BaseEntity.cs" />
+    <Compile Include="AuctionBrokers\Broker.cs" />
+    <Compile Include="BlendClose\BlendCloseDto.cs" />
+    <Compile Include="BlendCreation\BlendDetail.cs" />
+    <Compile Include="BlendCreation\BlendInfo.cs" />
+    <Compile Include="BlendCreation\BlendItem.cs" />
+    <Compile Include="BlendCreation\BlendItemSummaryDto.cs" />
+    <Compile Include="BlendCreation\BlendSheetDto.cs" />
+    <Compile Include="BlendCreation\BlendStockItem.cs" />
+    <Compile Include="BlendCreation\StraighLineStockDto.cs" />
+    <Compile Include="BlendCreation\StraightLineStockItem.cs" />
+    <Compile Include="Buyer\Buyer.cs" />
+    <Compile Include="CompanyRegistration\CompanyDto.cs" />
+    <Compile Include="Contract\BuyerContract.cs" />
+    <Compile Include="Download\Asycuda\AsycudaData.cs" />
+    <Compile Include="Download\Asycuda\Helper.cs" />
+    <Compile Include="Email\EmailDto.cs" />
+    <Compile Include="Item\PoItem.cs" />
+    <Compile Include="Packing\ItemIssue\ItemIssueNoteDto.cs" />
+    <Compile Include="Packing\ItemReceive\ItemReceiveNoteDto.cs" />
+    <Compile Include="Packing\ItemReturn\ItemReturnNoteDto.cs" />
+    <Compile Include="Packing\PO\PurchaseOrderDto.cs" />
+    <Compile Include="Packing\PO\PurchaseOrderInfo.cs" />
+    <Compile Include="Packing\UnitOfMeasure\Uom.cs" />
+    <Compile Include="TeaGrade\Grade.cs" />
+    <Compile Include="ItemSupplier\Supplier.cs" />
+    <Compile Include="Item\ItemMaster.cs" />
+    <Compile Include="LineSummary\LineSummaryDto.cs" />
+    <Compile Include="LogHelper\BaseLogWriter.cs" />
+    <Compile Include="PackGoods\PackGoodDto.cs" />
+    <Compile Include="Purchase\GardenMark.cs" />
+    <Compile Include="Purchase\SaleSummaryDto.cs" />
+    <Compile Include="Report\BlendSheetRptDto.cs" />
+    <Compile Include="Report\PurchaseSheetRptDto.cs" />
+    <Compile Include="Report\ShortNotePrint.cs" />
+    <Compile Include="Report\StockRptDto.cs" />
+    <Compile Include="Shipments\TeaShipmentDto.cs" />
+    <Compile Include="Standard\TeaStandard.cs" />
+    <Compile Include="Stock\BlendBalanceStockDto.cs" />
+    <Compile Include="Stock\StraightLineStockReportDto.cs" />
+    <Compile Include="StoresInstruction\StoresInstructions.cs" />
+    <Compile Include="TeaCollection\CollectionNote.cs" />
+    <Compile Include="TransDocument\DocumentNo.cs" />
+    <Compile Include="Menu\MenuEntity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Purchase\Sale.cs" />
+    <Compile Include="Purchase\StraightLine.cs" />
+    <Compile Include="Token\TokenEntity.cs" />
+    <Compile Include="User\ChangeUserPassword.cs" />
+    <Compile Include="User\UserEntity.cs" />
+    <Compile Include="User\UserRegistration.cs" />
+    <Compile Include="User\UserRole.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

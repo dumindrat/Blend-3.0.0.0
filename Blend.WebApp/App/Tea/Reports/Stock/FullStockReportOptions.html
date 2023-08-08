@@ -1,0 +1,33 @@
+﻿<div>
+    <div class="modal-header modal-header-info">
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+        <h4 class="modal-title">Print Options - {{ReportName}}</h4>
+    </div>
+    <div class="modal-body">
+        <ul class="list-group">
+
+            <li class="list-group-item">With Values
+                    <div class="material-switch pull-right">
+                        <input id="optunallocatedlines" name="someSwitchOption003" type="checkbox" ng-value="New.IsWithValues" ng-model="New.IsWithValues" />
+                        <label for="optunallocatedlines" class="label-info"></label>
+                    </div>
+            </li>
+            <li class="list-group-item">Download as Excel
+                       
+                    <div class="material-switch pull-right">
+                        <input id="optexcel" name="someSwitchOption002" type="checkbox" ng-value="New.IsExcelFormat" ng-model="New.IsExcelFormat" />
+                        <label for="optexcel" class="label-info"></label>
+                    </div>
+            </li>
+        </ul>
+
+        <div class="form-group">
+            <input type="button" name="sl" id="btn" class="btn btn-info" value="Print" ng-click="printlines()" style="width: 100%" />
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" ng-click="cancel()">Cancel</button>
+    </div>
+</div>

@@ -1,0 +1,186 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <button type="button" class="btn btn-default">Selected Box No : <span class="badge">{{SelectedBox.BoxNo}}</span></button>
+
+    </div>
+</div>
+<div class="modal-body">
+    <div class="container-fluid" style="font-size: smaller">
+        <div class="row">
+            <div class="row" style="padding: 10px 10px 10px 10px;">
+                <div class="col-sm-6">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Purchase and Main Stocks 
+                        </legend>
+                        <div class="container-fluid" style="overflow-y: auto; height: 100%">
+                            <span style="margin-left: 8px;" ng-show="linedataLoading">
+                                <img class="savedata" />
+                            </span>
+                            <table class="table table-hover" style="width: 100%; font-size: small">
+
+                                <tbody>
+                                    <tr>
+                                        <td>SaleDate</td>
+                                        <td>{{StraightLineData[0].SaleDate}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Broker</td>
+                                        <td>{{StraightLineData[0].BrokerCode}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>LotNo</td>
+                                        <td>{{StraightLineData[0].LotNo}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Invoice</td>
+                                        <td>{{StraightLineData[0].Invoice}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Grade</td>
+                                        <td>{{StraightLineData[0].Grade}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Standard</td>
+                                        <td>{{StraightLineData[0].Standard}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>GardenMark</td>
+                                        <td>{{StraightLineData[0].GardenMark}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Net * Packs</td>
+                                        <td>{{StraightLineData[0].NetWeight }} * {{StraightLineData[0].Packs}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Net * Packs</td>
+                                        <td>{{StraightLineData[1].NetWeight}} * {{StraightLineData[1].Packs }} </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Weight</td>
+                                        <td>{{StraightLineData[0].VirtualWeight | number: 2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Rate</td>
+                                        <td>{{StraightLineData[0].Rate | number: 2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Value</td>
+                                        <td>{{StraightLineData[0].VirtualValue | number: 2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Available Stock Packs</td>
+                                        <td>{{StraightLineData[0].StockPacks | number: 2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Available Stock Qty</td>
+                                        <td>{{StraightLineData[0].StockQty | number: 2}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend">Allocations
+                            </legend>
+                            <div class="container-fluid" style="overflow-y: auto; height: 150px">
+                                <table class="table table-filter">
+                                    <thead>
+                                        <tr>
+                                            <th>Blend No</th>
+                                            <th>Qty</th>
+                                            <th>Packs</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr ng-repeat="c in BlendAllocationData">
+                                            <td>{{c.BlendNo}}</td>
+                                            <td>{{c.Qty}}</td>
+                                            <td>{{c.Packs}}</td>
+                                            <td>{{c.CreateDate}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- <ul>
+                                    <li ng-repeat="c in BlendAllocationData">{{c.BlendNo}} - Allocated Qty {{c.Qty | number: 2}} -Packs {{c.Packs}} - Date {{c.CreateDate}}</li>
+                                </ul>-->
+                                <span style="margin-left: 8px;" ng-show="allocationdataLoading">
+                                    <img class="savedata" />
+                                </span>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <br />
+                    <div class="row">
+
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend">Reject or Short Lines 
+                            </legend>
+                            <div class="container-fluid" style="overflow-y: auto; height: 75px">
+                                <ul>
+                                    <li ng-repeat="c in AdjustedLineData">Packs : {{c.Packs}}. Qty : {{c.Qty | number: 2}}. TransType : {{c.AdjustmentType}}. Status : {{c.Status}}.  By : {{c.User}}</li>
+                                </ul>
+                                <span style="margin-left: 8px;" ng-show="linedataLoading">
+                                    <img class="savedata" />
+                                </span>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <br />
+
+                    <div class="row">
+
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend">Transaction flow 
+                            </legend>
+                            <div class="container-fluid" style="overflow-y: auto; height: 150px">
+                                <table class="table table-filter">
+                                    <thead>
+                                        <tr>
+                                            <th>Packs</th>
+                                            <th>Qty</th>
+                                            <th>TransType</th>
+                                            <th>TransTo</th>
+                                            <th>User</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr ng-repeat="c in LineHitoryData">
+                                            <td>{{c.Packs}}</td>
+                                            <td>{{c.Qty}}</td>
+                                            <td>{{c.TransType}}</td>
+                                            <td>{{c.TransTo}}</td>
+                                            <td>{{c.User}}</td>
+                                            <td>{{c.Date}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                                <span style="margin-left: 8px;" ng-show="linedataLoading">
+                                    <img class="savedata" />
+                                </span>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <input type="button" id="btnSLCancel" value="Close" class="btn btn-danger btn-sm" ng-disabled="showLoader" ng-click="cancel();" />
+    </div>
+</div>

@@ -1,0 +1,48 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+    <button type="button" class="btn btn-default" ng-disabled="true"> <span class="badge">Return Note : {{selectedItem.ReturnNoteNo}} Receive Note : {{selectedItem.ReceiveNoteNo}}</span></button>
+
+</div>
+
+<div class="modal-body">
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="table-responsive">
+        <div class="text-left">
+            <p>Received Items(GRN) : {{stockitems.length}} </p>
+
+        </div>
+        <table class="table" style="width: 100%; font-size: smaller;margin-top:20px">
+            <thead>
+                <tr>
+                    <th ng-repeat="c in itemcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="c in stockitems" ng-animate=" 'animate'" style="font: small" ng-include="getTemplate(c)"></tr>
+            </tbody>
+        </table>
+        <script type="text/ng-template" id="display">
+            <td width="5%" ng-hide="true">{{c.Id}}</td>
+            <td width="5%">{{c.ItemCode}}</td>
+            <td width="10%">{{c.ItemName}}</td>
+            <td width="25%">{{c.ShortDescription}}</td>
+            <td width="10%">{{c.UomName}}</td>
+            <td width="10%">{{c.ReceivedQty | number: 2}}</td>
+            <td width="10%">{{c.ReceivedPrice | number: 2}}</td>
+            <td width="10%">{{c.StockQty | number: 2}}</td>
+            <td width="20%">
+                <button class="btn btn-primary btn-sm" ng-disabled="checkstock(c.StockQty)" ng-click="openAddItemWindow(c)">+</button>
+            </td>
+        </script>
+       
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <a class="btn btn-danger btn-sm" ng-click="cancel()">Back to Return Note</a>
+    </div>
+</div>

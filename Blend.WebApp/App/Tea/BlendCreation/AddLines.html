@@ -1,0 +1,132 @@
+﻿<script type="text/ng-template" id="/straightlinestock.html">
+    <div ng-show="!showAddlines">
+    <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in stockgridcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="c in StraightLIneStockData" id="{{c.Id}}" animate-on-change='c.Id' ng-animate=" 'animate'" style="font: small">
+                            <td ng-hide="true">{{c.StockItemId}}</td>
+                            <td width="8%">
+                                <button type="button" style="width:100%" class="btn btn-sm" ng-disabled="accessLevels.C" ng-click="openSummaryWindow(c.BoxNo)" data-placement="top" title="View summary">
+                                    {{c.BoxNo}}
+                                </button>
+                            </td>
+                            <td width="17%">{{c.SaleDate}}</td>
+                            <td width="5%">{{c.LotNo}}</td>
+                            <td width="5%">{{c.Invoice}}</td>
+                            <td width="5%">{{c.Grade}}</td>
+                            <td width="5%">{{c.Standard}}</td>
+                            <td width="20%">{{c.GardenMark}}</td>
+                            <td width="5%">{{c.Packs}}</td>
+                            <td width="5%">{{c.NetWeight | number: 2}}</td>
+                            <td width="5%">{{c.Qty | number: 2}}</td>
+                            <td width="5%">{{c.ADQty | number: 2}}</td>
+                            <td width="5%">{{c.Rate | number: 2}}</td>
+                            <td width="10%">{{c.Value| number: 2}}</td>
+                            <td ng-hide="true">{{c.RowVersion}}</td>
+                            <td width="5%">
+                                <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.C" ng-click="openAddStraightLinesWindow(c.BoxNo)" data-placement="top" title="Add to Blend">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </td>
+
+                    </tbody>
+                </table>
+    </div>
+</script>
+
+<script type="text/ng-template" id="/blendstock.html">
+     <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in blendstockgridcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="c in BlendStockData" id="{{c.Id}}" animate-on-change='c.Id' ng-animate=" 'animate'" style="font: small">
+                            <td ng-hide="true">{{c.StockItemId}}</td>
+                            <td width="10%">{{c.ItemName}}</td>
+                            <td width="10%">{{c.Status}}</td>
+                            <td width="5%">{{c.Rate}}</td>
+                            <td width="5%">{{c.Qty}}</td>
+                            <td width="5%">{{c.Value}}</td>
+                            <td ng-hide="true">{{c.IsClosed}}</td>
+                            <td width="5%">
+                                <button type="button" class="btn btn-info btn-sm"  ng-disabled="blendselectdisable(c.StockItemId)" ng-click="openAddBlendBalanceWindow(c)" data-placement="top" title="Add to Blend">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </td>
+
+                    </tbody>
+                </table>
+</script>
+<div modal="focusQuickSearch" close="close()">
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+            <h4>{{SelectedBlend.BlendNo}}</h4>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="div-table  " style="text-align: left">
+            <div class="div-table-row" style="width:100%">
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+            </div>
+            <div class="div-table-row">
+              
+                <div class="div-table-input-col" style="width: 150px">
+                    <label>StockType:</label>
+                    <select id="stocktype" name="stocktype" class="form-control" ng-options="s.stocktype as s.desc for s in stocktypes" ng-model="StockType" style="width: 150px" ng-change="viewStockGrid()">
+                    </select>
+                </div>
+                <div class="div-table-input-col" style="width: 150px">
+                    <label>SearchType:</label>
+                    <select id="seachtype" name="seachtype" class="form-control" ng-disabled="disableStockType" ng-options="s.seachtype as s.desc for s in seachtypes" ng-model="SeachType" style="width: 150px">
+                    </select>
+                </div>
+                <div class="div-table-input-col" style="width: 100px">
+                    <label>Search:</label>
+                    <input autofocus type="text" id="searchby" ng-model="searchstr" style="width: 100px" class="form-control" ng-change="searchlinestock()" focus-me="focusGeneralSearch"/>
+                </div>
+                <div class="div-table-input-col" style="width: 10px">
+                    <label> </label>
+                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" style="margin-top:7px" ng-show="loadingdata"></span>
+                </div>
+                <div class="div-table-input-col" style="width: 150px">
+                    <label>Quick search BoxNo</label>
+                    <input type="text" name="quicksearch" id="quicksearch" class="form-control" ng-disabled="disableQuickSearch" ng-model="boxNoData" list="boxnumbers" my-enter="addQuickSearchItem(boxNoData)" ng-maxlength="10"/>
+                </div>
+                <datalist id="boxnumbers">
+                    <option data-ng-repeat="boxno in BoxNumbers" value="{{boxno}}">
+                </datalist>
+
+            </div>
+        </div>
+        
+        <div style="width: 100%">
+            <ng-include src="viewstkgrid"></ng-include>
+        </div>
+    </div>
+
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="disablestatus">
+                <img class="savedata" />
+            </span>
+            <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+        </div>
+    </div>
+</div>
+
+
+
+

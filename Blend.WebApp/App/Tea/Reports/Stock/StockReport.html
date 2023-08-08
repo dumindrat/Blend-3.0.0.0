@@ -1,0 +1,44 @@
+﻿<div class="modal-header">
+    <div class="form-group" style="text-align: left">
+        <h4>Stock Reports</h4>
+        <button type="button" class="btn btn-info" ng-click="PrintOptionAgeAnalysis()">Age Analysis</button>
+    </div>
+</div>
+<div class="modal-body">
+    <!--<div style="width: 100%; color: navy;">
+
+        <div class="gridStyle" ng-grid="gridOptions"></div>
+
+    </div>-->
+    <div class="panel panel-default">
+        <div class="panel-body" style="height: 100%">
+            <div class="table-container">
+                <table class="table table-filter">
+
+                    <tbody>
+
+                        <tr ng-repeat="c in reportData"  data-status="pagado">
+
+                            <td style="width: 90%">
+
+                                {{c.ReportName}}
+                            </td>
+                            <td style="width: 10%">
+                                <div class="btn-group">
+                                   <input class="btn btn-info btn-sm" type="button" ng-click="PrintOption(c)" name="view"  value="Print Options">
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

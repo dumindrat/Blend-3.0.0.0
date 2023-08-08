@@ -1,0 +1,51 @@
+﻿<div>
+    <h4>Straight Lines {{recordCount}}</h4>
+</div>
+
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search ReservedNo" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchlines()" />
+
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in StraightLineData" id="{{c.Id}}" data-status="pagado">
+
+                        <td style="width: 80%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">{{c.BoxNo}}
+                                       
+                                    </h4>
+                                    <p class="summary">Broker : {{c.BrokerCode}}  </p>
+                                    <p class="summary">Sale Date: {{c.SaleDate}} | LotNo : {{c.LotNo}} | Invoice : {{c.Invoice}} |SC : {{c.SaleCode}}  | ST:  {{c.SaleType}} </p>
+                                    <p class="summary">Grade : {{c.Grade}} | Standard : {{c.Standard}} | GardenMark : {{c.GardenMark}} | Packs : {{c.Packs}} | Qty :{{c.Qty}} | Weight: {{c.NetWeight}} </p>
+
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 20%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openRejectWindow(c)" data-toggle="tooltip" data-placement="top" title="Reject lines">Reject</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openShortWindow(c)" data-toggle="tooltip" data-placement="top" title="Shorte lines">Short</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openAdjustmentViewWindow(c)" data-toggle="tooltip" data-placement="top" title="Options">Options</button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

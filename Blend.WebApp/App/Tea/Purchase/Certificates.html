@@ -1,0 +1,16 @@
+﻿<div class="modal-header">
+    Certificates
+</div>
+<div class="modal-body">
+     <div ng-repeat="obj in certifiedNames" class="form-group">
+        <input type="button" id="{{obj.CertifiedName}}" value="{{obj.CertifiedName}}" ng-click="doCertified(obj.CertifiedName)" ng-class="clsname" style="width: 100px" />
+        <img id="img+{{obj.CertifiedName}}" src="../../Content/themes/base/images/right.jpg" style="height: 40px; width: 40px" ng-hide="{{!obj.IsCertified}}"/>
+
+    </div>
+  
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <input type="button" id="btnSLCancel" value="Close" class="btn btn-danger" ng-click="cancel();" />
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <!--<typeAlias alias="blendclose" type="Blend.BuisnessEntities.BlendClose.BlendCloseDto"/>-->
+    <typeAlias alias="blendclosecancelreq" type="Blend.BuisnessEntities.BlendClose.BlendCloseCancelRequest"/>
+  </alias>
+
+  <statements>
+
+    <!--<procedure id="GetClsedBlendsForReverse" parameterMap="get-blendclose-params"  resultMap="get-blendclose-result">
+      trn_BlendCategorizeGet
+    </procedure>-->
+
+    <procedure id="GetBlendCancelRequest" parameterMap="get-blendcancelreq-params"  resultMap="get-blendcancelreq-result">
+      trn_BlendCategorizeCancelRequestGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-blendcancelreq-params">
+      <parameter property="BlendNo" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <!--<resultMap id="get-blendclose-result" class="Blend.BuisnessEntities.BlendClose.BlendCloseDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+      <result property="BlendId" column="BlendId" dbType="Int"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+      <result property="PhysicalQty" column="PhysicalQty" dbType="Decimal"/>
+      <result property="BB" column="BB" dbType="Decimal"/>
+      <result property="BG" column="BG" dbType="Decimal"/>
+      <result property="BL" column="BL" dbType="Decimal"/>
+      <result property="SiftedQty" column="SiftedQty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="ClosedBy" column="CreateUser" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>-->
+    
+    <resultMap id="get-blendcancelreq-result" class="Blend.BuisnessEntities.BlendClose.BlendCloseCancelRequest">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="CategorizedId" column="CategorizedId" dbType="Int"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="LineQty" column="LineQty" dbType="Varchar"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+      <result property="CreateQty" column="CreateQty" dbType="Decimal"/>
+      <result property="BB" column="BB" dbType="Decimal"/>
+      <result property="BG" column="BG" dbType="Decimal"/>
+      <result property="BL" column="BL" dbType="Decimal"/>
+      <result property="SIFTED" column="SIFTED" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="RequestDate" column="RequestDate" dbType="Varchar"/>
+      <result property="RequestBy" column="RequestBy" dbType="Varchar"/>
+      <result property="Reason" column="Reason" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

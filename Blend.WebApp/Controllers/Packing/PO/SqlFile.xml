@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="pos" type="Blend.BuisnessEntities.Packing.PO.PurchaseOrderDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetPos" parameterMap="get-allpos-params"  resultMap="get-allpos-result">
+      pack_POGet
+    </procedure>
+    <procedure id="GetPOItems" parameterMap="get-allipotems-params"  resultMap="get-allpoitems-result">
+      pack_POItemsGet
+    </procedure>
+    <procedure id="GetPoById" parameterMap="get-po-params"  resultMap="get-po-result">
+      pack_POGetById
+    </procedure>
+    <procedure id="GetEmailHistory" parameterMap="get-emailhistory-params"  resultMap="get-emailhistory-result">
+      sys_EmailHistoryGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allpos-params">
+      <parameter property="PONumber" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-allipotems-params">
+      <parameter property="PoId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-po-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-emailhistory-params">
+      <parameter property="Referenceid" direction  ="Input" />
+      <parameter property="MenuId" direction  ="Input" />
+
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allpos-result" class="Blend.BuisnessEntities.Packing.PO.PurchaseOrderDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="PONumber" column="PONumber" dbType="Varchar"/>
+      <result property="SupplierId" column="SupplierId" dbType="Int"/>
+      <result property="Supplier" column="SupplierName" dbType="Varchar"/>
+      <result property="SupplierEmail" column="SupplierEmail" dbType="Varchar"/>
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="ContractNumber" column="ContractName" dbType="Varchar"/>
+      <result property="DeliveryDate" column="DateOfDelivery" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="Instructions" column="Instructions" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary" />
+    </resultMap>
+    <resultMap id="get-allpoitems-result" class="Blend.BuisnessEntities.Packing.PO.PurchaseOrderItemDto">
+      <result property="ItemId" column="ItemId" dbType="Int"/>
+      <result property="ItemCode" column="ItemCode" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="ShortDescription" column="ShortDescription" dbType="Varchar"/>
+      <result property="UomName" column="UOM" dbType="Varchar"/>
+      <result property="Qty" column="OrderQty" dbType="Varchar"/>
+      <result property="Price" column="OrderPrice" dbType="Varchar"/>
+      <result property="Comment" column="Comment" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-po-result" class="Blend.BuisnessEntities.Packing.PO.PurchaseOrderDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="PONumber" column="PONumber" dbType="Varchar"/>
+      <result property="SupplierId" column="SupplierId" dbType="Int"/>
+      <result property="Supplier" column="SupplierName" dbType="Varchar"/>
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="ContractNumber" column="ContractName" dbType="Varchar"/>
+      <result property="DeliveryDate" column="DateOfDelivery" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="Instructions" column="Instructions" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary" />
+    </resultMap>
+    <resultMap id="get-emailhistory-result" class="Blend.BuisnessEntities.Email.EmailHistory">
+      <result property="ReferenceId" column="ReferenceId" dbType="Int"/>
+      <result property="ReferenceNo" column="ReferenceNo" dbType="Varchar"/>
+      <result property="ToAddress" column="ToAddress" dbType="Varchar"/>
+      <result property="FromAddress" column="FromAddress" dbType="Varchar"/>
+      <result property="EmailBody" column="EmailBody" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="Subject" column="Subject" dbType="Varchar"/>
+      <result property="CC" column="CC" dbType="Varchar"/>
+      <result property="AttachmentPath" column="AttachmentPath" dbType="Varchar"/>
+      <result property="MenuId" column="MenuId" dbType="Int"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

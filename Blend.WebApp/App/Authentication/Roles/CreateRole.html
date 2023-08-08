@@ -1,0 +1,33 @@
+﻿<div class="modal-header">
+    <div>
+        <h4>Role Details</h4>
+    </div>
+</div>
+
+<div class="modal-body">
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <input type="text" ng-model="New.RoleId" ng-hide="true" />
+
+    </div>
+    <form id="form" name="form" role="form" >
+        <div class="form-group">
+            <label for="rolename">Role Name:</label>
+            <input id="rolename" name="rolename" class="form-control" type="text" ng-model="New.RoleDescription" required autofocus />
+            <span ng-show="form.rolename.$error.required" class="help-block">Role Name is required</span>
+
+        </div>
+    </form>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="save();" ng-disabled="form.$invalid || dataSaving" type="submit">{{buttonstatus}}</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataSaving">Cancel</button>
+
+    </div>
+</div>
+

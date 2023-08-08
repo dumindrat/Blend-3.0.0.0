@@ -1,0 +1,329 @@
+﻿<head>
+    <script src="../../Scripts/libs/jquery.autocomplete.min.js"></script>
+    <script type="text/javascript">
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+
+
+    </script>
+    <style type="text/css">
+        .div-table {
+            display: table;
+            width: auto;
+            /*border: 1px solid #666666;*/
+            border-spacing: 5px; /* cellspacing:poor IE support for  this */
+        }
+
+        .div-table-row {
+            display: table-row;
+            width: auto;
+            clear: both;
+            margin: 4px;
+            text-align: center;
+        }
+
+        .div-table-input-col {
+            float: left; /* fix for  buggy browsers */
+            display: table-column;
+            width: 100px;
+            margin: 4px;
+            text-align: right;
+        }
+
+        .div-table-lable-col {
+            float: left; /* fix for  buggy browsers */
+            display: table-column;
+            width: 120px;
+            margin: 4px;
+            text-align: right;
+        }
+
+        #saletype {
+            width: 109px;
+        }
+
+        #i1, #i2, #i3, #i4, #i5, #i6, #i7, #i8, #i9, #i10, #i11, #i12, #i13, #i14, #i15 {
+            text-align: left;
+            margin: 2px;
+        }
+
+        #salecode, #lotno, #invoiceno, #grade, #standard, #net1, #packs1, #net2, #packs2, #reducedqty, #rate {
+            width: 100px;
+        }
+    </style>
+</head>
+
+<script type="text/javascript">
+    $(function () {
+        var currencies = [
+          { value: 'Afghan afghani', data: 'AFN' },
+          { value: 'Albanian lek', data: 'ALL' },
+          { value: 'Algerian dinar', data: 'DZD' },
+          { value: 'European euro', data: 'EUR' },
+          { value: 'Angolan kwanza', data: 'AOA' },
+          { value: 'East Caribbean dollar', data: 'XCD' }];
+
+        // setup autocomplete function pulling from currencies[] array
+
+
+
+    });
+</script>
+<div class="modal-header">
+    <!--<label class="modal-title">{{selectedSale.SaleDate}}</</label>-->
+    <button type="button" class="btn btn-warning">Sale Date <span class="badge">{{selectedSale.SaleDate}}</span></button>
+    <span style="margin-left: 8px;" ng-show="selectedSale.IsClosed">
+        <img src="../../Content/themes/base/images/closed.jpg" style="width: 40px; height: 40px" />
+    </span>
+</div>
+
+<div class="modal-body">
+    <div class="table-responsive" ng-show="setvisibleaddscreen">
+        <form name="straightline_form" class="form-horizontal" role="form" novalidate>
+            <div class="panel panel-primary" style="width: 100%">
+                <div class="panel-heading">
+                    <button type="button" class="btn btn-primary">Reserved No <span class="badge">{{reservedNo}}</span></button>
+                    <button type="button" class="btn btn-primary" ng-hide="true">Version <span class="badge">{{New.RowVersion}}</span></button>
+                    
+                </div>
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="panel-body text-center">
+                    <div class="div-table  " style="text-align: center">
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Sale Type</label>
+                            </div>
+                            <div class="div-table-input-col" id="i1">
+                                <input type="text" id="Text1" class="form-control" ng-model="New.Id" ng-hide="true" />
+                                <input type="text" id="repeatId" class="form-control" ng-model="New.RepeatingId" ng-hide="true" />
+
+                                <input type="text" id="rowversion1" class="form-control" ng-model="New.RowVersion1" ng-hide="true" />
+                                <input type="text" id="rowversion2" class="form-control" ng-model="New.RowVersion2" ng-hide="true" />
+
+                                <input type="text" id="stockid" class="form-control" ng-model="New.StockId" ng-hide="true" />
+                                <input type="text" id="Text2" class="form-control" ng-model="New.RepeatingStockId" ng-hide="true" />
+
+
+                                <select autofocus id="saletype" name="D1" class="form-control" ng-options="s.saletype as s.saletype for s in saletypes" ng-model="New.SaleType">
+                                    <option style="display: none" value="">---Select---</option>
+                                </select>
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Sale Code</label>
+                            </div>
+                            <div class="div-table-input-col" id="i2">
+                                <input id="salecode" class="form-control" ng-model="New.SaleCode" />
+                            </div>
+
+
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>LotNo</label>
+                            </div>
+                            <div class="div-table-input-col" id="i3">
+                                <input type="text" id="lotno" class="form-control" ng-model="New.LotNo" />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Invoice</label>
+                            </div>
+                            <div class="div-table-input-col" id="i4">
+                                <input type="text" id="invoiceno" class="form-control" ng-model="New.Invoice" />
+                            </div>
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Broker</label>
+                            </div>
+                            <div class="div-table-input-col" id="i5">
+                                <select style="width: 400px" ng-options="broker.BrokerId as broker.BrokerName for broker  in BrokerData" class="form-control" ng-model="New.BrokerId">
+                                    <option style="display: none" value="">---Select---</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Gardenmark</label>
+                            </div>
+                            <div class="div-table-input-col" id="i5">
+                                <input type="text" style="width: 400px" id="gardenmark" class="form-control" data-ng-model="New.GardenMark" list="gardenmarks"/>
+                                <!--<input type="text" data-ng-model="item.title" list="comicstitle">-->
+                            </div>
+                            <datalist id="gardenmarks">
+                                <option data-ng-repeat="mark in GardenMarkList" value="{{mark}}">
+                            </datalist>
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Grade </label>
+                            </div>
+                            <div class="div-table-input-col" id="i6">
+                                <input type="text" id="grade" class="form-control" ng-model="New.Grade" />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Standard</label>
+                            </div>
+                            <div class="div-table-input-col" id="i7">
+                                <input type="text" id="standard" class="form-control" ng-model="New.Standard" />
+                            </div>
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Packs</label>
+                            </div>
+                            <div class="div-table-input-col" id="i9">
+                                <input type="text" id="packs1" class="form-control" ng-model="New.Pack1" ng-change="calWeight()" valid-number />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Net </label>
+                            </div>
+                            <div class="div-table-input-col" id="i8">
+                                <input id="net1" name="net1" class="form-control" ng-model="New.Net1" ng-change="calWeight()" only-digits />
+                                <span ng-show="straightline_form.net1.$error.required" class="help-block">Net is required</span>
+                            </div>
+
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Packs</label>
+                            </div>
+                            <div class="div-table-input-col" id="i11">
+                                <input type="text" id="packs2" class="form-control" ng-model="New.Pack2" ng-change="calWeight()" valid-number />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Net</label>
+                            </div>
+                            <div class="div-table-input-col" id="i10">
+                                <input type="text" id="net2" class="form-control" ng-model="New.Net2" ng-change="calWeight()" only-digits />
+                            </div>
+
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Reduced Qty</label>
+                            </div>
+                            <div class="div-table-input-col" id="i12">
+                                <input type="text" id="reducedqty" class="form-control" ng-model="New.ReducedQty" ng-change="calWeight()" validnumber />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Rate</label>
+                            </div>
+                            <div class="div-table-input-col" id="i13">
+                                <input type="text" id="rate" class="form-control" ng-model="New.Rate" ng-change="calWeight()" only-digits />
+                            </div>
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Weight</label>
+                            </div>
+                            <div class="div-table-input-col" id="i14">
+                                <input type="text" id="weight" class="form-control" ng-model="New.Weight" ng-disabled="true" only-digits />
+                            </div>
+                            <div class="div-table-lable-col">
+                                <label>Value</label>
+                            </div>
+                            <div class="div-table-input-col" id="i15">
+                                <input type="text" id="value" class="form-control" ng-model="New.Value" ng-disabled="true" />
+                            </div>
+
+                        </div>
+                        <div class="div-table-row">
+                            <div class="div-table-lable-col">
+                                <label>Certificates</label>
+                            </div>
+                            <div class="div-table-input-col" id="Div1">
+                                {{New.TeaCertificates}}
+                            </div>
+                        </div>
+                        <!-- <div>
+                            {{New.TeaCertificates}}
+                        </div>-->
+                        
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="text-right">
+                        <span style="margin-left: 8px;" ng-show="dataLoading">
+                            <img src="../../Content/themes/base/images/spinner.gif" style="width: 50px; height: 50px" />
+                        </span>
+                        <button id="Button1" class="btn btn-warning" ng-click="openAddCertificateWindow(teaCertificates)" ng-disabled="dataLoading">Add Certificates</button>
+                        <button id="btnSave" class="btn btn-primary" ng-click="AddToSale(New);" ng-disabled="dataLoading">{{buttonStatus}}</button>
+                        <button id="btnCancel" class="btn btn-danger" ng-click="HideInfoView();" ng-disabled="dataLoading">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive" ng-show="setvisibleaddedscreen">
+        <form name="straightline_form" class="form-horizontal" role="form" novalidate>
+            <div class="text-left">
+                <a class="btn btn-primary" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-click="HideAddedLines();">Add Lines</a>
+                <div class="space-6"></div>
+
+            </div>
+            <div class="panel panel-primary" style="width: 100%">
+
+                <div class="panel-heading">
+                    List of added Straight Lines
+                </div>
+                <div class="panel-body" style="overflow-y: scroll; height: 300px">
+
+                    <table class="table table-hover" style="width: 100%; font-size: smaller">
+                        <thead>
+                            <tr>
+                                <th ng-repeat="c in addedtealinecolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="c in addedStarightLine" id="{{c.BoxNo}}"
+                                animate-on-change='c.BoxNo' ng-animate=" 'animate'" style="font: small">
+                                <td width="5%" ng-hide="true">{{c.StockId}}</td>
+                                <td width="5%" ng-hide="true">{{c.Id}}</td>
+                                <td width="5%">{{c.BoxNo}}</td>
+                                <!-- <td width="5%">{{c.SaleCode}}</td>-->
+                                <td width="10%">{{c.SaleType}} {{c.SaleCode}}</td>
+                                <td width="5%">{{c.Invoice}}</td>
+                                <td width="5%">{{c.LotNo}}</td>
+                                <td ng-hide="true" width="5%">{{c.BrokerId}}</td>
+                                <td width="5%">{{c.BrokerCode}}</td>
+                                <td width="15%">{{c.Grade}}</td>
+                                <td width="30%">{{c.GardenMark}}</td>
+                                <td width="5%">{{c.NetWeight | number: 2}}</td>
+                                <td width="5%">{{c.Packs}}</td>
+                                <td width="5%">{{c.ReducedQty | number: 2}}</td>
+                                <td width="5%">{{c.VirtualWeight| number: 2}}</td>
+                                <td width="5%">{{c.Rate | number: 2}}</td>
+                                <td width="20%">{{c.VirtualValue| number: 2}}</td>
+                                <td width="5%">{{c.TinNo}}</td>
+
+                                <td width="5%">
+                                    <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-hide="Repeated(c.IsRepeated)" ng-click="GetStraightLine(c)">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </button>
+                                </td>
+                                <td width="5%">
+                                    <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-click="DeleteFromSale(c)">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <a class="btn btn-danger" ng-click="cancel()">Close</a>
+    </div>
+</div>

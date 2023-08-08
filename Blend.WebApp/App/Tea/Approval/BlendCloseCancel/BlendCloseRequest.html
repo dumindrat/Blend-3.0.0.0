@@ -1,0 +1,53 @@
+﻿<div>
+    <h4>Blend Close Cancel Requests {{ recordCount }}</h4>
+</div>
+
+
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search BlendNo" style="width: 200px" id="Text1" type="text" class="form-control" ng-model="searchstr" ng-change="searchlines()" />
+
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in BlendData" data-status="pagado">
+
+                        <td style="width: 90%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <h4 class="title">{{c.BlendNo}}</h4>
+                                    <p class="summary">LineQty : {{c.LineQty}}  ExportQty: {{c.ExportQty}}  FinalQty : {{c.CreateQty}}  BB : {{c.BB}}  BG :{{c.BG}} BL : {{c.BL}} </p>
+                                    <p class="summary">RequestedBy : {{c.RequestBy}}  RequestedDate {{c.RequestDate}} </p>
+                                    <p class="summary">Reason : {{c.Reason}}</p>
+
+                                </div>
+                            </div>
+                        </td>
+
+                        <td style="width: 10%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" ng-disabled="accessLevels.C" ng-click="Approve(c)" data-toggle="tooltip" data-placement="top" title="Approve Cancellation">Approve</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+

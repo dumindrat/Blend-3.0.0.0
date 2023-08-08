@@ -1,0 +1,66 @@
+﻿<div modal="focusQuickSearch" close="close()">
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+            Issue Items {{selectedItem.IssueNoteNo}}
+        </div>
+    </div>
+    <div class="modal-body">
+
+        <div class="div-table  " style="text-align: left">
+            <div class="div-table-row" style="width:100%">
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" ng-click="cancel();">&times;</span></button>
+                </div>
+            </div>
+            <div class="div-table-row">
+                Items count {{recordCount}}
+            </div>
+            <div class="div-table-row" style="margin-top:20px">
+                <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.M" ng-click="openIssueItemWindow();">Issue Items</button>
+            </div>
+            <div class="div-table-row" style="margin-top:20px">
+                <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in itemcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in issueditem" ng-animate=" 'animate'" style="font: small">
+                            <td style="width: 10%">{{item.ItemCode}}</td>
+                            <td style="width: 20%">{{item.ItemName}}</td>
+                            <td style="width: 25%">{{item.ShortDescription}}</td>
+                            <td style="width: 10%">{{item.UomName}}</td>
+                            <td style="width: 5%">{{item.Qty | number: 2}}</td>
+                            <td style="width: 10%">{{item.Price | number: 2}}</td>
+                            <td style="width: 10%">{{item.User}}</td>
+                            <td style="width: 10%">{{item.AddedDate}}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" ng-click="removeitem(item)">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <script type="text/ng-template" id="display">
+
+                </script>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="disablestatus">
+                <img class="savedata" />
+            </span>
+            <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+        </div>
+    </div>
+</div>

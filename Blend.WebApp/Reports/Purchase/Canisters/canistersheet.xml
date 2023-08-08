@@ -1,0 +1,21 @@
+<canistersheet>
+  <item>
+    <TinNo></TinNo>
+    <BoxNo></BoxNo>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <Grade></Grade>
+    <Standard></Standard>
+    <BrokerName></BrokerName>
+    <GardenMark></GardenMark>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <Rate></Rate>    
+    <LineQty></LineQty>
+    <RepeatedLineQty></RepeatedLineQty>
+    <Qty></Qty>
+    <TeaCertificates></TeaCertificates>
+
+  </item>
+  
+</canistersheet>

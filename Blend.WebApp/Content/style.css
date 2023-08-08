@@ -1,0 +1,716 @@
+﻿/*
+    DEMO STYLE
+*/
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+
+body
+{
+    font-family: 'Poppins', sans-serif;
+    background: #fafafa;
+}
+
+p
+{
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
+
+a, a:hover, a:focus
+{
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar
+{
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-btn
+{
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+.line
+{
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+i, span
+{
+    display: inline-block;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+.wrapper
+{
+    display: flex;
+    align-items: stretch;
+}
+
+#sidebar
+{
+    min-width: 250px;
+    max-width: 250px;
+    background: #7386D5;
+    color: #fff;
+    transition: all 0.3s;
+    overflow-y: hidden;
+    display: absolute;
+}
+
+    #sidebar.active
+    {
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+    }
+
+        #sidebar.active .sidebar-header h3, #sidebar.active .CTAs
+        {
+            display: none;
+        }
+
+        #sidebar.active .sidebar-header strong
+        {
+            display: block;
+        }
+
+    #sidebar ul li a
+    {
+        text-align: left;
+    }
+
+    #sidebar.active ul li a
+    {
+        padding: 20px 10px;
+        text-align: center;
+        font-size: 0.85em;
+    }
+
+        #sidebar.active ul li a i
+        {
+            margin-right: 0;
+            display: block;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+    #sidebar.active ul ul a
+    {
+        padding: 10px !important;
+    }
+
+    #sidebar.active a[aria-expanded="false"]::before, #sidebar.active a[aria-expanded="true"]::before
+    {
+        top: auto;
+        bottom: 5px;
+        right: 50%;
+        -webkit-transform: translateX(50%);
+        -ms-transform: translateX(50%);
+        transform: translateX(50%);
+    }
+
+    #sidebar .sidebar-header
+    {
+        padding: 20px;
+        background: #6d7fcc;
+    }
+
+        #sidebar .sidebar-header strong
+        {
+            display: none;
+            font-size: 1.8em;
+        }
+
+    #sidebar ul.components
+    {
+        padding: 20px 0;
+        border-bottom: 1px solid #47748b;
+    }
+
+    #sidebar ul li a
+    {
+        padding: 10px;
+        font-size: 1.1em;
+        display: block;
+    }
+
+        #sidebar ul li a:hover
+        {
+            color: #7386D5;
+            background: #fff;
+        }
+
+        #sidebar ul li a i
+        {
+            margin-right: 10px;
+        }
+
+    #sidebar ul li.active > a, a[aria-expanded="true"]
+    {
+        color: #fff;
+        background: #6d7fcc;
+    }
+
+
+a[data-toggle="collapse"]
+{
+    position: relative;
+}
+
+a[aria-expanded="false"]::before, a[aria-expanded="true"]::before
+{
+    content: '\e259';
+    display: block;
+    position: absolute;
+    right: 20px;
+    font-family: 'Glyphicons Halflings';
+    font-size: 0.6em;
+}
+
+a[aria-expanded="true"]::before
+{
+    content: '\e260';
+}
+
+
+ul ul a
+{
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #6d7fcc;
+}
+
+ul.CTAs
+{
+    padding: 20px;
+}
+
+    ul.CTAs a
+    {
+        text-align: center;
+        font-size: 0.9em !important;
+        display: block;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+a.download
+{
+    background: #fff;
+    color: #7386D5;
+}
+
+a.article, a.article:hover
+{
+    background: #6d7fcc !important;
+    color: #fff !important;
+}
+
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+#content
+{
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+@media (max-width: 768px)
+{
+    #sidebar
+    {
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+        margin-left: -80px !important;
+    }
+
+    a[aria-expanded="false"]::before, a[aria-expanded="true"]::before
+    {
+        top: auto;
+        bottom: 5px;
+        right: 50%;
+        -webkit-transform: translateX(50%);
+        -ms-transform: translateX(50%);
+        transform: translateX(50%);
+    }
+
+    #sidebar.active
+    {
+        margin-left: 0 !important;
+    }
+
+    #sidebar .sidebar-header h3, #sidebar .CTAs
+    {
+        display: none;
+    }
+
+    #sidebar .sidebar-header strong
+    {
+        display: block;
+    }
+
+    #sidebar ul li a
+    {
+        padding: 20px 10px;
+    }
+
+        #sidebar ul li a span
+        {
+            font-size: 0.85em;
+        }
+
+        #sidebar ul li a i
+        {
+            margin-right: 0;
+            display: block;
+        }
+
+    #sidebar ul ul a
+    {
+        padding: 10px !important;
+    }
+
+    #sidebar ul li a i
+    {
+        font-size: 1.3em;
+    }
+
+    #sidebar
+    {
+        margin-left: 0;
+    }
+
+    #sidebarCollapse span
+    {
+        display: none;
+    }
+}
+
+.center-modal
+{
+    position: static;
+    z-index: 1050;
+    top: 50%;
+    left: 50%;
+    margin-left: -10%;
+    margin-top: 20px;
+}
+
+.app-modal-window .modal-dialog
+{
+    width: 95%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.app-modal-md-window .modal-dialog
+{
+    width: 70%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.app-modal-sm-window .modal-dialog
+{
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.app-modal-xsm-window .modal-dialog
+{
+    width: 30%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.app-modal-xxsm-window .modal-dialog
+{
+    width: 15%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.app-modal-po-window .modal-dialog
+{
+    width: 30%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.app-modal-xxsm-window .modal-dialog
+{
+    width: 20%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+
+.app-modal-loading-window .modal-dialog
+{
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 400px;
+    height: 100px;
+    margin: auto;
+    margin-top: 150px;
+    font-size: 16px;
+    border: 0px;
+    -webkit-box-shadow: 0 5px 15px rgba(0,0,0,0);
+    -moz-box-shadow: 0 5px 15px rgba(0,0,0,0);
+    -o-box-shadow: 0 5px 15px rgba(0,0,0,0);
+    box-shadow: 0 5px 15px rgba(0,0,0,0);
+}
+
+.app-modal-loading-window .modal-content
+{
+    -webkit-border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    border-radius: 0px !important;
+    text-align: center;
+    /*background-color: transparent !important;*/
+}
+
+
+/* table*/
+
+.table-filter
+{
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+    .table-filter tbody tr:hover
+    {
+        cursor: pointer;
+        background-color: #eee;
+    }
+
+    .table-filter tbody tr td
+    {
+        padding: 10px;
+        vertical-align: middle;
+        border-top-color: #eee;
+    }
+
+    .table-filter tbody tr.selected td
+    {
+        background-color: #eee;
+    }
+
+    .table-filter tr td:first-child
+    {
+        width: 38px;
+    }
+
+    .table-filter tr td:nth-child(2)
+    {
+        width: 35px;
+    }
+
+.ckbox
+{
+    position: relative;
+}
+
+    .ckbox input[type="checkbox"]
+    {
+        opacity: 0;
+    }
+
+    .ckbox label
+    {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        .ckbox label:before
+        {
+            content: '';
+            top: 1px;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            display: block;
+            position: absolute;
+            border-radius: 2px;
+            border: 1px solid #bbb;
+            background-color: #fff;
+        }
+
+    .ckbox input[type="checkbox"]:checked + label:before
+    {
+        border-color: #2BBCDE;
+        background-color: #2BBCDE;
+    }
+
+    .ckbox input[type="checkbox"]:checked + label:after
+    {
+        top: 3px;
+        left: 3.5px;
+        content: '\e013';
+        color: #fff;
+        font-size: 11px;
+        font-family: 'Glyphicons Halflings';
+        position: absolute;
+    }
+
+.table-filter .star
+{
+    color: #ccc;
+    text-align: center;
+    display: block;
+}
+
+    .table-filter .star.star-checked
+    {
+        color: #F0AD4E;
+    }
+
+    .table-filter .star:hover
+    {
+        color: #ccc;
+    }
+
+    .table-filter .star.star-checked:hover
+    {
+        color: #F0AD4E;
+    }
+
+.table-filter .media-photo
+{
+    width: 35px;
+}
+
+.table-filter .media-body
+{
+    display: block;
+    /* Had to use this style to force the div to expand (wasn't necessary with my bootstrap version 3.3.6) */
+}
+
+.table-filter .media-meta
+{
+    font-size: 11px;
+    color: #999;
+}
+
+.table-filter .media .title
+{
+    color: #2BBCDE;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: normal;
+    margin: 0;
+}
+
+    .table-filter .media .title span
+    {
+        font-size: .8em;
+        margin-right: 20px;
+    }
+
+        .table-filter .media .title span.pagado
+        {
+            color: #5cb85c;
+        }
+
+        .table-filter .media .title span.pendiente
+        {
+            color: #f0ad4e;
+        }
+
+        .table-filter .media .title span.cancelado
+        {
+            color: #d9534f;
+        }
+
+.table-filter .media .summary
+{
+    font-size: 14px;
+}
+
+.table-del-col
+{
+    width: 5%;
+    background-color: #fc0a2f;
+    text-align: center;
+}
+
+.table-op-col
+{
+    width: 5%;
+    background-color: #ccc;
+    text-align: center;
+}
+
+.savedata
+{
+    content: url(../../Content/spinner.gif);
+    width: 50PX;
+    height: 50PX;
+}
+
+.right-icon
+{
+    content: url(../../Content/icon_right.png);
+    width: 40PX;
+    height: 40PX;
+}
+
+.error-icon
+{
+    content: url(../../Content/icon_wrong.png);
+    width: 40PX;
+    height: 40PX;
+}
+
+#scolc-1, #scolc-2, #scold-1, #scol2-1, #scole-1, #scole-2, #scolf-1, #scolf-2, #scolg-1, #scolg-2, #scolh-1, #scolh-2, #scoli-1
+{
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+/*spining icon*/
+
+.glyphicon-refresh-animate
+{
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2
+{
+    from
+    {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to
+    {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin
+{
+    from
+    {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to
+    {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+
+/* Legends*/
+
+.the-legend
+{
+    border-style: none;
+    border-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 0;
+    width: auto;
+    padding: 0 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.the-fieldset
+{
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+}
+
+.modal-header {
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #0480be;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+ }
+
+.modal-footer {
+    padding:10px 10px 9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: whitesmoke;
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-top-right-radius: 0px;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-topright: 0px;
+     border-top-left-radius: 0px;
+     border-top-right-radius: 0px;
+ }

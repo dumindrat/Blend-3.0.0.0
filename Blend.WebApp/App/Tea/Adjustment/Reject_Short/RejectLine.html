@@ -1,0 +1,50 @@
+﻿<form data-toggle="validator" role="form" ng-submit="Reject()">
+
+    <div class="modal-header">
+        <div class="form-group">
+
+            <h3>Reject Lines</h3>
+            <button type="button" class="btn btn-default" ng-attr-autofocus="false">Box No : <span class="badge">{{SelectedBoxNo.BoxNo}}</span></button>
+        </div>
+    </div>
+    <div class="modal-body">
+
+        <div ng-show="message" class="{{messageclass}}" role="alert">
+            <label>{{message}}</label>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="form-group" style="padding-left: 40px; padding-right: 40px">
+            <input type="text" ng-hide="true" ng-model="New.Id" />
+            <input type="text" ng-hide="true" ng-model="New.StockItemId" />
+            <label for="qtyd">Qty :({{QtyD}})</label>
+            <input type="text" class="form-control" ng-model="New.Qty" id="qtyd" ng-disabled="true" style="width: 100%" ng-disabled="true" />
+            <label for="rqtyd">ReducedQty :</label>
+            <input type="text" class="form-control" ng-model="New.ReducedQty" id="rqtyd" ng-disabled="true" style="width: 100%" ng-disabled="true" />
+
+            <label for="net">Net :</label>
+            <input type="text" class="form-control" ng-model="New.Net" id="net" style="width: 100%" ng-disabled="true" />
+
+            <label for="packs">Bags : ({{PacksD}})</label>
+            <input type="text" class="form-control" ng-model="New.Packs" id="packs" style="width: 100%" ng-disabled="false" only-digits autofocus required />
+
+            <label for="reason">Reason :</label>
+            <i class="fa fa-lock"></i>
+            <input type="text" class="form-control" ng-model="New.Reason" id="reason" name="reason" style="width: 100%" ng-disabled="false" required />
+            <span ng-show="form.reason.$dirty && form.reason.$error.required" class="help-block">Reason is required</span>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="btnRejectDisable">
+                <img class="savedata" />
+            </span>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary btn-sm" ng-disabled="btnRejectDisable">Submit</button>
+                <input type="button" class="btn btn-danger btn-sm" ng-click="cancel()" value="Cancel">
+            </div>
+        </div>
+
+    </div>
+
+</form>

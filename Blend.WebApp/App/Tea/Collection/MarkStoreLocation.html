@@ -1,0 +1,35 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h5>Mark Store Location for Reserved No : {{SelectedBoxNo.BoxNo}}</h5>
+
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    </div>
+    <ul class="list-group">
+
+        <li class="list-group-item">Store Location
+                <div class="div-table-input-col" id="Div1">
+                    <input type="text" style="width: 100%" id="storelocation" class="form-control"
+                        data-ng-model="New.StoreLocation" required />
+                </div>
+
+        </li>
+    </ul>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="create();" type="submit" ng-disabled="dataLoading">Submit</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+    </div>
+</div>

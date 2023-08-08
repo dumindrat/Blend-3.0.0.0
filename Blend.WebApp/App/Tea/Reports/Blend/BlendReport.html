@@ -1,0 +1,56 @@
+﻿<style type="text/css">
+    .loading
+    {
+        background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat right center;
+    }
+</style>
+
+<div>
+    <h4>Blend Reports {{recordCount}}</h4>
+</div>
+
+
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Blend" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in BlendData" id="{{c.BlendId}}" data-status="pagado">
+
+                        <td style="width: 65%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}} By {{c.ModifiedUser}}</span>
+
+                                    <h4 class="title">Blend No : {{c.BlendNo}}
+                                       
+                                    </h4>
+                                    <p class="summary">Status : {{c.CloseStatus}} | Contract : {{c.ContractNo}} | Standard : {{c.StandardName}}  </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 35%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.V" ng-click="printBlendSheet(c.BlendId)" data-toggle="tooltip" data-placement="top" title="Blend Sheet Print">Blend Sheet</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.V" ng-click="CanisterSheet(c.BlendId)" data-toggle="tooltip" data-placement="top" title="Canister Sheet Print">Canister Sheet</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.V" ng-click="PrintOption(c)" data-toggle="tooltip" data-placement="top" title="Blend sheet options">Options</button>
+                                <!--<button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.V" ng-click="PrintOption(c)" data-toggle="tooltip" data-placement="top" title="Blend Sheet Print">Add/Delete Report</button>-->
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

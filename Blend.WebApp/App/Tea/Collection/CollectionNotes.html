@@ -1,0 +1,59 @@
+﻿<div>
+    <h4>Straight Lines {{recordCount}}</h4>
+</div>
+
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search By BoxNo" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchlines()" />
+    <input placeholder="LotNo" style="width: 200px" id="Text2" type="text" class="form-control" ng-model="searchbylot" ng-change="searchlines()" />
+    <input placeholder="InvNo" style="width: 200px" id="Text3" type="text" class="form-control" ng-model="searchbyinv" ng-change="searchlines()" />
+
+    <span class="input-group-btn">
+        <button type="button" class="btn btn-warning"> <span class="badge">{{CollectionNote.CollectionNo}}</span></button>
+
+        <button class="btn btn-info btn-sm" ng-click="create();">Generate Collection Note</button>
+        <button class="btn btn-info btn-sm" ng-click="openPrintWindow();">Print Note</button>
+
+        
+    </span>
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in StraightLines" id="{{c.PurchaseId}}" data-status="pagado">
+
+                        <td style="width: 75%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Collection Date : {{c.CollectionDate}}</span>
+
+                                    <h4 class="title">{{c.BoxNo}} | Collection Note : {{c.CollectionNoteNo}} | Store Location :{{c.StoreLocation}}
+                                       
+                                    </h4>
+                                    <p class="summary">SD: {{c.SaleDate}} | LOT : {{c.LotNo}} | INV : {{c.Invoice}} | Grade : {{c.Grade}} | Mark : {{c.GardenMark}} | Packs : {{c.Packs}} | Qty :{{c.Qty}} | Weight: {{c.NetWeight}} </p>
+
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 25%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openCollectionWindow(c)" data-toggle="tooltip" data-placement="top" title="Options">Mark Collection</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openLocationWindow(c)" data-toggle="tooltip" data-placement="top" title="Options">Mark Location</button>
+                            
+                            </div>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

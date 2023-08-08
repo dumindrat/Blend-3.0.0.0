@@ -1,0 +1,47 @@
+﻿<div class="modal-header">
+
+    <div>
+        <h4>Remove User from Role : {{SelectedRole}}</h4>
+    </div>
+</div>
+<div class="modal-body">
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+    </div>
+    <div class="form-group">
+        <input placeholder="Search User" style="width: 200px" id="searchremoveuser" type="text" class="form-control" ng-model="searchstr" ng-disabled="dataLoading" ng-change="searchusers()" />
+    </div>
+    <table class="table-responsive" style="width: 100%">
+        <tr>
+            <th>User Name</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th></th>
+
+        </tr>
+        <tr ng-repeat="c in userData">
+            <td ng-hide="true">{{c.UserId}}</td>
+            <td>{{c.UserName}}</td>
+            <td>{{c.Name}}</td>
+            <td>{{c.Email}}</td>
+
+            <td>
+                <button class="btn btn-info btn-sm" ng-disabled="dataLoading" ng-disabled="accessLevels.M" ng-click="delete(c.UserId)">Remove</button>
+            </td>
+
+        </tr>
+    </table>
+</div>
+
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+    </div>
+</div>
+
+
+

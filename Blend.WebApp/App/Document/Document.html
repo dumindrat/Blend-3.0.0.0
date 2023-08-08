@@ -1,0 +1,41 @@
+﻿<div class="modal-header">
+    <h4>Reset Document Numbers</h4>
+
+</div>
+<div class="modal-body">
+
+    <div class="table-responsive">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Document List
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <th ng-repeat="h in documentheader" ng-hide="h.hide">{{h.text}}</th>
+                    </tr>
+
+                    <tr ng-repeat="c in DocumentData" id="{{c.DocType}}" ng-animate=" 'animate'">
+                        <td width="5%" ng-hide="true" ng-model="c.DocType">{{c.DocType}}</td>
+                        <td width="50%" ng-model="c.Description">{{c.Description}}</td>
+                        <td width="10%">
+                            <input width="10px" type="text" ng-model="c.DocNo" only-digits required /></td>
+                        <td width="10%">
+                            <input width="10px" type="text" ng-model="c.Prefix" required /></td>
+                        <td width="15%">
+                            <input width="15px" type="text" ng-model="c.DocFormat" required /></td>
+                        <td width="10%">
+                            <!--<a class="btn btn-primary" ng-click="Reset(c)">Reset</a>-->
+                            <button type="submit" class="btn btn-primary" ng-click="Reset(c)" ng-disabled="dataLoading">Reset</button>
+
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

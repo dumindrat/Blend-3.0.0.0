@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="straightlinesock" type="Blend.BuisnessEntities.Stock.StraightLineStockReportDto"/>
+    <typeAlias alias="blendbalancesock" type="Blend.BuisnessEntities.Stock.BlendBalanceStockDto"/>
+    <typeAlias alias="storesanalysis" type="Blend.BuisnessEntities.Report.StoresAnalysisData"/>
+
+  </alias>
+
+  <statements>
+
+    <procedure id="GetStraightLineStockReport" parameterMap="get-straightlinesock-params"  resultMap="get-straightlinesock-result">
+      rpt_StraightLineStock
+    </procedure>
+    <procedure id="GetStraightLineStockReportNoAllocation" parameterMap="get-straightlinesockalloc-params"  resultMap="get-straightlinesockalloc-result">
+      rpt_StraightLineStockWithoutAllocation
+    </procedure>
+    <procedure id="GetStraightLineStockReportAlloctionOnly" parameterMap="get-straightlinesockalloc-params"  resultMap="get-straightlinesockalloc-result">
+      rpt_StraightLineStockUsed
+    </procedure>
+    <procedure id="GetBlendBalanceStockReport" parameterMap="get-bbstock-params"  resultMap="get-bbstock-result">
+      rpt_BlendBalanceStock
+    </procedure>
+    <procedure id="GetBlendBalanceStockReportNoAllocation" parameterMap="get-bbstocknoalloc-params"  resultMap="get-bbstocknoalloc-result">
+      rpt_BlendBalanceStockWithoutAllocation
+    </procedure>
+    <procedure id="GetAgeAnalysisStockReport" parameterMap="get-ageana-params"  resultMap="get-ageana-result">
+      rpt_AgeAnalysis
+    </procedure>
+    <procedure id="GetFullStockReport" parameterMap="get-fullstock-params"  resultMap="get-fullstock-result">
+      rpt_FullStock
+    </procedure>
+    <procedure id="GetStoresAnalysisReport" parameterMap="get-storesan-params"  resultMap="get-storesan-result">
+      rpt_TeaStoresAnalysis
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-straightlinesock-params">
+      <parameter property="Grade" direction  ="Input"/>
+      <parameter property="Standard" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-straightlinesockalloc-params">
+      <parameter property="Grade" direction  ="Input"/>
+      <parameter property="Standard" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-bbstock-params">
+    </parameterMap>
+    <parameterMap id="get-bbstocknoalloc-params">
+    </parameterMap>
+    <parameterMap id="get-ageana-params">
+      <parameter property="AsAtDate" direction  ="Input"/>
+      <parameter property="Grade" direction  ="Input"/>
+      <parameter property="Standard" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-fullstock-params">
+    </parameterMap>
+    <parameterMap id="get-storesan-params">
+      <parameter property="FromDate" direction  ="Input"/>
+      <parameter property="ToDate" direction  ="Input"/>
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-straightlinesock-result" class="Blend.BuisnessEntities.Stock.StraightLineStockReportDto">
+      <result property="AllocatedBlend" column="AllocatedBlend" dbType="Varchar"/>
+      <result property="Id" column="Id" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-straightlinesockalloc-result" class="Blend.BuisnessEntities.Stock.StraightLineStockReportDto">
+      <result property="AllocatedBlend" column="AllocatedBlend" dbType="Varchar"/>
+      <result property="Id" column="Id" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-bbstock-result" class="Blend.BuisnessEntities.Stock.BlendBalanceStockDto">
+      <result property="AllocatedBlend" column="AllocatedBlend" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="StockItemId" column="StockItemId" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+      <result property="ClosedDate" column="ClosedDate" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-bbstocknoalloc-result" class="Blend.BuisnessEntities.Stock.BlendBalanceStockDto">
+      <result property="AllocatedBlend" column="AllocatedBlend" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="StockItemId" column="StockItemId" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+      <result property="ClosedDate" column="ClosedDate" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+
+    <resultMap id="get-ageana-result" class="Blend.BuisnessEntities.Stock.StraightLineAgeAnalysisReportDto">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="CollectionCode" column="CollectionCode" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+
+    <resultMap id="get-fullstock-result" class="Blend.BuisnessEntities.Stock.FullStockReportDto">
+      <result property="SeqNo" column="SeqNo" dbType="Int"/>
+      <result property="StockType" column="StockType" dbType="Varchar"/>
+      <result property="AllocatedBlend" column="AllocatedBlend" dbType="Varchar"/>
+      <result property="Id" column="Id" dbType="Varchar"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+
+    </resultMap>
+  
+    <resultMap id="get-storesan-result" class="Blend.BuisnessEntities.Report.StoresAnalysisData">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="CollectionDate" column="CollectionDate" dbType="Varchar"/>
+      <result property="ReceivedPacks" column="ReceivedPacks" dbType="Decimal"/>
+      <result property="DayCount" column="DayCount" dbType="Int"/>
+      <result property="ClosedDate" column="ClosedDate" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

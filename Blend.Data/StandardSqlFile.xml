@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="boo" type="Tmixing.Data.Standard.TeaStandard"/>
+  </alias>
+
+  <statements>
+    <procedure id="GetDataById" parameterMap="get-standards-params"  resultMap="get-standards-result">
+      trn_GetTeaStandardById
+    </procedure>
+    <insert id="Insert">
+      INSERT INTO [Standard]
+      (Description,AddedDate,ModifiedDate)
+      VALUES
+      (#StandardName#,#AddedDate#,#ModifiedDate#)
+    </insert>
+
+  </statements>
+  <parameterMaps>
+    <parameterMap id="get-standards-params">
+      <parameter property="ID" column="Id" />
+    </parameterMap>
+  </parameterMaps>
+  <resultMaps>
+    <resultMap id="get-standards-result" class="Tmixing.Data.Standard.TeaStandard">
+      <result property="ID" column="Id" dbType="Int"/>
+      <result property="StandardName" column="Description" dbType="Varchar"/>
+      <result property="AddedDate" column="AddedDate" dbType="Date"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Date"/>
+      <result property="RowNo" column="RowVersion" dbType="timestamp"/>
+
+    </resultMap>
+  </resultMaps>
+</sqlMap>

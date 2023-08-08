@@ -1,0 +1,44 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+    <h4>Print Broker Wise Purchases</h4>
+</div>
+
+<div class="modal-body">
+
+    <ul class="list-group">
+        <li class="list-group-item">Select Broker
+        <div class="form-group">
+            <select id="bk" style="width: 100%" ng-options="broker.BrokerName for broker  in BrokerData track by broker.BrokerId" 
+                class="form-control"  ng-model="filterOptions.host" required>
+                <option style="display: none" value="">---Select Broker---</option>
+            </select>
+        </div>
+        </li>
+        <li class="list-group-item">From Sale
+        <div class="form-group">
+            <input type="date" class="form-control" ng-value="New.FromSaleDate" ng-model="New.FromSaleDate" id="fromdate" style="width: 100%" placeholder="MM-DD-YYYY" />
+
+        </div>
+        </li>
+        <li class="list-group-item">To Sale
+        <div class="form-group">
+            <input type="date" class="form-control" ng-value="New.ToSaleDate" ng-model="New.ToSaleDate" id="Date1" style="width: 100%" placeholder="MM-DD-YYYY" />
+
+        </div>
+        </li>
+    </ul>
+</div>
+
+
+
+<div class="modal-footer">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-primary btn-sm" ng-click="print();" ng-disabled="disablestatus">Print</button>
+
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="disablestatus">Close</button>
+
+    </div>
+</div>

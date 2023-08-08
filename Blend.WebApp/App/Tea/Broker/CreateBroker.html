@@ -1,0 +1,62 @@
+﻿    <form data-toggle="validator" role="form" ng-submit="save()">
+
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+            <h4>Broker Information</h4>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div ng-show="message" class="{{messageclass}}" role="alert">
+            <label>{{message}}</label>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <input type="text" ng-model="New.BrokerId" ng-hide="true" />
+            <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+
+        </div>
+        <div style="padding: 5px 50px 10px 50px">
+            <div class="form-group">
+                <label for="brokercode">Broker Code</label>
+                <i class="fa fa-key"></i>
+                <input type="text" name="brokercode" id="brokercode" class="form-control" ng-model="New.BrokerCode" style="width: 50px" limit-to="2" required />
+            </div>
+            <div class="form-group">
+                <label for="brokername">Broker Name</label>
+                <i class="fa fa-lock"></i>
+                <input type="text" name="brokername" id="brokername" class="form-control" ng-model="New.BrokerName" limit-to="40" required />
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group">
+                <label for="brokeraddress">Address</label>
+                <input type="text" name="password" id="brokeraddress" class="form-control" ng-model="New.Address" limit-to="40" />
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" ng-model="New.email" limit-to="30" />
+            </div>
+            <div class="form-group">
+                <label for="name">Phone</label>
+                <input type="text" name="tel" id="tel" class="form-control" ng-model="New.Tel" limit-to="10" />
+            </div>
+            <div class="form-group">
+                <label for="brokercontactper">Contact Person</label>
+                <input type="text" name="brokercontactper" id="Text1" class="form-control" ng-model="New.ContactPerson" limit-to="40" />
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: right">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <!--<button id="Button1" ng-click="save();" class="btn btn-primary" ng-disabled="form.$invalid || dataLoading"><i class="icon-hand-right"></i>Save</button>-->
+        <button type="submit" class="btn btn-primary" ng-disabled="dataLoading">Save</button>
+        <button class="btn btn-danger" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+
+    </div>
+
+</form>
+
+

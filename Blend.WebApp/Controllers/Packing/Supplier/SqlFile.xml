@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="supplier" type="Blend.BuisnessEntities.ItemSupplier.Supplier"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetSuppliers" parameterMap="get-allsupplier-params"  resultMap="get-allsupplier-result">
+      pack_SupplierGet
+    </procedure>
+    <procedure id="GetSupplier" parameterMap="get-supplier-params"  resultMap="get-supplier-result">
+      pack_SupplierGetById
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allsupplier-params">
+      <parameter property="SupplierName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-supplier-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allsupplier-result" class="Blend.BuisnessEntities.ItemSupplier.Supplier">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="SupplierName" column="SupplierName" dbType="Varchar"/>
+      <result property="Address1" column="Address1" dbType="Varchar"/>
+      <result property="Address2" column="Address2" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="Tel" column="Tel" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-supplier-result" class="Blend.BuisnessEntities.ItemSupplier.Supplier">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="SupplierName" column="SupplierName" dbType="Varchar"/>
+      <result property="Address1" column="Address1" dbType="Varchar"/>
+      <result property="Address2" column="Address2" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="Tel" column="Tel" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

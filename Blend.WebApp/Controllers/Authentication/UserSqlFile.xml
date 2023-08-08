@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="usr" type="Blend.BuisnessEntities.UserEntity"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetUserByUserName" parameterMap="get-user-params"  resultMap="get-user-result">
+      auth_UserGet
+    </procedure>
+    <procedure id="GetUsersNotInRole" parameterMap="get-alluser-params"  resultMap="get-alluser-result">
+      auth_UserGetNotInRole
+    </procedure>
+    <procedure id="GetUsersInRole" parameterMap="get-roleuser-params"  resultMap="get-roleuser-result">
+      auth_UserGetInRole
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-user-params">
+      <parameter property="UserName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-alluser-params">
+      <parameter property="UserName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-roleuser-params">
+      <parameter property="UserName" direction  ="Input" />
+      <parameter property="RoleId" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-user-result" class="Blend.BuisnessEntities.UserEntity">
+      <result property="UserId" column="Id" dbType="int"/>
+      <result property="UserName" column="UserName" dbType="Varchar"/>
+      <result property="Password" column="Password" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="Name" column="Name" dbType="Varchar" />
+      <result property="PasswordExpireDate" column="PasswordExpireDate" dbType="DateTime" />
+    </resultMap>
+
+    <resultMap id="get-alluser-result" class="Blend.BuisnessEntities.UserEntity">
+      <result property="UserId" column="Id" dbType="int"/>
+      <result property="UserName" column="UserName" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="Name" column="Name" dbType="Varchar" />
+    </resultMap>
+
+    <resultMap id="get-roleuser-result" class="Blend.BuisnessEntities.UserEntity">
+      <result property="UserId" column="Id" dbType="int"/>
+      <result property="UserName" column="UserName" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="Name" column="Name" dbType="Varchar" />
+    </resultMap>
+  </resultMaps>
+</sqlMap>

@@ -1,0 +1,27 @@
+﻿<form data-toggle="validator" role="form" ng-submit="CancelRequest()">
+
+    <div class="modal-header">
+        <div>
+            <h3>Cancel Confirmation</h3>
+        </div>
+        <div>
+            <button type="button" class="btn btn-default" ng-attr-autofocus="false">Packs : <span class="badge">{{selectedObject.Packs}}</span></button>
+            <button type="button" class="btn btn-default" ng-attr-autofocus="false">QTy : <span class="badge">{{selectedObject.Qty}}</span></button>
+        </div>
+
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you need to request for a cancelation ? </p>
+        <div class="form-group">
+            <label for="confreason">Reason</label>
+            <input type="text" class="form-control" ng-model="confirmReason" id="confreason" style="width: 100%" autofocus required />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+            <input type="button" class="btn btn-danger btn-sm" ng-click="cancel()" value="Cancel">
+        </div>
+    </div>
+</form>

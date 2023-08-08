@@ -1,0 +1,53 @@
+﻿<div>
+    <h4>User Roles {{recordCount}}</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search UserRoles" style="width: 200px" id="Text1" type="text" class="form-control" ng-model="searchstr" ng-change="searchrole()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in roleData" id="{{c.RoleId}}" data-status="pagado">
+
+                        <td style="width: 55%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">Role : {{c.RoleDescription}}
+                                       
+                                    </h4>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 45%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openCreateWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit Role">Edit</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openAccessLevelWindow(c)" name="edit" data-toggle="tooltip" data-placement="top" title="Access Levels">Access Levels</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openAddUserWindow(c)" data-toggle="tooltip" data-placement="top" title="Add Users">Add Users</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openRemoveUserWindow(c)" data-toggle="tooltip" data-placement="top" title="Remove Users">Remove Users</button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.RoleId)" data-toggle="tooltip" data-placement="top" title="Delete Role">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

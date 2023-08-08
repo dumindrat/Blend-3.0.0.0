@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="document" type="Blend.BuisnessEntities.TransDocument.DocumentNo"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetDocumentNo" parameterMap="get-docno-params"  resultMap="get-docno-result">
+      trn_DocumentGetNo
+    </procedure>
+    <procedure id="GetDocuments" parameterMap="get-docnos-params"  resultMap="get-docnos-result">
+      trn_DocumentGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-docno-params">
+      <parameter property="doctypes" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-docnos-params">
+      <!--<parameter property="doctypes" direction  ="Input" />-->
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-docno-result" class="Blend.BuisnessEntities.TransDocument.DocumentNo">
+      <result property="DocType" column="DocType" dbType="Int"/>
+      <result property="DocNo" column="DocNo" dbType="Varchar"/>
+      <result property="Prefix" column="Prefix" dbType="Varchar"/>
+      <result property="DocFormat" column="DocFormat" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-docnos-result" class="Blend.BuisnessEntities.TransDocument.DocumentNo">
+      <result property="DocType" column="DocType" dbType="Int"/>
+      <result property="DocNo" column="DocNo" dbType="Varchar"/>
+      <result property="Prefix" column="Prefix" dbType="Varchar"/>
+      <result property="DocFormat" column="DocFormat" dbType="Varchar"/>
+      <result property="Description" column="Description" dbType="Varchar"/>
+      <result property="ModuleId" column="ModuleId" dbType="Int"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

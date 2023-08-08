@@ -1,0 +1,60 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h5>Mark Collection for Reserved No : {{SelectedBoxNo.BoxNo}}. {{SelectedBoxNo.CollectionNoteNo}}</h5>
+
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">Stock Received
+                       
+            <div class="material-switch pull-right">
+                <input id="optstockreceived" name="someSwitchOption001" type="checkbox"  ng-model="stockreceived" />
+                <label for="optstockreceived" class="label-info"></label>
+
+            </div>
+        </li>
+        <li class="list-group-item">Stock Received Date
+                <input type="date" class="form-control" ng-value="New.CollectionDate" ng-model="New.CollectionDate" ng-disabled="!stockreceived" id="StockReceivedDate" style="width: 100%" placeholder="MM-DD-YYYY" required autofocus />
+
+        </li>
+        <li class="list-group-item">Current Selected Collection No : {{CurrentNote.CollectionNo}}
+            <div class="material-switch pull-right">
+                <input id="optunallocatedlines" name="someSwitchOption003" type="checkbox"  ng-model="currentcollection" />
+                <label for="optunallocatedlines" class="label-info"></label>
+            </div>
+        </li>
+        <li class="list-group-item">Existing Collection No
+                       
+            <div class="material-switch pull-right">
+                <input id="optexcel" name="someSwitchOption002" type="checkbox"  ng-model="!currentcollection" />
+                <label for="optexcel" class="label-info"></label>
+            </div>
+        </li>
+        <li class="list-group-item">Search Collection No
+                <div class="div-table-input-col" id="Div1">
+                    <input type="text" style="width: 100%" id="collectionnote" class="form-control" ng-disabled="currentcollection" data-ng-model="SelectedCollectioNoteNo" list="collectionnotes" required />
+                </div>
+            <datalist id="collectionnotes">
+                <option data-ng-repeat="note in CollectionNotes" value="{{note}}">
+            </datalist>
+        </li>
+    </ul>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="create();" type="submit" ng-disabled="dataLoading">Submit</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+    </div>
+</div>

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="auth" type="Blend.BuisnessEntities.TokenEntity"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetAuthToken" parameterMap="get-authtoken-params"  resultMap="get-authtoken-result">
+      auth_TokenGetByIdAndDateTime
+    </procedure>
+
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-authtoken-params">
+      <parameter property="AuthToken" direction  ="Input" />
+    </parameterMap>
+
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-authtoken-result" class="Blend.BuisnessEntities.TokenEntity">
+      <result property="TokenId" column="TokenId" dbType="int"/>
+      <result property="UserId" column="UserId" dbType="Varchar"/>
+      <result property="AuthToken" column="AuthToken" dbType="Varchar"/>
+      <result property="IssuedOn" column="IssuedOn" dbType="DateTime"/>
+      <result property="ExpiresOn" column="ExpiresOn" dbType="DateTime" />
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

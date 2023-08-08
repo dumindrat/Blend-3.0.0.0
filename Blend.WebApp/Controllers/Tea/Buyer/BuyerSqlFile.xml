@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="byre" type="Blend.BuisnessEntities.TeaBuyer.Buyer"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetBuyers" parameterMap="get-allbuyers-params"  resultMap="get-allbuyers-result">
+      trn_BuyerGet
+    </procedure>
+    
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allbuyers-params">
+      <parameter property="Name" direction  ="Input" />
+    </parameterMap>
+    
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allbuyers-result" class="Blend.BuisnessEntities.TeaBuyer.Buyer">
+      <result property="BuyerId" column="BuyerId" dbType="Int"/>
+      <result property="BuyerCode" column="BuyerCode" dbType="Varchar"/>
+      <result property="BuyerName" column="Name" dbType="Varchar"/>
+      <result property="Address" column="Address" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary" />
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

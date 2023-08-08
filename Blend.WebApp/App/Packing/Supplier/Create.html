@@ -1,0 +1,51 @@
+﻿<form data-toggle="validator" role="form" ng-submit="save()">
+
+    <div class="modal-header">
+        <div>
+            <h4>Supplier Details</h4>
+        </div>
+    </div>
+    <div class="modal-body">
+
+        <div ng-show="message" class="{{messageclass}}" role="alert">
+            <label>{{message}}</label>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <input type="text" ng-model="New.SupplierId" ng-hide="true" /></td>
+        <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+
+        </div>
+
+        <div class="form-group">
+            <label for="supplierdname">Supplier Name:</label>
+            <input id="supplierdname" class="form-control" type="text" ng-model="New.SupplierName" required />
+        </div>
+        <div class="form-group">
+            <label for="address1">Address1:</label>
+            <input id="address1" class="form-control" type="text" ng-model="New.Address1" required />
+        </div>
+        <div class="form-group">
+            <label for="address2">Address2:</label>
+            <input id="address2" class="form-control" type="text" ng-model="New.Address2" required />
+        </div>
+        <div class="form-group">
+            <label for="tel">Tel:</label>
+            <input id="tel" class="form-control" type="text" ng-model="New.Tel" required />
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input id="email" class="form-control" type="text" ng-model="New.Email" required />
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="dataLoading">
+                <img class="savedata" />
+
+            </span>
+            <button type="submit" class="btn btn-primary btn-sm" ng-disabled="dataLoading">Save</button>
+
+            <input type="button" class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading" value="Cancel" />
+
+        </div>
+    </div>
+</form>

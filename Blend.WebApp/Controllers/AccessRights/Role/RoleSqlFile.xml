@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="role" type="Blend.BuisnessEntities.AccessRights.Role.RoleEntity"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetRoles" parameterMap="get-allroles-params"  resultMap="get-allroles-result">
+      auth_RoleGet
+    </procedure>
+    <procedure id="GetRoleAccessLevels" parameterMap="get-allroleaccesslevel-params"  resultMap="get-allroleaccesslevel-result">
+      auth_RoleAccessGet
+    </procedure>
+    
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allroles-params">
+      <parameter property="RoleDescription" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-allroleaccesslevel-params">
+      <parameter property="RoleId" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allroles-result" class="Blend.BuisnessEntities.AccessRights.Role.RoleEntity">
+      <result property="RoleId" column="RoleId" dbType="Int"/>
+      <result property="RoleDescription" column="RoleDescription" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-allroleaccesslevel-result" class="Blend.BuisnessEntities.AccessRights.Role.RoleAccessLevel">
+      <result property="RoleId" column="RoleId" dbType="Int"/>
+      <result property="MenuId" column="MenuId" dbType="Int"/>
+      <result property="MenuName" column="MenuName" dbType="Varchar"/>
+      <result property="AccessLevel" column="AccessLevel" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

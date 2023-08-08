@@ -1,0 +1,26 @@
+﻿<div class="modal-dialog" style="padding-top: 100px; width: 350px">
+    <div class="modal-content">
+        <form name="form" ng-submit="logoff()" role="form">
+
+            <div ng-show="error" class="alert alert-danger">{{error}}</div>
+            <div class="modal-header modal-header-info">
+                <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+                <h4 class="modal-title">Signing out.</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h5>Are you sure you want to signing out ?</h5>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="submit" class="btn btn-danger">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">No</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+

@@ -1,0 +1,51 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+    <button type="button" class="btn btn-warning">PO No <span class="badge">{{selectedItem.PONumber}}</span></button>
+   
+</div>
+
+<div class="modal-body">
+
+    <div class="table-responsive">
+        <div class="text-left">
+            <p>List of added Items : {{addedItems.length}} </p>
+
+            <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-click="openAddItemWindow();">Add Items</button>
+
+        </div>
+        <table class="table" style="width: 100%; font-size: smaller">
+
+            <thead>
+                <tr>
+                    <th ng-repeat="c in itemcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="c in model.Items" id="{{c.ItemCode}}"
+                    animate-on-change='c.ItemCode' ng-animate=" 'animate'" style="font: small">
+                    <td width="5%" ng-hide="true">{{c.Id}}</td>
+                    <td width="5%">{{c.ItemCode}}</td>
+                    <td width="10%">{{c.ItemName}}</td>
+                    <td width="25%">{{c.ShortDescription}}</td>
+                    <td width="10%">{{c.UomName}}</td>
+                    <td width="10%">{{c.Qty | number: 2}}</td>
+                    <td width="10%">{{c.Price | number: 2}}</td>
+                    <td width="10%">{{c.Value| number: 2}}</td>
+                    <td width="25%">{{c.Comment}}</td>
+
+                    <td width="5%">
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Delete line" ng-hide="accessLevels.D" ng-click="deleteitem(c)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </td>
+
+</tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <a class="btn btn-danger btn-sm" ng-click="cancel()">Close</a>
+    </div>
+</div>

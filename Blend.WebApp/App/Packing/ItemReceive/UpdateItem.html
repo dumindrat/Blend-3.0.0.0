@@ -1,0 +1,38 @@
+﻿<div class="modal-header">
+    <div>
+
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4>{{buttonstatus}}Update received Item</h4>
+    </div>
+</div>
+<div class="modal-body">
+   
+    <div class="form-group">
+        <input id="chkrecqty" type="checkbox" ng-value="true" ng-change="setRecQty(changeReqQty)" ng-model="changeReqQty" />
+        <label for="receiedqty" ng-hide="boxnodisabled">Change Qty: (Order Qty: {{New.OrderQty | number: 2}})</label>
+        <input type="text" class="form-control" ng-model="New.ReceivedQty" id="irnqty" style="width: 100%" ng-disabled="disableQty" only-digit />
+    </div>
+    <div class="form-group">
+        <input id="chkrecprice" type="checkbox" ng-value="true" ng-change="setRecPrice(changeReqPrice)" ng-model="changeReqPrice" />
+        <label for="unitprice">Change Unit Price: (Order Price: {{New.OrderPrice | number: 2}})</label>
+        <input type="text" class="form-control" ng-model="New.ReceivedPrice" id="irnprice" style="width: 100%" ng-disabled="disablePrice" only-digit />
+    </div>
+    <div class="form-group">
+        <label for="date">Received Date: ({{New.ReceivedDate}})</label>
+        <input type="date" class="d1" ng-model="New.ReceivedDate" id="irnrecdate" style="width: 100%" placeholder="MM-DD-YYYY" />
+    </div>
+    <div class="form-group">
+        <label for="location">Store Location:</label>
+        <input type="text" class="form-control" ng-model="New.StoreLocation" id="irnstoreloc" style="width: 100%" />
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="save(New);" type="submit">Update</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+    </div>
+</div>

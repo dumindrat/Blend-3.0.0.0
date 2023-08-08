@@ -1,0 +1,227 @@
+﻿<style type="text/css">
+    .div-table
+    {
+        display: table;
+        width: auto;
+        /*border: 1px solid #666666;*/
+        border-spacing: 5px; /* cellspacing:poor IE support for  this */
+    }
+
+    .div-table-row
+    {
+        display: table-row;
+        width: auto;
+        clear: both;
+        margin: 4px;
+        text-align: center;
+    }
+
+    .div-table-input-col
+    {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;
+        width: 100px;
+        margin: 5px 5px 5px 5px;
+        text-align: left;
+    }
+
+    .div-table-lable-col
+    {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;
+        width: 75px;
+        margin: 4px;
+        text-align: right;
+    }
+</style>
+
+
+
+<!--<script type="text/ng-template" id="/straightlinestock.html">
+    <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in stockgridcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="c in StraightLIneStockData" id="{{c.Id}}" animate-on-change='c.Id' ng-animate=" 'animate'" style="font: small">
+                            <td ng-hide="true">{{c.StockItemId}}</td>
+                            <td width="10%">{{c.BoxNo}}</td>
+                            <td width="10%">{{c.SaleDate}}</td>
+                            <td width="5%">{{c.LotNo}}</td>
+                            <td width="5%">{{c.Invoice}}</td>
+                            <td width="5%">{{c.Grade}}</td>
+                            <td width="5%">{{c.Standard}}</td>
+                            <td width="25%">{{c.GardenMark}}</td>
+                            <td width="5%">{{c.Packs}}</td>
+                            <td width="5%">{{c.NetWeight | number: 2}}</td>
+                            <td width="5%">{{c.Qty | number: 2}}</td>
+                            <td width="5%">{{c.ADQty | number: 2}}</td>
+                            <td width="5%">{{c.Rate | number: 2}}</td>
+                            <td width="10%">{{c.Value| number: 2}}</td>
+                            <td ng-hide="true">{{c.RowVersion}}</td>
+                            <td width="5%">
+                                <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.C" ng-click="openAddStraightLinesWindow(c.BoxNo)" data-placement="top" title="Add to Blend">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </td>
+
+                    </tbody>
+                </table>
+
+</script>
+
+<script type="text/ng-template" id="/blendstock.html">
+     <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in blendstockgridcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="c in BlendStockData" id="{{c.Id}}" animate-on-change='c.Id' ng-animate=" 'animate'" style="font: small">
+                            <td ng-hide="true">{{c.StockItemId}}</td>
+                            <td width="10%">{{c.ItemName}}</td>
+                            <td width="10%">{{c.Status}}</td>
+                            <td width="5%">{{c.Rate}}</td>
+                            <td width="5%">{{c.Qty}}</td>
+                            <td width="5%">{{c.Value}}</td>
+                            <td ng-hide="true">{{c.IsClosed}}</td>
+                            <td width="5%">
+                                <button type="button" class="btn btn-info btn-sm"  ng-disabled="blendselectdisable(c.StockItemId)" ng-click="openAddBlendBalanceWindow(c)" data-placement="top" title="Add to Blend">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </td>
+
+                    </tbody>
+                </table>
+</script>-->
+
+<div class="modal-header">
+
+    <div style="display: inline-block">
+        <!--<label class="modal-title">Blend Creation. Add/Remove items</label>-->
+        <button class="btn btn-info btn-sm" ng-click="openViewAddLines();" ng-disabled="CheckCloseStatus()" type="submit">Add lines</button>
+        <button class="btn btn-info btn-sm" ng-click="PrintOption(SelectedBlend);">View Blend sheet</button>
+        <button type="button" class="btn btn-default">BlendNo : <span class="badge">{{SelectedBlend.BlendNo}}</span></button>
+        <button type="button" class="btn btn-default">Export Qty : <span class="badge">{{SelectedBlend.ExportQty}}</span></button>
+        <button type="button" class="btn btn-default" ng-attr-autofocus="false">Total Line Qty : <span class="badge">{{BlendDisplayQty}}</span></button>
+        <button type="button" class="btn btn-default" ng-attr-autofocus="false">Current Blend Rate : <span class="badge">{{BlendDisplayRate}}</span></button>
+        <button type="button" class="{{closestatusbadgeclass}}">Status : <span class="badge">{{SelectedBlend.CloseStatus}}</span></button>
+        
+
+        <span style="margin-left: 8px;" ng-show="showLoader">
+            <img class="savedata" />
+        </span>
+    </div>
+</div>
+
+<div class="modal-body">
+    <div role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="cancel();"><span aria-hidden="true">&times;</span></button>
+
+        </div>
+    <div ng-show="setvisibleaddedscreen">
+        
+
+        <!--  <div class="panel-heading" style="color: white; background-color: white">
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                    <input placeholder="Search added lines" style="width: 200px" id="Text1" type="text" class="form-control" ng-model="searchstr" ng-change="searchblend()" />
+                </div>
+            </div>-->
+        <div class="panel-body" style="height: 100%">
+            <table class="table" style="width: 100%; font-size: smaller">
+
+                <thead>
+                    <tr>
+                        <th ng-repeat="c in blenddetailcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="c in BlendDisplayItems" id="{{c.BlendDetalId}}" animate-on-change='c.BlendDetalId' ng-animate=" 'animate'" style="font: smaller">
+                        <td ng-hide="true">{{c.BlendDetalId}}</td>
+                        <td ng-hide="true">{{c.Id}}</td>
+                        <td ng-hide="true">{{c.StockItemId}}</td>
+                        <td width="15%">{{c.BoxNo}}</td>
+                        <td width="5%">{{c.SaleDate}}</td>
+                        <td width="5%">{{c.LotNo}}</td>
+                        <td width="5%">{{c.Invoice}}</td>
+                        <td width="5%">{{c.Grade}}</td>
+                        <td width="5%">{{c.Standard}}</td>
+                        <td width="5%">{{c.SaleType}} {{c.SaleCode}}</td>
+                        <td width="15%">{{c.GardenMark}}</td>
+                        <td width="5%">{{c.Packs}}</td>
+                        <td width="5%">{{c.NetWeight | number: 2}}</td>
+                        <td width="5%">{{c.Qty | number: 2}}</td>
+                        <td width="5%">{{c.Rate | number: 2}}</td>
+                        <td width="10%">{{c.Value| number: 2}}</td>
+                        <td ng-hide="true">{{c.RowVersion}}</td>
+                        <td ng-hide="true">{{c.ItemType}}</td>
+                        <td width="5%">
+                            <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D || CheckCloseStatus()" ng-click="RemoveItem(c)" data-placement="top" title="Remove from Blend">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </td>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!--<form id="blendCreationForm">
+        <div ng-show="setvisiblecreatescreen">
+            <div class="panel panel-primary" style="width: 100%" ng-show="setvisiblestockwindow">
+                <div class="panel-heading">
+                    List of Stock Lines search  
+                    <button class="btn btn-warning" ng-click="closeCreteView();" type="submit">Go to Blend</button>
+                </div>
+                <div class="panel-body" style="overflow-y: scroll; height: 100%">
+
+                    <div class="div-table  " style="text-align: left">
+                        <div class="div-table-row">
+                            <div class="div-table-input-col" style="width: 150px">
+                                <label>StockType:</label>
+                                <select id="stocktype" name="stocktype" class="form-control" ng-options="s.stocktype as s.desc for s in stocktypes" ng-model="StockType" style="width: 150px" ng-change="viewStockGrid()">
+                                </select>
+                            </div>
+                            <div class="div-table-input-col" style="width: 150px">
+                                <label>SearchType:</label>
+                                <select id="seachtype" name="seachtype" class="form-control" ng-options="s.seachtype as s.desc for s in seachtypes" ng-model="SeachType" style="width: 150px">
+                                </select>
+                            </div>
+                            <div class="div-table-input-col" style="width: 150px">
+                                <label>Search:</label>
+                                <input autofocus type="text" id="searchby" ng-model="searchstr" style="width: 100px" class="form-control" ng-change="searchlinestock()" />
+                            </div>
+                             <div class="div-table-input-col" style="width: 150px">
+                                <label>Quick search BoxNo</label>
+                                <input type="text" name="quicksearch" id="quicksearch" class="form-control" ng-model="boxNoData" list="boxnumbers"  my-enter="addQuickSearchItem(boxNoData)" ng-maxlength="10"  />
+                            </div>
+                            <datalist id="boxnumbers">
+                                <option data-ng-repeat="boxno in BoxNumbers" value="{{boxno}}">
+                            </datalist>
+
+                        </div>
+                    </div>
+                    <div style="width: 100%">
+                        <ng-include src="viewstkgrid"></ng-include>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </form>-->
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" type="submit">Close</button>
+    </div>
+</div>

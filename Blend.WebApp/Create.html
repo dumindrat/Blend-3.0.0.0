@@ -1,0 +1,52 @@
+﻿<div class="modal-header">
+    <div>
+
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4>{{buttonstatus}} Purchse Order</h4>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="form-group">
+
+        <input id="chkAutoDoc" type="checkbox" ng-value="true" ng-change="setAutoDocNo(New.IsAutoDocNo)" ng-model="New.IsAutoDocNo" ng-hide="boxnodisabled" />
+        <label for="blendngen" ng-hide="boxnodisabled">Auto Generated PO No</label>
+        <input type="text" class="form-control" ng-model="New.PONumber" id="pono" style="width: 100%" ng-disabled="boxnodisabled" />
+
+    </div>
+    <div class="form-group">
+        <input type="text" id="id" class="form-control" ng-model="New.Id" ng-hide="true" />
+        <label for="contract">Contract:</label>
+        <select id="contract" name="contract" class="form-control" ng-options="c.ContractId as c.ContractName for c in ContractData" ng-model="New.ContractId" style="width: 100%">
+            <option style="display: none" value="">---Select---</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="supplier">Supplier:</label>
+        <select id="supplier" name="supplier" class="form-control" ng-options="c.Id as c.SupplierName for c in SupplierData" ng-model="New.SupplierId" style="width: 100%">
+            <option style="display: none" value="">---Select---</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="buyername">Date of Delivery:({{New.DeliveryDate}})</label>
+        <input type="date" class="form-control" ng-value="New.DeliveryDate" ng-model="New.DeliveryDate" id="deliverydate" style="width: 100%" placeholder="MM-DD-YYYY" required />
+    </div>
+    <div class="form-group">
+        <label for="buyername">Instructions:</label>
+        <input type="text" class="form-control" ng-value="New.Instructions" ng-model="New.Instructions" id="instructions" style="width: 100%" />
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="save(New);" type="submit" ng-disabled="button.disabled">Save</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+    </div>
+</div>

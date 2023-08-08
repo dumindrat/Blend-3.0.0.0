@@ -1,0 +1,70 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
+        <h4>Pack Goods Convertion : {{SelectedBlend.BlendNo}}</h4>
+
+    </div>
+</div>
+<div class="modal-body">
+    
+    <br />
+    <fieldset class="the-fieldset">
+        <legend class="the-legend">Tea Convertion</legend>
+
+        <div class="container-fluid">
+            <form class="form-horizontal" data-toggle="validator" role="form" ng-submit="save()">
+                <div>
+                    <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+                    <input type="text" ng-model="New.BlendId" ng-hide="true" />
+                    <input type="text" ng-model="New.BB" ng-hide="true" />
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-6" for="dbb">BB:</label>
+                    <div class="col-sm-6">
+                        <input id="Text3" type="text" class="form-control" name="dbb" ng-model="New.BB" ng-disabled="true">
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-6" for="goodtea">Good Tea:</label>
+                    <div class="col-sm-6">
+                        <input id="packs" type="text" class="form-control" name="goodtea" placeholder="Good Tea" ng-model="New.GoodTea"  required only-digits>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-6" for="flv">Flavoured Tea:</label>
+                    <div class="col-sm-6">
+                        <input id="Text1" type="text" class="form-control" name="flv" placeholder="Nett" ng-model="New.FlavouredTea"  required only-digits>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-6" for="packsgood">PackGood Tea:</label>
+                    <div class="col-sm-6">
+                        <input id="Text2" type="text" class="form-control" name="packsgood" placeholder="Qty" ng-model="New.PackGoodTea"  required only-digits>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-6" for="packs"></label>
+                    <div class="col-sm-6">
+                        <button type="submit" class="btn btn-primary btn-sm" ng-disabled="dataLoading">Submit</button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <span style="margin-left: 8px;" ng-show="showLoader">
+            <img class="savedata" />
+        </span>
+    </fieldset>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading">Close</button>
+
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<purchasesheet>
+  <item>
+    <BoxNo></BoxNo>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <Grade></Grade>
+    <Standard></Standard>
+    <BrokerName></BrokerName>
+    <GardenMark></GardenMark>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <SaleCode></SaleCode>
+    <NetWeight></NetWeight>
+    <Packs></Packs>
+    <Weight></Weight>
+    <Rate></Rate>
+    <Value></Value>
+    <IsRepeated></IsRepeated>
+    <VirtualValue></VirtualValue>
+    <VirtualWeight></VirtualWeight>
+    <TinNo></TinNo>
+    <TeaCertificates></TeaCertificates>
+  </item>
+</purchasesheet>

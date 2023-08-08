@@ -1,0 +1,51 @@
+﻿<div>
+    <h4>Suppliers ({{recordCount}})</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Standard" style="width: 200px" id="search" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in supplierData" id="{{c.Id}}" data-status="pagado">
+
+                        <td style="width: 70%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">{{c.SupplierName}}
+                                       
+                                       </h4>
+                                </div>
+                            </div>
+                        </td>
+
+                         <td style="width: 30%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" ng-disabled="accessLevels.M" ng-click="openCreateWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit Supplier">Edit</button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.id)" data-toggle="tooltip" data-placement="top" title="Delete Supplier">Delete</button>
+                            
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

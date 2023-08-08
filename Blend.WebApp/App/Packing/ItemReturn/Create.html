@@ -1,0 +1,43 @@
+﻿<div class="modal-header">
+    <div>
+
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4>{{buttonstatus}} Item Return Note</h4>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="form-group">
+
+        <input id="chkAutoDoc" type="checkbox" ng-value="true" ng-change="setAutoDocNo(New.IsAutoDocNo)" ng-model="New.IsAutoDocNo" ng-hide="boxnodisabled" />
+        <label for="blendngen" ng-hide="boxnodisabled">Auto Generated ISN No</label>
+        <input type="text" class="form-control" ng-model="New.ReturnNoteNo" id="returnnoteno" style="width: 100%" ng-disabled="boxnodisabled" />
+
+    </div>
+    <div class="form-group">
+        <input type="text" id="id" class="form-control" ng-model="New.Id" ng-hide="true" />
+        <label for="contract">Received Note Number:</label>
+        <select id="blendopt" name="blend" class="form-control" ng-options="c.Id as c.Description for c in receivednotedata" ng-model="New.ReceiveNoteId" style="width: 100%" ng-disabled="boxnodisabled">
+            <option style="display: none" value="">---Select---</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="contract">Comment:</label>
+        <input type="text" id="comment" class="form-control" ng-model="New.Comment" ng-hide="false" />
+
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="save(New);" type="submit" ng-disabled="button.disabled">{{buttonstatus}}</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+    </div>
+</div>

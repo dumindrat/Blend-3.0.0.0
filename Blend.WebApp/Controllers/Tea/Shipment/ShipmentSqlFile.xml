@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="closedblends" type="Blend.BuisnessEntities.Shipments.ClosedBlend"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetClosedBlends" parameterMap="get-closedblends-params"  resultMap="get-closedblends-result">
+      trn_ClosedBlendSearch
+    </procedure>
+    
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-closedblends-params">
+      <parameter property="BlendNo" direction  ="Input" />
+    </parameterMap>
+    
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-closedblends-result" class="Blend.BuisnessEntities.Shipments.ClosedBlend">
+      <result property="BlendId" column="BlendId" dbType="Int"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="LineQty" column="LineQty" dbType="Decimal"/>
+      <result property="ContractName" column="ContractName" dbType="Varchar"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="ClosedDate" column="ClosedDate" dbType="Varchar"/>
+      <result property="ClosedUser" column="ClosedUser" dbType="Varchar"/>
+      <result property="ClosedRate" column="ClosedRate" dbType="Decimal"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+      <result property="DateOfCompletion" column="DateOfCompletion" dbType="Varchar"/>
+      <result property="STDBB" column="STDBB" dbType="Decimal"/>
+      <result property="AvailableStock" column="AvailableStock" dbType="Decimal"/>
+      <result property="AvailableBalance" column="AvailableBalance" dbType="Decimal"/>
+      <result property="TotShipQty" column="TotShipQty" dbType="Decimal"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+      <result property="IsPackGoodsCreate" column="IsPackGoodsCreate" dbType="Int"/>
+      
+    
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

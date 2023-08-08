@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.Data", "Blend.Data\Blend.Data.csproj", "{1E36CE49-C5DD-4030-B4FD-044E6CB111CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.BuisnessService", "Blend.BuisnessService\Blend.BuisnessService.csproj", "{D3CD4741-BDF8-48AF-A516-154832C684BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.BuisnessEntities", "Blend.BuisnessEntities\Blend.BuisnessEntities.csproj", "{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.DataModel", "Blend.DataModel\Blend.DataModel.csproj", "{CD2ECC77-7490-45DA-9CBB-4EC2DAC8309A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.Resolver", "Blend.Resolver\Blend.Resolver.csproj", "{3D4D9724-DEEE-4243-A30C-4D430514AC45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blend.WebApp", "Blend.WebApp\Blend.WebApp.csproj", "{34B041FA-3084-4DB7-A800-83134CDE4F58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E36CE49-C5DD-4030-B4FD-044E6CB111CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E36CE49-C5DD-4030-B4FD-044E6CB111CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E36CE49-C5DD-4030-B4FD-044E6CB111CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E36CE49-C5DD-4030-B4FD-044E6CB111CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3CD4741-BDF8-48AF-A516-154832C684BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3CD4741-BDF8-48AF-A516-154832C684BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3CD4741-BDF8-48AF-A516-154832C684BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3CD4741-BDF8-48AF-A516-154832C684BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E7FC6FA-C666-45AD-9008-AF59FBA6138A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2ECC77-7490-45DA-9CBB-4EC2DAC8309A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2ECC77-7490-45DA-9CBB-4EC2DAC8309A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2ECC77-7490-45DA-9CBB-4EC2DAC8309A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2ECC77-7490-45DA-9CBB-4EC2DAC8309A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D4D9724-DEEE-4243-A30C-4D430514AC45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D4D9724-DEEE-4243-A30C-4D430514AC45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D4D9724-DEEE-4243-A30C-4D430514AC45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D4D9724-DEEE-4243-A30C-4D430514AC45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34B041FA-3084-4DB7-A800-83134CDE4F58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34B041FA-3084-4DB7-A800-83134CDE4F58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34B041FA-3084-4DB7-A800-83134CDE4F58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34B041FA-3084-4DB7-A800-83134CDE4F58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35
+	EndGlobalSection
+EndGlobal

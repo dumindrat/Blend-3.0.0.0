@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="returnnote" type="Blend.BuisnessEntities.Packing.ItemReturn.ItemReturnNoteDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetReturnNotes" parameterMap="get-allreturnnote-params"  resultMap="get-allreturnnote-result">
+      pack_ItemReturnNoteGet
+    </procedure>
+    <procedure id="GetReceiveNoteList" parameterMap="get-receivenotelist-params"  resultMap="get-receivenotelist-result">
+      pack_ItemReceivedNoteListGet
+    </procedure>
+    <procedure id="GetReturnNoteItems" parameterMap="get-returnnoteitems-params"  resultMap="get-returnnoteitems-result">
+      pack_ItemReturnNoteItemsGetById
+    </procedure>
+    <procedure id="GetReceiveItemsForReturnNotes" parameterMap="get-receiveitemsforreturnnote-params"  resultMap="get-receiveitemsforreturnnote-result">
+      pack_ReceiveNoteItemsForReturn
+    </procedure>
+    <procedure id="GetReturnNoteById" parameterMap="get-returnnote-params"  resultMap="get-returnnote-result">
+      pack_ItemReturnNoteGetById
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allreturnnote-params">
+      <parameter property="ReturnNoteNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-receivenotelist-params">
+      <!--<parameter property="ItemName" direction  ="Input" />-->
+    </parameterMap>
+    <parameterMap id="get-returnnoteitems-params">
+      <parameter property="ReturnNoteId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-receiveitemsforreturnnote-params">
+      <parameter property="ReceivedNoteId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-returnnote-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allreturnnote-result" class="Blend.BuisnessEntities.Packing.ItemReturn.ItemReturnNoteDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReturnNoteNo" column="ReturnNoteNo" dbType="Varchar"/>
+      <result property="ReceiveNoteId" column="ReceiveNoteId" dbType="Int"/>
+      <result property="ReceiveNoteNo" column="ReceiveNoteNo" dbType="Varchar"/>
+      <result property="SupplierId" column="SupplierId" dbType="Int"/>
+      <result property="Supplier" column="Supplier" dbType="Varchar"/>
+      <result property="PoId" column="PoId" dbType="Int"/>
+      <result property="PoNumber" column="PONumber" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="Comment" column="Comment" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-receivenotelist-result" class="Blend.BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReceiveNoteNo" column="ReceiveNoteNo" dbType="Varchar"/>
+      <result property="PoNumber" column="PONumber" dbType="Varchar"/>
+      <result property="SupplierName" column="SupplierName" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-returnnoteitems-result" class="Blend.BuisnessEntities.Packing.ItemReturn.ReturnNoteItems">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReturnNoteId" column="ReturnNoteId" dbType="Int"/>
+      <result property="ItemId" column="ItemId" dbType="Int"/>
+      <result property="ItemCode" column="ItemCode" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="UomName" column="UomName" dbType="Varchar"/>
+      <result property="ShortDescription" column="ShortDescription" dbType="Varchar"/>
+      <result property="ReturnQty" column="Qty" dbType="Decimal"/>
+      <result property="Price" column="Price" dbType="Decimal"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+      <result property="Reason" column="Reason" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-receiveitemsforreturnnote-result" class="Blend.BuisnessEntities.Packing.ItemReturn.ReceiveNoteStockItems">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReceveNoteId" column="ReceivedNoteId" dbType="Int"/>
+      <result property="ItemId" column="ItemId" dbType="Int"/>
+      <result property="ItemCode" column="ItemCode" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="UomName" column="UomName" dbType="Varchar"/>
+      <result property="ShortDescription" column="ShortDescription" dbType="Varchar"/>
+      <result property="ReceivedQty" column="ReceivedQty" dbType="Decimal"/>
+      <result property="ReceivedPrice" column="ReceivedPrice" dbType="Decimal"/>
+      <result property="StockQty" column="StockQty" dbType="Decimal"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+    </resultMap>
+    <resultMap id="get-returnnote-result" class="Blend.BuisnessEntities.Packing.ItemReturn.ItemReturnNoteDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReturnNoteNo" column="ReturnNoteNo" dbType="Varchar"/>
+      <result property="ReceiveNoteId" column="ReceiveNoteId" dbType="Int"/>
+      <result property="ReceiveNoteNo" column="ReceiveNoteNo" dbType="Varchar"/>
+      <result property="SupplierId" column="SupplierId" dbType="Int"/>
+      <result property="Supplier" column="Supplier" dbType="Varchar"/>
+      <result property="PoId" column="PoId" dbType="Int"/>
+      <result property="PoNumber" column="PONumber" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="Comment" column="Comment" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

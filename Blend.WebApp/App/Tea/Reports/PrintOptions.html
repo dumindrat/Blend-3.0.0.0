@@ -1,0 +1,49 @@
+﻿<div class="modal-header    ">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+    <h4 class="modal-title">Print Options {{itemname}}</h4>
+</div>
+<div class="modal-body">
+    <ul class="list-group">
+        <li class="list-group-item">With Values
+                       
+                    <div class="material-switch pull-right">
+                        <input id="optallocatedlines" name="someSwitchOption001" type="checkbox" ng-value="New.IsWithValues" ng-model="New.IsWithValues" />
+                        <label for="optallocatedlines" class="label-info"></label>
+                    </div>
+        </li>
+        <!--         <li class="list-group-item">With Watermark
+                       
+                    <div class="material-switch pull-right">
+                        <input id="Checkbox1" name="someSwitchOption002" type="checkbox" ng-value="New.IsWithWaterMark" ng-model="New.IsWithWaterMark" />
+                        <label for="optexcel" class="label-info"></label>
+                    </div>
+        </li>-->
+        <li class="list-group-item">Download
+                       
+                    <div class="material-switch pull-right">
+                        <input id="optexcel" name="someSwitchOption002" type="checkbox" ng-value="New.IsDownload" ng-model="New.IsDownload" />
+                        <label for="optexcel" class="label-info"></label>
+                    </div>
+        </li>
+        <li class="list-group-item">Download format
+                       <div style="width: 100%">
+                           <select id="downloadformat" style="width: 100%" ng-options="file.FileType as file.FileType for file  in FileTypes" class="form-control" ng-model="New.FileType" required>
+                               <option style="display: none" value="">---Select---</option>
+                           </select>
+                       </div>
+        </li>
+    </ul>
+
+    <div class="form-group">
+
+        <input type="button" name="sl" id="btn" class="btn btn-info btn-sm" value="Print" ng-click="printlines()" style="width: 100%" />
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger btn-sm" ng-click="cancel()">Cancel</button>
+</div>

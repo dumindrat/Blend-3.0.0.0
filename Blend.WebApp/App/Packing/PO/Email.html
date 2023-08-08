@@ -1,0 +1,57 @@
+﻿<div class="modal-header">
+    <div>
+
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4>{{buttonstatus}} Send Email</h4>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="send(Email);" type="submit">Send Message</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();">Close</button>
+        <button class="btn btn-primary btn-sm" ng-click="viewHistory(Email);">View History</button>
+
+    </div>
+    <div class="form-group">
+        <input id="chkAutoDoc" type="checkbox" ng-value="true" ng-change="setAttachment(Email.IsAttachment)" ng-model="Email.IsAttachment" ng-hide="boxnodisabled" />
+        <label for="blendngen" ng-hide="boxnodisabled">Attached PO</label>
+    </div>
+    <div class="form-group">
+
+        <!--<input id="chkAutoDoc" type="checkbox" ng-value="true" ng-change="setAutoDocNo(New.IsAutoDocNo)" ng-model="New.IsAutoDocNo" ng-hide="boxnodisabled" />-->
+        <label for="blendngen" ng-hide="boxnodisabled">Supplier Email</label>
+        <input type="text" class="form-control" ng-model="Email.To" id="email" style="width: 100%" ng-disabled="boxnodisabled" />
+
+    </div>
+    <div class="form-group">
+        <input type="text" id="id" class="form-control" ng-model="New.Id" ng-hide="true" />
+        <label for="contract">Subject:</label>
+        <input type="text" class="form-control" ng-model="Email.Subject" id="subject" style="width: 100%"  />
+
+    </div>
+
+    <div class="form-group">
+        <label for="contract">Message:</label>
+        <textarea type="text" class="form-control" ng-model="Email.Message" id="pono" style="width: 100%" />
+
+    </div>
+   
+</div>
+<div class="modal-footer" style="text-align: right">
+    <!--<div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="send(New);" type="submit" ng-disabled="button.disabled">Send</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+    </div>-->
+</div>

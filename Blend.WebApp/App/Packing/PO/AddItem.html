@@ -1,0 +1,75 @@
+﻿<div modal="focusQuickSearch" close="close()">
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+            Search Items for PO {{selectedPo.PONumber}}
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="div-table  " style="text-align: left">
+            <div class="div-table-row" style="width:100%">
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" ng-click="cancel();">&times;</span></button>
+                </div>
+            </div>
+            <div class="div-table-row">
+                <div class="div-table-input-col" style="width: 100px">
+                    <label>Search Items:</label>
+                    <input autofocus type="text" id="itemsearch" ng-model="searchstr" style="width: 100px" class="form-control" ng-change="searchdata()" focus-me="true" />
+                </div>
+
+            </div>
+            <div class="div-table-row">
+                <table class="table" style="width: 100%; font-size: smaller">
+
+                    <thead>
+                        <tr>
+                            <th ng-repeat="c in itemcolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in model.items" ng-animate=" 'animate'" style="font: small" ng-include="getTemplate(item)"></tr>
+                    </tbody>
+                </table>
+                <script type="text/ng-template" id="display">
+                    <td>{{item.ItemName}}</td>
+                    <td>{{item.ItemCode}}</td>
+                    <td>{{item.ShortDescription}}</td>
+                    <td>{{item.UomName}}</td>
+                    <td>{{item.Qty}}</td>
+                    <td>{{item.Price}}</td>
+                    <td>{{item.Comment}}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" ng-click="editContact(item)" ng-disabled="IsAdded(item)">Add to PO</button>
+                    </td>
+                </script>
+                <script type="text/ng-template" id="edit">
+                    <td>{{item.ItemName}}</td>
+                    <td>{{item.ItemCode}}</td>
+                    <td>{{item.ShortDescription}}</td>
+                    <td>{{item.UomName}}</td>
+                    <td><input id="{{item.Id}}" type="text" ng-model="item.Qty" only-digits /></td>
+                    <td><input id="{{item.Id}}" type="text" ng-model="item.Price" only-digits /></td>
+                    <td><input id="{{item.Id}}" type="text" ng-model="item.Comment" /></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" ng-click="addToPO(item)">Add</button>
+                        <button class="btn btn-danger btn-sm" ng-click="reset()">Cancel</button>
+                    </td>
+                </script>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="disablestatus">
+                <img class="savedata" />
+            </span>
+            <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+        </div>
+    </div>
+</div>

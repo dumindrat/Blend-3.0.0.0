@@ -1,0 +1,54 @@
+﻿<div>
+    <h4>Item Master ({{recordCount}})</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Standard" style="width: 200px" id="search" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in itemData" id="{{c.Id}}" data-status="pagado">
+
+                        <td style="width: 80%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}} By: {{c.ModifiedUser}}</span>
+
+                                    <h4 class="title">{{c.ItemName}} ({{c.UomName}})
+                                    </h4>
+                                    <p class="summary">Item Code : {{c.ItemCode}}  |  Create Date : {{c.AddedDate}}  By : {{c.User}}</p>
+                                    <p class="summary">{{c.ShortDescription}}</p>
+
+                                </div>
+                            </div>
+                        </td>
+
+                         <td style="width: 20%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openCreateWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit Contract">Edit</button>
+                                <!--<button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openProperty(c)" data-toggle="tooltip" data-placement="top" title="Add Standards">Properties</button>-->
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.Id)" data-toggle="tooltip" data-placement="top" title="Delete Contract">Delete</button>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

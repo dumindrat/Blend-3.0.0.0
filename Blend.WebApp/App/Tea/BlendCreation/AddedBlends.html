@@ -1,0 +1,33 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4>Added Blends : {{addedBlend.length}}</h4>
+    </div>
+</div>
+
+<div class="modal-body">
+   
+
+    <table class="table" style="width: 100%; font-size: smaller">
+
+        <thead>
+            <tr>
+                <th>Blend No</th>
+                <th>Status</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="c in addedBlend" id="{{c.BlendNo}}" animate-on-change='c.BlendNo' ng-animate=" 'animate'" style="font: small">
+                <td width="90%">{{c.BlendNo}}</td>
+                <td width="10%">{{c.ClosedStatus}}</td>
+        </tbody>
+    </table>
+
+</div>
+<div class="panel-footer">
+    <div class="text-right">
+        <input type="button" id="btnBLCancel" value="Close" class="btn btn-danger btn-sm" ng-disabled="showLoader" ng-click="cancel();" />
+
+    </div>
+</div>

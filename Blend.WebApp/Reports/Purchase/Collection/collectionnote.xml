@@ -1,0 +1,21 @@
+<collectionnote>
+  <item>
+    <BoxNo></BoxNo>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <Grade></Grade>
+    <Standard></Standard>
+    <BrokerCode></BrokerCode>
+    <GardenMark></GardenMark>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <SaleCode></SaleCode>
+    <NetWeight></NetWeight>
+    <Packs></Packs>
+    <Weight></Weight>
+    <CollectionDate></CollectionDate>
+    <StockReceivedDate></StockReceivedDate>
+    <StockReceived></StockReceived>
+    <StoreLocation></StoreLocation>
+  </item>
+</collectionnote>

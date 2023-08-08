@@ -1,0 +1,56 @@
+﻿<div>
+    <h4>Purchase Orders ({{recordCount}})</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Standard" style="width: 200px" id="search" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in poData" id="{{c.Id}}" data-status="pagado">
+
+                        <td style="width: 75%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}  by : {{c.ModifiedUser}}</span>
+
+                                    <h4 class="title">{{c.PONumber}}
+                                    </h4>
+                                    <p class="summary" >Supplier : {{c.Supplier}}  |  Contract : {{c.ContractNumber}} </p>
+                                    <p class="summary">Delivery on : {{c.DeliveryDate}}  Create Date : {{c.AddedDate}}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                         <td style="width: 25%">
+                            <div class="btn-group">
+                                
+                                <button type="button" class="btn btn-primary btn-sm" ng-disabled="accessLevels.M" ng-click="openCreateWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit PO">Edit</button>
+                                <button type="button" class="btn btn-primary btn-sm" ng-disabled="accessLevels.M" ng-click="openViewAddedItems(c)" data-toggle="tooltip" data-placement="top" title="Items">Items</button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.Id)" data-toggle="tooltip" data-placement="top" title="Delete PO">Delete</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.P" ng-click="print(c)" data-toggle="tooltip" data-placement="top" title="Print">Print</button>
+                                <button type="button" class="btn btn-warning btn-sm" ng-disabled="accessLevels.P" ng-click="email(c)" data-toggle="tooltip" data-placement="top" title="Email">Email</button>
+
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

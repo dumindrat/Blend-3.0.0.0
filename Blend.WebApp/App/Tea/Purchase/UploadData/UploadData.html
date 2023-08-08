@@ -1,0 +1,107 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+    <h4>Upload Data</h4>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <select id="broker" style="width: 100%" ng-options="broker.BrokerId as broker.BrokerName for broker  in BrokerData" class="form-control" ng-model="BrokerId" required>
+                    <option style="display: none" value="">---Select Broker---</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="form-group">
+                        <select  autofocus id="saletype" name="D1" class="form-control" ng-options="s.saletype as s.saletype for s in saletypes" ng-model="SaleType" required>
+                            <option style="display: none" value="">---Sale Type---</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="form-group"> 
+                        <input type="text" style="width: 100%" id="salecode" class="form-control" ng-model="SaleCode" required placeholder="Sale Code" />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-sm-5">
+            <fieldset class="the-fieldset">
+                <legend class="the-legend">
+                    Select and Validate the file
+                </legend>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <input type="file" id="file1" name="file" multiple ng-files="getTheFiles($files)" />
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="button" class="btn btn-info btn-sm" ng-click="uploadFiles()" ng-disabled="validatecomplete" value="Validate file" />
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+        
+    </div>
+
+
+    <div style="height: 400px; overflow-y: auto">
+
+        <table class="table table-filter">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>LotNo</th>
+                    <th>Mark</th>
+                    <th>Invoice</th>
+                    <th>Grade</th>
+                    <th>Bags</th>
+                    <th>NetWeight</th>
+                    <th>Red.Qty</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="c in dataObjects">
+                    <td>{{c.Sequence}}</td>
+                    <td>{{c.Lot}}</td>
+                    <td>{{c.Mark}}</td>
+                    <td>{{c.Inv}}</td>
+                    <td>{{c.Grade}}</td>
+                    <td>{{c.Bags}}</td>
+                    <td>{{c.Net}}</td>
+                    <td>{{c.RedQty}}</td>
+                    <td>{{c.Qty}}</td>
+                    <td>{{c.Price}}</td>
+                    <td>{{c.Value}}</td>
+                    <td>
+                        <span>
+                            <img ng-class="setclass(c.Status)" />
+
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="form-group">
+        <input type="button" class="btn btn-info btn-sm" value="Submit" ng-disabled="disablestatus" ng-click="submit()" />
+
+        <!--<span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>-->
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="validating">Cancel</button>
+
+    </div>
+</div>

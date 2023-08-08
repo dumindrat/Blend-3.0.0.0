@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Blend for Tea</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-grid/2.0.11/ng-grid.min.css" />
+
+
+    <!-- Our Custom CSS -->
+    <link href="Content/style.css" rel="stylesheet" />
+    <style>
+        #banner {
+            text-align: center;
+            border: 3px solid red;
+        }
+
+        #rightbanner {
+            position: relative;
+            float: right;
+        }
+
+        #leftbanner {
+            position: relative;
+            float: left;
+        }
+
+       
+    </style>
+</head>
+<body ng-app="myApp">
+
+    <div class="wrapper" ng-controller="mainController">
+        <div ng-controller="myProfileController">
+        </div>
+        <!-- Sidebar Holder -->
+        <nav id="sidebar" ng-hide="hideMenu">
+            <div class="sidebar-header">
+                <h3>Blend {{moduleName | lowercase}}</h3>
+                <h5>Tea Master</h5>
+                <strong>BS</strong>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="active">
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <i class="glyphicon glyphicon-home"></i>
+                        Setups
+                    </a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li ng-repeat="menu in SiteMenuType1"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#features" data-toggle="collapse" aria-expanded="true" data-target="#features" aria-controls="features" id="featuremenu">
+                        <i class="glyphicon glyphicon-link"></i>
+                        Fetures
+                    </a>
+                    <ul class="collapse list-unstyled" id="features">
+                        <li ng-repeat="menu in SiteMenuType2"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#adjustment" data-toggle="collapse" aria-expanded="false">
+                        <i class="glyphicon glyphicon-link"></i>
+                        Approvals
+                    </a>
+                    <ul class="collapse list-unstyled" id="adjustment">
+                        <li ng-repeat="menu in SiteMenuType9"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#reports" data-toggle="collapse" aria-expanded="false">
+                        <i class="glyphicon glyphicon-link"></i>
+                        Reports
+                    </a>
+                    <ul class="collapse list-unstyled" id="reports">
+                        <li ng-repeat="menu in SiteMenuType4"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#admin" data-toggle="collapse" aria-expanded="false">
+                        <i class="glyphicon glyphicon-link"></i>
+                        Administration
+                    </a>
+                    <ul class="collapse list-unstyled" id="admin">
+                        <li ng-repeat="menu in SiteMenuType5"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+            <ul class="list-unstyled components">
+                <li><a href="#MyProfile"><i class="glyphicon glyphicon-user"></i>My Profile </a></li>
+                <li><a href="#Logoff"><i class="glyphicon glyphicon-logout"></i>Sign Out</a></li>
+            </ul>
+        </nav>
+
+        <!-- Page Content Holder -->
+        <div id="content" style="margin-top: 0px; padding-top: 0px; padding-left: 15px; padding-right: 0px">
+
+            <!--<nav class="navbar navbar-default">-->
+            <div class="container-fluid" ng-hide="hideMenu" style="padding-left: 0px">
+
+                <div class="row" style="height: 50px; background-color: #dfddddd1; margin-top: 0px; min-height: 20px; padding-top: 0px">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a>{{companyName}} - Welcome {{currentuser}}..!</a></li>
+
+                    </ul>
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a href="#Logoff"><i class="glyphicon glyphicon-logout" style="font:bold"></i>Sign Out ></a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right" style="padding-right: 10px">
+                        <li ng-repeat="menu in QuickLinks"><a ng-href="{{menu.href}}">{{menu.MenuName}} </a></li>
+                    </ul>
+                </div>
+                <div id="banner" ng-show="showbanner" class="row" style="height: 75px; font-style: initial; margin-top: 0px; min-height: 20px; padding-top: 0px">
+                    <label>{{bannermessage}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" ng-click="CloseBanner()">&times;</span></button>
+                </div>
+                <div class="row" style="padding-left: 10px">
+                    <div class="navbar-header">
+                        <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                            <i class="glyphicon glyphicon-align-left"></i>
+                            <span></span>
+                        </button>
+                        <button type="button" class="btn btn-info navbar-btn" ng-click="resetmenu(1,'TEA')">
+                            <i class="glyphicon-align-right"></i>
+                            <span>Tea</span>
+                        </button>
+                        <button type="button" class="btn btn-info navbar-btn" ng-click="resetmenu(2,'PACKING')">
+                            <i class="glyphicon-align-right"></i>
+                            <span>Packing</span>
+                        </button>
+                        <button type="button" class="btn btn-info navbar-btn" ng-click="resetmenu(4,'SHIPPING')">
+                            <i class="glyphicon-align-right"></i>
+                            <span>Shipping</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!--<div class="line"></div>-->
+            <div ng-view style="padding-right: 10px" id="mainView">
+                <!--Angular injected pages-->
+            </div>
+            <p style="visibility: hidden;">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+    <script src="http://code.angularjs.org/1.2.4/angular-route.js"></script>
+    <!--<script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.0.js"></script>-->
+    <script src="lib/ui-bootstrap-tpls-0.11.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-grid/2.0.11/ng-grid.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            $('#featuremenu').triggerHandler('click');
+        });
+    </script>
+
+    <script src="Script/app.js"></script>
+    <script src="Script/jszip.js"></script>
+    <script src="Script/xlsx.full.min.js"></script>
+    <script src="Script/main.controller.js"></script>
+    <script src="Script/global.service.js"></script>
+    <script src="Script/data.service.js"></script>
+    <script src="Script/report.service.js"></script>
+
+    <script src="Script/jquery.autocomplete.min.js"></script>
+    <!--<script src="Script/all.min.js"></script>-->
+    <script src="App/Document/controller.js"></script>
+    <script src="App/Authentication/Login/login.controller.js"></script>
+    <script src="App/Authentication/Login/login.service.js"></script>
+    <script src="App/Tea/TeaBuyer/buyersvc.js"></script>
+    <script src="App/Tea/TeaStandards/standards.js"></script>
+    <script src="App/Tea/Broker/broker.js"></script>
+    <script src="Utility/controller.js"></script>
+    <script src="App/Document/controller.js"></script>
+    <script src="App/Tea/Contracts/contract.js"></script>
+    <script src="App/Tea/Purchase/purchase.js"></script>
+    <script src="App/Tea/Purchase/UploadData/controller.js"></script>
+    <script src="App/Tea/BlendCreation/blendcreation.js"></script>
+    <script src="App/Tea/BlendCreation/bl_createblend.js"></script>
+    <script src="App/Tea/BlendCreation/bl_editblend.js"></script>
+    <script src="App/Tea/BlendCreation/bl_addstraightline.js"></script>
+    <script src="App/Tea/BlendCreation/bl_addblendbalance.js"></script>
+    <script src="App/Tea/BlendCreation/bl_trace.js"></script>
+    <script src="App/Tea/BlendCreation/bl_storesins.js"></script>
+    <script src="App/Tea/BlendCreation/bl_download.js"></script>
+    <script src="App/Tea/BlendCreation/bl_addlines.js"></script>
+    <script src="App/Tea/Adjustment/Reject_Short/controller.js"></script>
+    <script src="App/Tea/Adjustment/Reject_Short/rejectcontroller.js"></script>
+    <script src="App/Tea/Adjustment/Reject_Short/shortcontroller.js"></script>
+    <script src="App/Tea/Adjustment/Reject_Short/adjustmentopscontroller.js"></script>
+    <script src="App/Tea/Adjustment/Approvals/controller.js"></script>
+
+    <script src="App/Tea/BlendClose/blendclose.js"></script>
+    <script src="App/Tea/LineSummary/controller.js"></script>
+    <script src="App/Authentication/Roles/role_controller.js"></script>
+    <script src="App/Authentication/Roles/role_createcontroller.js"></script>
+    <script src="App/Authentication/Roles/role_removeusercontroller.js"></script>
+    <script src="App/Authentication/Roles/role_addusercontroller.js"></script>
+    <script src="App/Authentication/Roles/role_accesslevelcontroller.js"></script>
+    <script src="App/Authentication/Register/controller.js"></script>
+    <script src="App/Authentication/Register/service.js"></script>
+    <script src="App/Tea/Shipments/controller.js"></script>
+    <script src="App/Tea/Reports/Purchase/controller.js"></script>
+    <script src="App/Tea/Reports/Blend/controller.js"></script>
+    <script src="App/Tea/Reports/Stock/controller.js"></script>
+    <script src="App/Tea/Reports/reportviewcontroller.js"></script>
+    <script src="App/Tea/Approval/BlendCloseCancel/controller.js"></script>
+    <script src="App/Packing/ItemMaster/controller.js"></script>
+    <script src="App/Tea/Reports/Reject-Short/controller.js"></script>
+    <script src="App/Tea/Reports/Reject-Short/ShortNote/controller.js"></script>
+    <script src="App/Tea/Reports/Reject-Short/ClaimNote/controller.js"></script>
+    <script src="App/Tea/Reports/Reject-Short/DO/controller.js"></script>
+    <script src="App/Packing/Supplier/controller.js"></script>
+    <script src="App/Tea/Collection/controller.js"></script>
+    <script src="App/Packing/PO/controller.js"></script>
+    <script src="App/Packing/PO/po_itemscontroller.js"></script>
+    <script src="App/Packing/PO/po_addlines.js"></script>
+
+    <script src="App/Authentication/MyProfile/controller.js"></script>
+    <script src="App/Packing/ItemReceive/controller.js"></script>
+    <script src="App/Packing/ItemReceive/irn_itemscontroller.js"></script>
+    <script src="App/Packing/ItemIssue/in_itemscontroller.js"></script>
+    <script src="App/Packing/ItemIssue/controller.js"></script>
+    <script src="App/Packing/ItemReturn/controller.js"></script>
+
+</body>
+</html>

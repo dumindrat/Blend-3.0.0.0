@@ -1,0 +1,1173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+    <LastUsedPlatform>Any CPU</LastUsedPlatform>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\Projects\Tea\Package</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="App/Authentication/Login/login.controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Login/login.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Authentication/Login/login.service.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Login/login.v2.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Login/logoff.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/MyProfile/ChangePassword.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/MyProfile/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/MyProfile/Options.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Register/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Register/messages.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Register/Register.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Register/service.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/AccessLevel.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/AddUser.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/CreateRole.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/RemoveUser.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/Roles.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/role_accesslevelcontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/role_addusercontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/role_controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/role_createcontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Authentication/Roles/role_removeusercontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Document/controller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Document/Document.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Approvals/controller.js">
+      <publishTime>06/03/2018 08:36:14</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Approvals/StraightLines.html">
+      <publishTime>06/03/2018 08:35:53</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/adjustmentopscontroller.js">
+      <publishTime>08/19/2018 20:24:24</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/Adjustments.html">
+      <publishTime>08/19/2018 20:17:29</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/AdjustmentsCancel.html">
+      <publishTime>05/13/2018 07:28:59</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/controller.js">
+      <publishTime>08/12/2018 08:02:18</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/rejectcontroller.js">
+      <publishTime>04/28/2018 10:57:42</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/RejectLine.html">
+      <publishTime>05/13/2018 07:29:22</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/shortcontroller.js">
+      <publishTime>04/28/2018 11:31:53</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/ShortLine.html">
+      <publishTime>05/13/2018 07:29:34</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Adjustment/Reject_Short/StraightLines.html">
+      <publishTime>08/19/2018 15:53:00</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Approval/BlendCloseCancel/BlendCloseRequest.html">
+      <publishTime>06/03/2018 08:47:11</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Approval/BlendCloseCancel/controller.js">
+      <publishTime>06/03/2018 08:36:16</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/AddCloseAmount.html">
+      <publishTime>04/22/2018 22:33:15</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/AddSiftedAmount.html">
+      <publishTime>04/22/2018 22:33:15</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/BlendClose.html">
+      <publishTime>08/28/2018 00:04:51</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/blendclose.js">
+      <publishTime>08/28/2018 00:02:49</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/BlendCloseCancel.html">
+      <publishTime>07/23/2018 07:06:36</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/BlendDetails.html">
+      <publishTime>05/05/2018 15:43:57</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendClose/MoreOptions.html">
+      <publishTime>08/26/2018 09:07:28</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/AddBL.html">
+      <publishTime>06/03/2018 18:12:02</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/AddedBlends.html">
+      <publishTime>08/14/2018 09:13:23</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/AddSL.html">
+      <publishTime>06/03/2018 18:10:45</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/Blend.html">
+      <publishTime>08/09/2018 06:11:23</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/blendcreation.js">
+      <publishTime>07/03/2018 06:22:21</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/BlendDetail.html">
+      <publishTime>08/11/2018 14:13:22</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/bl_addblendbalance.js">
+      <publishTime>04/29/2018 11:41:01</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/bl_addstraightline.js">
+      <publishTime>08/14/2018 00:07:16</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/bl_createblend.js">
+      <publishTime>08/14/2018 09:46:13</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/bl_editblend.js">
+      <publishTime>08/11/2018 14:13:07</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/bl_trace.js">
+      <publishTime>08/26/2018 09:16:49</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/CreateBlend.html">
+      <publishTime>08/14/2018 09:21:51</publishTime>
+    </File>
+    <File Include="App/Document/Tea/BlendCreation/TraceBlend.html">
+      <publishTime>08/26/2018 09:17:22</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Broker/broker.js">
+      <publishTime>04/28/2018 10:46:22</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Broker/BrokerDetail.html">
+      <publishTime>05/12/2018 08:02:25</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Broker/CreateBroker.html">
+      <publishTime>06/03/2018 18:11:08</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Contracts/contract.js">
+      <publishTime>08/24/2018 00:12:46</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Contracts/ContractDetail.html">
+      <publishTime>04/28/2018 23:57:41</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Contracts/CreateContract.html">
+      <publishTime>06/03/2018 18:11:18</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Contracts/StandardDetail.html">
+      <publishTime>06/03/2018 18:11:26</publishTime>
+    </File>
+    <File Include="App/Document/Tea/LineSummary/controller.js">
+      <publishTime>06/02/2018 20:06:06</publishTime>
+    </File>
+    <File Include="App/Document/Tea/LineSummary/StraightLines.html">
+      <publishTime>04/30/2018 17:31:06</publishTime>
+    </File>
+    <File Include="App/Document/Tea/LineSummary/SummaryView.html">
+      <publishTime>06/03/2018 18:08:12</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/AddLines.html">
+      <publishTime>05/26/2018 00:07:04</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/Certificates.html">
+      <publishTime>04/20/2018 14:45:42</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/CreateSale.html">
+      <publishTime>06/03/2018 18:11:36</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/purchase.js">
+      <publishTime>08/10/2018 07:55:46</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/Sale.html">
+      <publishTime>04/29/2018 00:01:48</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/StraightLines.html">
+      <publishTime>08/10/2018 00:15:34</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/UploadData/controller.js">
+      <publishTime>08/15/2018 23:31:33</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/UploadData/UploadData.html">
+      <publishTime>08/15/2018 23:31:16</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Purchase/UploadData/UploadStatus.html">
+      <publishTime>05/29/2018 23:19:29</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Blend/BlendReport.html">
+      <publishTime>07/29/2018 07:13:04</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Blend/controller.js">
+      <publishTime>07/29/2018 07:18:34</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/PrintOptions.html">
+      <publishTime>08/12/2018 17:13:44</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Purchase/AdvanceOptions.html">
+      <publishTime>06/03/2018 18:22:42</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Purchase/controller.js">
+      <publishTime>05/11/2018 22:43:24</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Purchase/PurchaseReport.html">
+      <publishTime>05/13/2018 19:24:37</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/ClaimNote/controller.js">
+      <publishTime>08/19/2018 15:51:52</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/ClaimNote/PrintOptions.html">
+      <publishTime>08/19/2018 15:06:03</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/controller.js">
+      <publishTime>08/19/2018 15:06:39</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/DO/controller.js">
+      <publishTime>08/19/2018 00:58:59</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/DO/PrintOptions.html">
+      <publishTime>08/19/2018 00:58:49</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/Options.html">
+      <publishTime>08/19/2018 05:59:43</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/ShortNote/controller.js">
+      <publishTime>08/19/2018 15:52:10</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Reject-Short/ShortNote/PrintOptions.html">
+      <publishTime>08/18/2018 20:38:28</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/ReportView.html">
+      <publishTime>05/12/2018 15:58:30</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/reportviewcontroller.js">
+      <publishTime>05/12/2018 15:59:29</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/AgeAnalysisOptions.html">
+      <publishTime>05/07/2018 14:04:56</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/controller.js">
+      <publishTime>07/21/2018 23:51:41</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/FullStockReportOptions.html">
+      <publishTime>07/21/2018 16:13:33</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/StockReport.html">
+      <publishTime>05/13/2018 19:43:34</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/StockReportOptions.html">
+      <publishTime>06/03/2018 18:23:12</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Reports/Stock/StraightLineStockReportOptions.html">
+      <publishTime>06/03/2018 18:23:13</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Shipments/ClosedBlends.html">
+      <publishTime>08/25/2018 14:49:27</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Shipments/controller.js">
+      <publishTime>08/26/2018 08:04:44</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Shipments/PackGoods.html">
+      <publishTime>08/25/2018 08:14:46</publishTime>
+    </File>
+    <File Include="App/Document/Tea/Shipments/Shipments.html">
+      <publishTime>06/17/2018 19:28:13</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaBuyer/BuyerDetail.html">
+      <publishTime>04/15/2018 21:12:07</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaBuyer/buyersvc.js">
+      <publishTime>04/18/2018 23:15:47</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaBuyer/CreateBuyer.html">
+      <publishTime>04/28/2018 06:35:43</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaStandards/CreateStandard.html">
+      <publishTime>05/12/2018 16:56:39</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaStandards/standards.js">
+      <publishTime>05/12/2018 16:06:11</publishTime>
+    </File>
+    <File Include="App/Document/Tea/TeaStandards/TeaStandard.html">
+      <publishTime>04/15/2018 22:22:08</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/controller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/Create.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/in_itemscontroller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/IssueNoteItems.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/Items.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemIssue/List.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemMaster/controller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemMaster/CreateItem.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemMaster/CreateItemProperty.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Packing/ItemMaster/Items.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/controller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/Create.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/irn_itemscontroller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/List.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/ReceiveNoteItems.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReceive/UpdateItem.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/controller.js">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/Create.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/Email.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/EmailHistory.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/Items.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/List.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/Options.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/ReturnItem.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/ItemReturn/ReturnNoteItems.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/AddItem.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Packing/PO/Create.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/Email.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/EmailHistory.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/Items.html">
+      <publishTime>08/06/2023 10:08:51</publishTime>
+    </File>
+    <File Include="App/Packing/PO/List.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Packing/PO/po_addlines.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Packing/PO/po_itemscontroller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Packing/Supplier/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Packing/Supplier/Create.html">
+      <publishTime>06/13/2021 23:24:13</publishTime>
+    </File>
+    <File Include="App/Packing/Supplier/List.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Approvals/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Approvals/StraightLines.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/adjustmentopscontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/Adjustments.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/AdjustmentsCancel.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/rejectcontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/RejectLine.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/shortcontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/ShortLine.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Adjustment/Reject_Short/StraightLines.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Approval/BlendCloseCancel/BlendCloseRequest.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Approval/BlendCloseCancel/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/AddCloseAmount.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/AddSiftedAmount.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/BlendClose.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/blendclose.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/BlendCloseCancel.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/BlendDetails.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendClose/MoreOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/AddBL.html">
+      <publishTime>03/24/2021 13:55:42</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/AddedBlends.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/AddLines.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/AddSL.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/Blend.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/blendcreation.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/BlendDetail.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/BlendDownload.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_addblendbalance.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_addlines.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_addstraightline.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_createblend.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_download.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_editblend.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_storesins.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/bl_trace.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/CreateBlend.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/ModelContent.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/StoresInstructions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/BlendCreation/TraceBlend.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Broker/broker.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Broker/BrokerDetail.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Broker/CreateBroker.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/CollectionNotes.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/CreateNote.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/MarkCollectionNote.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/MarkStoreLocation.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Collection/PrintCollectionNote.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Contracts/contract.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Contracts/ContractDetail.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Contracts/CreateContract.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Contracts/StandardDetail.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/LineSummary/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/LineSummary/StraightLines.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/LineSummary/SummaryView.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/AddLines.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/Certificates.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/CreateSale.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/purchase.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/Sale.html">
+      <publishTime>07/04/2021 12:50:44</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/StraightLines.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/UploadData/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/UploadData/UploadData.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Purchase/UploadData/UploadStatus.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Blend/BlendReport.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Blend/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Blend/PrintOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/PrintOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Purchase/AdvanceOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Purchase/BrokerPurchaseOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Purchase/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Purchase/PurchaseReport.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/ClaimNote/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/ClaimNote/PrintOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/DO/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/DO/PrintOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/Options.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/ShortNote/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Reject-Short/ShortNote/PrintOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/ReportView.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/reportviewcontroller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/AgeAnalysisOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/FullStockReportOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/StockReport.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/StockReportOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/StoresAnalysisReportOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Reports/Stock/StraightLineStockReportOptions.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Shipments/ClosedBlends.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Shipments/controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/Shipments/PackGoods.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/Shipments/Shipments.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/TeaBuyer/BuyerDetail.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/TeaBuyer/buyersvc.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/TeaBuyer/CreateBuyer.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/TeaStandards/CreateStandard.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="App/Tea/TeaStandards/standards.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="App/Tea/TeaStandards/TeaStandard.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Blend.BuisnessEntities.dll">
+      <publishTime>08/06/2023 14:45:46</publishTime>
+    </File>
+    <File Include="bin/Blend.BuisnessService.dll">
+      <publishTime>08/06/2023 14:45:49</publishTime>
+    </File>
+    <File Include="bin/Blend.Data.dll">
+      <publishTime>08/06/2023 14:45:46</publishTime>
+    </File>
+    <File Include="bin/Blend.DataModel.dll">
+      <publishTime>08/06/2023 14:45:47</publishTime>
+    </File>
+    <File Include="bin/Blend.Resolver.dll">
+      <publishTime>08/06/2023 14:45:46</publishTime>
+    </File>
+    <File Include="bin/Blend.WebApp.dll">
+      <publishTime>08/06/2023 14:48:41</publishTime>
+    </File>
+    <File Include="bin/Castle.DynamicProxy.dll">
+      <publishTime>03/22/2021 11:11:46</publishTime>
+    </File>
+    <File Include="bin/EPPlus.dll">
+      <publishTime>03/21/2021 21:00:28</publishTime>
+    </File>
+    <File Include="bin/IBatisNet.Common.dll">
+      <publishTime>03/22/2021 11:11:46</publishTime>
+    </File>
+    <File Include="bin/IBatisNet.DataMapper.dll">
+      <publishTime>03/22/2021 11:11:46</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.ServiceLocation.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.Unity.Configuration.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.Unity.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Infrastructure.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/MySql.Data.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/blendreport.rpt">
+      <publishTime>08/06/2023 10:02:38</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/blendreport1.cs">
+      <publishTime>07/17/2022 22:14:53</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/blendreportstores.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/blendreportstores.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/storesinstructions.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/storesinstructions.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/storessheet.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/storessheet1.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/VN/blendreport.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/VN/blendreport1.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/VN/blendreportstores.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Blendsheet/VN/blendreportstores.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Letters/ClaimNote/claimnote.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Letters/ClaimNote/claimnote.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Letters/DONote/donote.cs">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Letters/DONote/donote.rpt">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/IN/in.cs">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/IN/in.rpt">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/IR/ir.cs">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/IR/ir.rpt">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/PO/po.cs">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/PO/po.rpt">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/RN/rn.cs">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/RN/rn.rpt">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Stock/StoresAnalysis/storeanalysis.cs">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/Reports/Stock/StoresAnalysis/storeanalysis.rpt">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="bin/System.Net.Http.Formatting.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.Helpers.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.dll">
+      <publishTime>03/22/2021 12:59:03</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.WebHost.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.Mvc.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.Razor.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Deployment.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Razor.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Unity.Mvc3.dll">
+      <publishTime>03/22/2021 11:11:47</publishTime>
+    </File>
+    <File Include="bin/Unity.WebApi.dll">
+      <publishTime>03/21/2021 21:00:28</publishTime>
+    </File>
+    <File Include="Content/bootstrap.min.css">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Content/font-awesome.min.css">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Content/icon_right.png">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Content/icon_wrong.png">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Content/ng-grid.min.css">
+      <publishTime>11/07/2017 23:42:57</publishTime>
+    </File>
+    <File Include="Content/spinner.gif">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Content/style.css">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/AccessRights/Role/RoleSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Authentication/AuthenticationSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Authentication/UserAuthorizeSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Authentication/UserSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Company/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Document/DocumentSqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Menu/MenuSqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/ItemIssue/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/ItemMaster/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/ItemReceive/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/ItemReturn/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/PO/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/Supplier/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Packing/UOM/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Adjustment/LineAdjustmentSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/BlendClose/BlendCloseSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/BlendCloseReversal/SqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/BlendCreation/BlendCreationSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Broker/BrokerSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Buyer/BuyerSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Contracts/ContractSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/LineSummary/LineSummarySqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Purchases/AuctionSaleSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Report/Blend/SqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Report/Purchase/SqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Report/Stock/SqlFile.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Controllers/Tea/Shipment/ShipmentSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/TeaCollection/SqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Controllers/Tea/TeaStandard/StandardSqlFile.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Create.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="gulpfile.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="index.html">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="lib/angular-animate.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/angular-cookies.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/angular-route.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/angular.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/bootstrap.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/jquery-1.10.1.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/ng-grid.min.js">
+      <publishTime>11/07/2017 23:42:59</publishTime>
+    </File>
+    <File Include="lib/ui-bootstrap-tpls-0.11.2.min.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="lib/ui-bootstrap-tpls-2.5.0.min.js">
+      <publishTime>11/07/2017 23:43:00</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>03/22/2021 12:42:43</publishTime>
+    </File>
+    <File Include="providers.config">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Blendsheet/blendsheet.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Blendsheet/canistersheet.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Blendsheet/storesinstruction.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Letters/ClaimNote/claimnote.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Letters/DONote/donote.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Letters/ShortNote/shortnote.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/NoData.pdf">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Packing/IN/in.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Reports/Packing/IR/ir.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Reports/Packing/PO/po.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Reports/Packing/RN/rn.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Reports/Purchase/Canisters/canistersheet.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Purchase/Collection/collectionnote.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Purchase/Download/blnd.pdf">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Purchase/PurchaseSheet/purchasesheet.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Purchase/SalesSummary/salessummary.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Stock/AgeAnalysis/ageanalysis.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Stock/blendstock.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Stock/FullStock/fullstock.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Reports/Stock/StoresAnalysis/ageanalysis.xml">
+      <publishTime>12/02/2018 09:15:03</publishTime>
+    </File>
+    <File Include="Reports/Stock/StoresAnalysis/storesanalysis.xml">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Reports/Stock/straghtlinestock.xml">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/all.min.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/app.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Script/data.service.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/global.service.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/jquery.autocomplete.min.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/jszip.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/main.controller.js">
+      <publishTime>08/06/2023 10:08:52</publishTime>
+    </File>
+    <File Include="Script/report.service.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/validator.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Script/xlsx.full.min.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="SqlMap.config">
+      <publishTime>08/06/2023 14:43:49</publishTime>
+    </File>
+    <File Include="Utility/controller.js">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Utility/Loading.html">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Views/Web.config">
+      <publishTime>03/21/2021 21:00:27</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>08/06/2023 14:45:51</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

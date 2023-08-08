@@ -1,0 +1,5 @@
+BrokerName,LotNo,Mark,SellingMark,InvoiceNo,GradeCode,NoOfChests,WeightPerChest,GrossWeight,NettWeight,MinimumBid,CurrentHighestBid,buyerPrice,latestPrice
+Forbes & Walker Tea Brokers,128,MF0067,LIDDESDALE,243,BOPF,20,55,1100,1095,500,470,470,470
+Forbes & Walker Tea Brokers,130,MF0729,RAGALLA,232R,BOPF,20,58,1160,1160,510,490,490,490
+Forbes & Walker Tea Brokers,133,MF0729,RAGALLA,238R,BOPF,20,58,1160,1160,510,500,500,500
+Eastern Brokers Ltd,57,MF0739,KIRKLEES,189R,BOPF,20,56,1120.23,1120,550,540,540,540

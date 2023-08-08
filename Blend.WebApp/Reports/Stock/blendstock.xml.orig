@@ -1,0 +1,12 @@
+<bltocks>
+  <item>
+    <AllocatedBlend></AllocatedBlend>
+    <StockItemId></StockItemId>
+    <ItemName></ItemName>
+    <Qty></Qty>
+    <Value></Value>
+    <Rate></Rate>
+    <Status></Status>
+    <ClosedDate></ClosedDate>
+  </item>
+</bltocks>

@@ -1,0 +1,52 @@
+﻿<div>
+    <h4>Tea Standard ({{recordCount}})</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Standard" style="width: 200px" id="search" type="text" class="form-control" ng-model="searchstr" ng-change="searchstndard()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in standardData" id="{{c.StandardId}}" data-status="pagado">
+
+                        <td style="width: 95%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">{{c.StandardName}}
+                                       
+                                        <!--<span class="pull-right pagado">(Pagado)</span>-->
+                                    </h4>
+                                   <!-- <p class="summary" ng-hide="accessLevels.C">{{c.StandardName}}  </p>
+                                    <p class="summary">{{c.Address}} | {{c.Email}}</p>-->
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="table-del-col">
+                            <a ng-click="delete(c.StandardId)">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

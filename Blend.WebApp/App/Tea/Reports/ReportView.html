@@ -1,0 +1,20 @@
+﻿<div class="modal-header modal-header-info">
+    <button type="button" class="close" ng-click="cancel()">&times;</button>
+
+    <h4 class="modal-title">{{reportTitle}}</h4>
+    <span style="margin-left: 8px;" ng-show="true">
+        <img class="savedata" />
+    </span>
+</div>
+<div class="modal-body" style="width: 100%; height: 500px">
+    <div style="width: 100%; height: 100%">
+
+        <embed src="{{reportContent}}" type="application/pdf" style="width: 100%; height: 100%">
+    </div>
+</div>
+<div class="modal-footer">
+    <span style="margin-left: 8px;" ng-show="dataLoading">
+        <img class="savedata" />
+    </span>
+    <button type="button" class="btn btn-danger" ng-click="cancel()">Cancel</button>
+</div>

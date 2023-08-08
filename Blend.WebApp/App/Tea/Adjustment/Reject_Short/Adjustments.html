@@ -1,0 +1,53 @@
+﻿<div class="modal-header">
+    <div>
+        <h3>Adjustment details</h3>
+    </div>
+    <div>
+        <button id="displaybutton" type="button" class="btn btn-default" ng-attr-autofocus="false">Box No : <span class="badge">{{SelectedBoxNo.BoxNo}}</span></button>
+
+    </div>
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="table-container" style="overflow-y: scroll;">
+        <table class="table" style="width: 100%; font-size: small">
+
+            <thead>
+                <tr>
+                    <th ng-repeat="c in adjustedlinecolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="c in AdjustedLineData" id="{{c.AdjustmentId}}" animate-on-change='c.AdjustmentId' ng-animate=" 'animate'" style="font: small">
+                    <td ng-hide="true">{{c.PurchaseId}}</td>
+                    <td ng-hide="true">{{c.StockId}}</td>
+                    <td width="5%">{{c.Packs}}</td>
+                    <td width="5%">{{c.Qty}}</td>
+                    <td width="10%">{{c.AdjustmentType}}</td>
+                    <td width="20%">{{c.Reason}}</td>
+                    <td width="10%">{{c.Status}}</td>
+                    <td width="15%">{{c.User}}</td>
+                    <td ng-hide="true">{{c.RowVersion}}</td>
+                    <td width="30%">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.M || checkDisabled(c.StatusId)" ng-click="CancelConfirm(c)" data-placement="top" title="Cancel Adjustment">
+                                Revert
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" ng-disabled="accessLevels.M || checkDisabled(c.StatusId)" ng-click="PaymentSettle(c.AdjustmentId)" data-placement="top" title="Settle Payment">
+                                Settle Payment
+                            </button>
+                        </div>
+                    </td>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-danger btn-sm" ng-click="cancel()">Close</button>
+    </div>
+</div>

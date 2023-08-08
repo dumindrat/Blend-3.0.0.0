@@ -1,0 +1,165 @@
+﻿<style type="text/css">
+    .div-table
+    {
+        display: table;
+        width: auto;
+        /*border: 1px solid #666666;*/
+        border-spacing: 5px; /* cellspacing:poor IE support for  this */
+    }
+
+    .div-table-row
+    {
+        display: table-row;
+        width: auto;
+        clear: both;
+        margin: 4px;
+        text-align: center;
+    }
+
+    .div-table-input-col
+    {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;
+        width: 160px;
+        margin: 4px;
+        text-align: right;
+    }
+
+    .div-table-icon-col
+    {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;
+        width: 10px;
+        margin: 4px;
+        text-align: right;
+    }
+
+    .div-table-lable-col
+    {
+        float: left; /* fix for  buggy browsers */
+        display: table-column;
+        width: 200px;
+        margin: 4px;
+        text-align: right;
+    }
+
+    #lblLienQty
+    {
+        border-top-left-radius: 0em;
+        border-top-right-radius: 0em;
+        border-bottom-left-radius: 0em;
+        border-bottom-right-radius: 0em;
+    }
+</style>
+
+<script type="text/ng-template" id="/gainloss.html">
+   <button type="button" class="btn btn-primary">Exp Qty <span class="badge">{{SelectedBlend.GainLoss}}</span></button>
+</script>
+
+<div class="modal-header modal-header-info">
+    <label class="modal-title">Blend Close. BlendNo : {{SelectedBlend.BlendNo}}  Contract :{{SelectedBlend.ContractNo}}   Standard : {{SelectedBlend.StandardName}}</label>
+</div>
+
+<div class="modal-body">
+    <div class="panel panel-primary" style="width: 100%">
+        <div class="panel-heading">
+            <button type="button" class="btn btn-primary" ng-hide="true">Version <span class="badge">{{SelectedBlend.RowVersion}}</span></button>
+            <button type="button" class="btn btn-primary">LIne Qty <span class="badge">{{SelectedBlend.LineQty  | number: 2}}</span></button>
+            <button type="button" class="btn btn-primary">Rate <span class="badge">{{SelectedBlend.Rate  | number: 2}}</span></button>
+            <button type="button" class="btn btn-primary">Exp Qty <span class="badge">{{SelectedBlend.ExportQty  | number: 2}}</span></button>
+            <button type="button" class="btn btn-warning">BB<span class="badge">{{SelectedBlend.BB  | number: 2}}</span></button>
+            <button type="button" class="btn btn-warning">BG <span class="badge">{{SelectedBlend.BG  | number: 2}}</span></button>
+            <button type="button" class="btn btn-danger">BL <span class="badge">{{SelectedBlend.BL  | number: 2}}</span></button>
+            <div style="width: 100%">
+                <ng-include src="viewgainloss"></ng-include>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-show="message" class="{{messageclass}}" role="alert">
+                <label>{{message}}</label>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="div-table  " style="text-align: center">
+                <div class="div-table-row" style="text-align: center">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-info btn-sm" ng-click="openAddCloseAmount(SelectedBlend)" value="+ Closed Blend Balance" />
+                        <input type="button" class="btn btn-info btn-sm" ng-click="openSiftedAmount(SelectedBlend)" value="+ Sifted Tea" />
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="div-table  " style="text-align: center">
+                <div class="div-table-row" style="text-align: center">
+                    <div class="div-table-lable-col">
+                        <label>Physical Qty</label>
+                    </div>
+                    <div class="div-table-input-col" id="i1">
+                        <input type="text" id="physicalqty" class="form-control" tabindex="1" ng-disabled="true" ng-model="SelectedBlend.PhysicalQty" ng-keypress="focusFunc($event,'siftedqty')" only-digits autofocus />
+                    </div>
+
+                    <div class="div-table-icon-col" id="Div7">
+                        <span ng-hide="physicalqtyerror" class="{{physicalqtyerrorclss}}">
+                    </div>
+                    <div class="div-table-input-col" id="Div2">
+                        <button type="button" class="btn btn-default" ng-attr-autofocus="false">STDBB : <span class="badge">{{SelectedBlend.STDBB  | number: 2}}</span></button>
+
+                    </div>
+                    <div class="div-table-input-col" id="Div5">
+                        <button type="button" class="btn btn-default" ng-attr-autofocus="false">STDBG : <span class="badge">{{SelectedBlend.STDBG  | number: 2}}</span></button>
+
+                    </div>
+                </div>
+
+                <div class="div-table-row">
+                    <div class="div-table-lable-col">
+                        <label>Sifted Qty</label>
+                    </div>
+                    <div class="div-table-input-col" id="Div1">
+                        <input type="text" id="siftedqty" class="form-control" tabindex="2" ng-disabled="true" ng-model="SelectedBlend.SiftedQty" ng-keypress="focusFunc($event,'btnSubmit')" only-digits />
+                    </div>
+                    <div class="div-table-icon-col" id="siftedIcon">
+                        <span ng-hide="siftedqtyerror" class="{{siftedqtyerrorclss}}">
+                    </div>
+                    <div class="div-table-input-col" id="Div4">
+                        <button type="button" class="btn btn-default" ng-attr-autofocus="false">SFTBB : <span class="badge">{{SelectedBlend.SFTBB  | number: 2}}</span></button>
+
+                    </div>
+                    <div class="div-table-input-col" id="Div6">
+                        <button type="button" class="btn btn-default" ng-attr-autofocus="false">SFTBG : <span class="badge">{{SelectedBlend.SFTBG  | number: 2}}</span></button>
+
+                    </div>
+                </div>
+                <div class="div-table-row">
+                    <div class="div-table-lable-col">
+                        <label>Close Date</label>
+                    </div>
+
+                    <div class="div-table-input-col" id="Div3">
+                        <input type="date" id="closedate" class="form-control" tabindex="3" ng-value="SelectedBlend.CloseDate" ng-model="SelectedBlend.CloseDate" placeholder="MM-DD-YYYY" required />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <!--<button type="button" class="btn btn-primary">STDBB<span class="badge">1233.89</span></button>
+            <button type="button" class="btn btn-primary">STDBG <span class="badge">12334.89</span></button>
+            <button type="button" class="btn btn-primary">SFTBB <span class="badge">12334.89</span></button>
+            <button type="button" class="btn btn-primary">SFTBG <span class="badge">12334.89</span></button>-->
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+
+        <span style="margin-left: 8px;" ng-show="showLoader">
+            <img class="savedata" />
+        </span>
+        <button id="btnSubmit" class="btn btn-primary btn-sm" ng-click="save();" type="submit" tabindex="4" ng-disabled="showLoader">Submit</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" type="submit" tabindex="5" ng-disabled="showLoader">Cancel</button>
+    </div>
+</div>
+

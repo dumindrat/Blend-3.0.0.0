@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Blend.Data.DataOperation
+{
+    public static class DataOperationFactory
+    {
+        public static IDataOperation GetDataOperation(string dbType)
+        {
+            return new MySQLDataOperation();
+        }
+    }
+}

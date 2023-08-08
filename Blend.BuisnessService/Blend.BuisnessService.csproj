@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D3CD4741-BDF8-48AF-A516-154832C684BA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Blend.BuisnessService</RootNamespace>
+    <AssemblyName>Blend.BuisnessService</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.DynamicProxy, Version=1.1.5.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\IBatisNet.1.0.0\lib\net20\Castle.DynamicProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\dll\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="IBatisNet.Common, Version=1.6.2.0, Culture=neutral, PublicKeyToken=ed781d9fc396c6ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\IBatisNet.1.0.0\lib\net20\IBatisNet.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IBatisNet.DataMapper, Version=1.6.2.0, Culture=neutral, PublicKeyToken=ed781d9fc396c6ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\IBatisNet.1.0.0\lib\net20\IBatisNet.DataMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccessRights\Roles\IRoleService.cs" />
+    <Compile Include="AccessRights\Roles\RoleService.cs" />
+    <Compile Include="Adjustent\AdjustmentService.cs" />
+    <Compile Include="Adjustent\IAdjustmentService.cs" />
+    <Compile Include="Approvals\AdjustmentCancelService.cs" />
+    <Compile Include="Approvals\IAdjustmentCancelService.cs" />
+    <Compile Include="BaseManagement.cs" />
+    <Compile Include="BlendClose\BlendCloseService.cs" />
+    <Compile Include="BlendClose\IBlendCloseService.cs" />
+    <Compile Include="BlendCreation\BlendCreationService.cs" />
+    <Compile Include="BlendCreation\IBlendCreationService.cs" />
+    <Compile Include="BlendRateConvert\BlendGainLossConvertService.cs" />
+    <Compile Include="BlendRateConvert\IBlendGainLossConvertService.cs" />
+    <Compile Include="BlendTrace\BlendLogService.cs" />
+    <Compile Include="BlendTrace\IBlendLogService.cs" />
+    <Compile Include="Broker\BrokerService.cs" />
+    <Compile Include="Broker\IBrokerService.cs" />
+    <Compile Include="Company\CompanyService.cs" />
+    <Compile Include="Company\ICompanyService.cs" />
+    <Compile Include="Contract\ContractService.cs" />
+    <Compile Include="Contract\IContractService.cs" />
+    <Compile Include="DataMapper.cs" />
+    <Compile Include="DependencyResolver.cs" />
+    <Compile Include="Document\DocumentService.cs" />
+    <Compile Include="Document\IDocumentService.cs" />
+    <Compile Include="Download\DownloadFilesService.cs" />
+    <Compile Include="Download\IDownloadFileService.cs" />
+    <Compile Include="GardenMarks\GardenMarkService.cs" />
+    <Compile Include="GardenMarks\IGardenMarkService.cs" />
+    <Compile Include="Grades\GradeService.cs" />
+    <Compile Include="Grades\IGradeService.cs" />
+    <Compile Include="Item\IItemService.cs" />
+    <Compile Include="Item\ItemService.cs" />
+    <Compile Include="LineSummary\ILineSummaryService.cs" />
+    <Compile Include="LineSummary\LineSummaryService.cs" />
+    <Compile Include="PackGoods\PackGoodService.cs" />
+    <Compile Include="PackGoods\IPackGoodService.cs" />
+    <Compile Include="Packing\ItemIssue\IItemIssueService.cs" />
+    <Compile Include="Packing\ItemIssue\ItemIssueService.cs" />
+    <Compile Include="Packing\ItemReceive\IItemReceiveService.cs" />
+    <Compile Include="Packing\ItemReceive\ItemReceiveService.cs" />
+    <Compile Include="Packing\ItemReturn\IItemRetunService.cs" />
+    <Compile Include="Packing\ItemReturn\ItemReturnService.cs" />
+    <Compile Include="Packing\PO\IPurchaseOrderService.cs" />
+    <Compile Include="Packing\PO\PurchaseOrderService.cs" />
+    <Compile Include="Packing\UOM\IUomService.cs" />
+    <Compile Include="Packing\UOM\UomService.cs" />
+    <Compile Include="Shipments\ITeaShipmentService.cs" />
+    <Compile Include="Shipments\TeaShipmentService.cs" />
+    <Compile Include="StoresInstruction\IStoresInstructionService.cs" />
+    <Compile Include="StoresInstruction\StoresInstructionService.cs" />
+    <Compile Include="Supplier\ISupplierService.cs" />
+    <Compile Include="Supplier\SupplierService.cs" />
+    <Compile Include="TeaCollection\ITeaCollectionService.cs" />
+    <Compile Include="TeaCollection\TeaCollectionService.cs" />
+    <Compile Include="TransactionOwners\TransactionOwnersService.cs" />
+    <Compile Include="TransactionOwners\ITransactionOwnersService.cs" />
+    <Compile Include="Helper\Email\EmailService.cs" />
+    <Compile Include="Helper\Email\IEmailService.cs" />
+    <Compile Include="Menu\IMenuService.cs" />
+    <Compile Include="Menu\MenuService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Purchase\IPurchaseService.cs" />
+    <Compile Include="Purchase\PurchaseService.cs" />
+    <Compile Include="RejectLine\IRejectLineService.cs" />
+    <Compile Include="RejectLine\RejectLineService.cs" />
+    <Compile Include="Reports\Blend\BlendReportService.cs" />
+    <Compile Include="Reports\Blend\IBlendReportService.cs" />
+    <Compile Include="Reports\Purchase\IPurchaseReportService.cs" />
+    <Compile Include="Reports\Purchase\PurchaseReportService.cs" />
+    <Compile Include="Reports\Stock\IStockReportService.cs" />
+    <Compile Include="Reports\Stock\StockReportService.cs" />
+    <Compile Include="TeaBuyer\BuyerManagement.cs" />
+    <Compile Include="TeaBuyer\IBuyerService.cs" />
+    <Compile Include="TeaStandards\ITeaStandardService.cs" />
+    <Compile Include="TeaStandards\TeaStandardService.cs" />
+    <Compile Include="Token\EncryptData.cs" />
+    <Compile Include="Token\ITokenServices.cs" />
+    <Compile Include="Token\TokenServices.cs" />
+    <Compile Include="UploadSale\ISaleUploadService.cs" />
+    <Compile Include="UploadSale\SaleUploadService.cs" />
+    <Compile Include="User\IUserRegistration.cs" />
+    <Compile Include="User\IUserService.cs" />
+    <Compile Include="User\UserRegistrationService.cs" />
+    <Compile Include="User\UserService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Blend.BuisnessEntities\Blend.BuisnessEntities.csproj">
+      <Project>{3e7fc6fa-c666-45ad-9008-af59fba6138a}</Project>
+      <Name>Blend.BuisnessEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.DataModel\Blend.DataModel.csproj">
+      <Project>{cd2ecc77-7490-45da-9cbb-4ec2dac8309a}</Project>
+      <Name>Blend.DataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.Resolver\Blend.Resolver.csproj">
+      <Project>{3d4d9724-deee-4243-a30c-4d430514ac45}</Project>
+      <Name>Blend.Resolver</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AccessRights\UserActivation\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

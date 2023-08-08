@@ -1,0 +1,45 @@
+﻿
+<div class="modal-header">
+    <div>
+        <h4>Role Access Levels </h4>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="true" class="{{messageclass}}" role="alert">
+        <input type="text" ng-model="New.RoleId" ng-hide="true" />
+
+    </div>
+    <div style="width: 100%; color: navy;">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th ng-hide="{{c.hide}}" ng-repeat="c in roledatacolumns">{{c.text}}</th>
+            </tr>
+            <tr ng-repeat="c in accessLevelData">
+                <td ng-hide="false">{{c.MenuId}}</td>
+                <td>{{c.MenuName}}</td>
+                <td>{{c.AccessLevel}}</td>
+                <td>
+                    <div class="btn-group">
+                        <input type="button" value="C" class="{{getAccessLevelsClass(c.AccessLevel,'C')}}" ng-click="updateAccessLevel(c.MenuId,'C')" />
+                        <input type="button" value="M" class="{{getAccessLevelsClass(c.AccessLevel,'M')}}" ng-click="updateAccessLevel(c.MenuId,'M')" />
+                        <input type="button" value="D" class="{{getAccessLevelsClass(c.AccessLevel,'D')}}" ng-click="updateAccessLevel(c.MenuId,'D')" />
+                        <input type="button" value="V" class="{{getAccessLevelsClass(c.AccessLevel,'V')}}" ng-click="updateAccessLevel(c.MenuId,'V')" />
+                        <input type="button" value="P" class="{{getAccessLevelsClass(c.AccessLevel,'P')}}" ng-click="updateAccessLevel(c.MenuId,'P')" />
+                    </div>
+                </td>
+               
+            </tr>
+        </table>
+
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataLoading">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-danger" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+    </div>
+</div>

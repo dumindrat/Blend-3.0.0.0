@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="irn" type="Blend.BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetRn" parameterMap="get-allreceivenote-params"  resultMap="get-allreceivenote-result">
+      pack_ItemReceivedNoteGet
+    </procedure>
+    <procedure id="GetRnPo" parameterMap="get-poforirn-params"  resultMap="get-poforirn-result">
+      pack_ItemReceivedPoGet
+    </procedure>
+    <procedure id="ReceiveNoteItems" parameterMap="get-rinitems-params"  resultMap="get-rinitems-result">
+      pack_ItemReceivedNoteItemsGet
+    </procedure>
+    <procedure id="GetRnById" parameterMap="get-receivenotebyid-params"  resultMap="get-receivenotebyid-result">
+      pack_ItemReceivedNoteGetById
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allreceivenote-params">
+      <parameter property="ReceiveNoteNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-poforirn-params">
+      <!--<parameter property="PoId" direction  ="Input" />-->
+    </parameterMap>
+    <parameterMap id="get-rinitems-params">
+      <parameter property="ReceivedNoteId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-receivenotebyid-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allreceivenote-result" class="Blend.BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReceiveNoteNo" column="ReceiveNoteNo" dbType="Varchar"/>
+      <result property="PoId" column="PoId" dbType="Int"/>
+      <result property="PoNumber" column="PoNumber" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary" />
+    </resultMap>
+    <resultMap id="get-poforirn-result" class="Blend.BuisnessEntities.Packing.ItemReceive.AvailablePoDto">
+      <result property="PoId" column="Id" dbType="Int"/>
+      <result property="PoNumber" column="PoNumber" dbType="Varchar"/>
+      <result property="Suplier" column="SupplierName" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-rinitems-result" class="Blend.BuisnessEntities.Packing.ItemReceive.ReceiveNoteItems">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ItemId" column="ItemId" dbType="Int"/>
+      <result property="ItemCode" column="ItemCode" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="UomName" column="UomName" dbType="Varchar"/>
+      <result property="ShortDescription" column="ShortDescription" dbType="Varchar"/>
+      <result property="OrderQty" column="OrderQty" dbType="Decimal"/>
+      <result property="OrderPrice" column="OrderPrice" dbType="Decimal"/>
+      <result property="ReceivedQty" column="ReceivedQty" dbType="Decimal"/>
+      <result property="ReceivedPrice" column="ReceivedPrice" dbType="Decimal"/>
+      <result property="ReceivedDate" column="ReceivedDate" dbType="Varchar"/>
+      <result property="StoreLocation" column="StoreLocation" dbType="Varchar"/>
+      <result property="Comment" column="Comment" dbType="Varchar"/>
+      <result property="StockQty" column="StockQty" dbType="Decimal"/>
+
+    </resultMap>
+    <resultMap id="get-receivenotebyid-result" class="Blend.BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ReceiveNoteNo" column="ReceiveNoteNo" dbType="Varchar"/>
+      <result property="PoId" column="PoId" dbType="Int"/>
+      <result property="PoNumber" column="PoNumber" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary" />
+    </resultMap>
+  </resultMaps>
+</sqlMap>

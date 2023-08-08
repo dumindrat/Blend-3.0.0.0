@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="menu" type="Blend.BuisnessEntities.Menu.MenuEntity"/>
+    <typeAlias alias="accesslevel" type="Blend.BuisnessEntities.AccessRights.Role.RoleAccessLevel"/>
+
+  </alias>
+
+  <statements>
+
+    <procedure id="GetMenuItems" parameterMap="get-menubyuser-params"  resultMap="get-menubyuser-result">
+      auth_MenuGetByUserNameAndMainModule
+    </procedure>
+    <procedure id="GetMenuById" parameterMap="get-menubyrole-params"  resultMap="get-menubyrole-result">
+      auth_MenuGetByRoleAndMenu
+    </procedure>
+    
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-menubyuser-params">
+      <parameter property="UserName" direction  ="Input" />
+      <parameter property="MainModule" direction  ="Input" />
+
+    </parameterMap>
+    <parameterMap id="get-menubyrole-params">
+      <parameter property="RoleId" direction  ="Input" />
+      <parameter property="MenuId" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-menubyuser-result" class="Blend.BuisnessEntities.Menu.MenuEntity">
+      <result property="RoleId" column="RoleId" dbType="Int"/>
+      <result property="MenuId" column="MenuId" dbType="Int"/>
+      <result property="MenuName" column="MenuName" dbType="Varchar"/>
+      <result property="href" column="href" dbType="Varchar" />
+      <result property="AccessLevel" column="AccessLevel" dbType="Varchar"/>
+      <result property="Category" column="Category" dbType="Varchar" />
+      <result property="ModuleId" column="ModuleId" dbType="Int" />
+      <result property="IsQuickLink" column="IsQuickLink" dbType="Int" />
+    </resultMap>
+    <resultMap id="get-menubyrole-result" class="Blend.BuisnessEntities.AccessRights.Role.RoleAccessLevel">
+      <result property="RoleId" column="RoleId" dbType="Int"/>
+      <result property="MenuId" column="MenuId" dbType="Int"/>
+      <result property="AccessLevel" column="AccessLevel" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

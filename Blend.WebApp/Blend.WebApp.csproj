@@ -1,0 +1,962 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{34B041FA-3084-4DB7-A800-83134CDE4F58}</ProjectGuid>
+    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Blend.WebApp</RootNamespace>
+    <AssemblyName>Blend.WebApp</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine">
+      <HintPath>..\packages\CrystalDecisions.CrystalReports.Engine.1.0.0\lib\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL" />
+    <Reference Include="CrystalDecisions.Shared">
+      <HintPath>..\packages\CrystalDecisions.Shared.1.0.0\lib\CrystalDecisions.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Office.Tools.Excel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\dll\Microsoft.Office.Tools.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20710.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mvc3">
+      <HintPath>..\packages\Unity.Mvc3.1.2\lib\net40\Unity.Mvc3.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.WebApi">
+      <HintPath>..\dll\Unity.WebApi.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App\ActionFilters\AuthorizationRequiredAttribute.cs" />
+    <Compile Include="App\ActionFilters\DataOperationAuthorization.cs" />
+    <Compile Include="Controllers\AccessRights\Role\RoleAccessLevelController.cs" />
+    <Compile Include="Controllers\AccessRights\Role\RoleController.cs" />
+    <Compile Include="Controllers\AccessRights\Role\UserRoleController.cs" />
+    <Compile Include="Controllers\Authentication\ChangePasswordController.cs" />
+    <Compile Include="Controllers\Authentication\UserRegistrationController.cs" />
+    <Compile Include="Controllers\BaseApi.cs" />
+    <Compile Include="Controllers\Packing\ItemIssue\INPrint.cs" />
+    <Compile Include="Controllers\Packing\ItemIssue\IssueNotePrintController.cs" />
+    <Compile Include="Controllers\Packing\ItemIssue\IssueNoteAddItemController.cs" />
+    <Compile Include="Controllers\Packing\ItemIssue\ItemIssueController.cs" />
+    <Compile Include="Controllers\Packing\ItemReceive\ItemReceiveController.cs" />
+    <Compile Include="Controllers\Packing\ItemReceive\IRPrintController.cs" />
+    <Compile Include="Controllers\Packing\ItemReceive\IRPrint.cs" />
+    <Compile Include="Controllers\Packing\ItemReturn\ItemReturnAddItemController.cs" />
+    <Compile Include="Controllers\Packing\ItemReturn\ItemReturnController.cs" />
+    <Compile Include="Controllers\Packing\ItemReturn\ItemReturnPrint.cs" />
+    <Compile Include="Controllers\Packing\ItemReturn\ItemReturnSendMailController.cs" />
+    <Compile Include="Controllers\Packing\ItemReturn\ReturnNotePrintController.cs" />
+    <Compile Include="Controllers\Packing\PO\POAddRemoveItemController.cs" />
+    <Compile Include="Controllers\Packing\PO\POPrint.cs" />
+    <Compile Include="Controllers\Packing\PO\POPrintController.cs" />
+    <Compile Include="Controllers\Packing\PO\POSendMailController.cs" />
+    <Compile Include="Controllers\Packing\PO\PurchaseOrderController.cs" />
+    <Compile Include="Controllers\Packing\Supplier\SupplierController.cs" />
+    <Compile Include="Controllers\Packing\ItemMaster\ItemController.cs" />
+    <Compile Include="Controllers\Packing\UOM\UomController.cs" />
+    <Compile Include="Controllers\Tea\Adjustment\AdjustLineController.cs" />
+    <Compile Include="Controllers\Tea\Adjustment\CancellationApproveController.cs" />
+    <Compile Include="Controllers\Tea\Adjustment\RejectLineController.cs" />
+    <Compile Include="Controllers\Tea\Adjustment\ShortLineController.cs" />
+    <Compile Include="Controllers\Tea\BlendCloseReversal\BlendCloseReversalAppoveController.cs" />
+    <Compile Include="Controllers\Tea\BlendCloseReversal\BlendCloseReversalController.cs" />
+    <Compile Include="Controllers\Tea\BlendClose\BlendCloseController.cs" />
+    <Compile Include="Controllers\Tea\BlendCreation\BlendAddRemoveController.cs" />
+    <Compile Include="Controllers\Tea\BlendCreation\BlendController.cs" />
+    <Compile Include="Controllers\Tea\BlendCreation\BlendEnableTeaBoardController.cs" />
+    <Compile Include="Controllers\Tea\BlendCreation\StoresInstructionController.cs" />
+    <Compile Include="Controllers\Tea\BlendGainLossConvert\BlendGainLossConvertController.cs" />
+    <Compile Include="Controllers\Tea\Broker\BrokerController.cs" />
+    <Compile Include="Controllers\Tea\Buyer\BuyerController.cs" />
+    <Compile Include="Controllers\Company\CompanyController.cs" />
+    <Compile Include="Controllers\Tea\Contracts\ContractController.cs" />
+    <Compile Include="Controllers\Tea\Contracts\ContractDetailController.cs" />
+    <Compile Include="Controllers\Document\DocumentController.cs" />
+    <Compile Include="Controllers\Tea\GardenMark\GardenMarkController.cs" />
+    <Compile Include="Controllers\Menu\MenuController.cs" />
+    <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Controllers\Authentication\UserController.cs" />
+    <Compile Include="Controllers\Tea\Grade\GradeController.cs" />
+    <Compile Include="Controllers\Tea\LineSummary\LineSummaryController.cs" />
+    <Compile Include="Controllers\Tea\PackGoods\PackGoodController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\SaleCloseController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\SaleController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\StraightLineUploadController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\StraightLineDeleteController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\StraightLinePurchaseController.cs" />
+    <Compile Include="Controllers\Tea\Purchases\UploadFileController.cs" />
+    <Compile Include="Controllers\Tea\Report\Blend\BlendReportsController.cs" />
+    <Compile Include="Controllers\Tea\Report\Blend\StoresInstructionReportController.cs" />
+    <Compile Include="Controllers\Tea\Report\Purchase\BrokerPurchaseController.cs" />
+    <Compile Include="Controllers\Tea\Report\Purchase\PurchaseReportAdvanceController.cs" />
+    <Compile Include="Controllers\Tea\Report\Purchase\PurchaseReportController.cs" />
+    <Compile Include="Controllers\Tea\Report\Purchase\SalesSummaryReportController.cs" />
+    <Compile Include="Controllers\Tea\Report\Reject-Short\ClaimNoteController.cs" />
+    <Compile Include="Controllers\Tea\Report\Reject-Short\DONoteController.cs" />
+    <Compile Include="Controllers\Tea\Report\Reject-Short\ShortNoteController.cs" />
+    <Compile Include="Controllers\Tea\Report\Stock\AgeAnalysisController.cs" />
+    <Compile Include="Controllers\Tea\Report\Stock\FullStockController.cs" />
+    <Compile Include="Controllers\Tea\Report\Stock\StockReportController.cs" />
+    <Compile Include="Controllers\Tea\Report\Stock\StoresAnalysisController.cs" />
+    <Compile Include="Controllers\Tea\Shipment\TeaShipmentController.cs" />
+    <Compile Include="Controllers\Tea\TeaCollection\PrintCollectionNoteController.cs" />
+    <Compile Include="Controllers\Tea\TeaCollection\TeaCollectionController.cs" />
+    <Compile Include="Controllers\Tea\TeaCollection\TeaLocationController.cs" />
+    <Compile Include="Controllers\Tea\TeaStandard\TeaStandardController.cs" />
+    <Compile Include="Filters\ApiAuthenticationFilter.cs" />
+    <Compile Include="Filters\BasicAuthenticationIdentity.cs" />
+    <Compile Include="Filters\GenericAuthenticationFilter.cs" />
+    <Compile Include="Filters\UserAuthenticationAttribute.cs" />
+    <Compile Include="Filters\ValidateModelAttribute.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="LogHelper\LogWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\Blendsheet\blendreport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\blendreport1.cs">
+      <DependentUpon>blendreport.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\blendreportstores.cs">
+      <DependentUpon>blendreportstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\canistersheet.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>canistersheet.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\storesinstructions.cs">
+      <DependentUpon>storesinstructions.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\storessheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\storessheet1.cs">
+      <DependentUpon>storessheet.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\VN\blendreport1.cs">
+      <DependentUpon>blendreport.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Blendsheet\VN\blendreportstores.cs">
+      <DependentUpon>blendreportstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\CrystalReport1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CrystalReport11.cs">
+      <DependentUpon>CrystalReport1.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Letters\ClaimNote\claimnote.cs">
+      <DependentUpon>claimnote.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Reports\Letters\DONote\donote.cs">
+      <DependentUpon>donote.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Letters\ShortNote\shortnote.cs">
+      <DependentUpon>shortnote.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Packing\IN\in.cs">
+      <DependentUpon>in.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Packing\IR\ir.cs">
+      <DependentUpon>ir.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Packing\PO\po.cs">
+      <DependentUpon>po.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Packing\RN\rn.cs">
+      <DependentUpon>rn.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\Canisters\canistersheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Purchase\Canisters\canistersheet1.cs">
+      <DependentUpon>canistersheet.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\Canisters\canistersheet_rowtype.cs">
+      <DependentUpon>canistersheet_rowtype.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\Collection\collectionnote.cs">
+      <DependentUpon>collectionnote.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\PurchaseSheet\brokerpurchases.cs">
+      <DependentUpon>brokerpurchases.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\PurchaseSheet\advancepurchasesheet.cs">
+      <DependentUpon>advancepurchasesheet.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\PurchaseSheet\purchasesheet.cs">
+      <DependentUpon>purchasesheet.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\PurchaseSheet\purchasesheetstores.cs">
+      <DependentUpon>purchasesheetstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\SalesSummary\salessummarynew.cs">
+      <DependentUpon>salessummarynew.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Purchase\SalesSummary\salessummary1.cs">
+      <DependentUpon>salessummary.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\AgeAnalysis\ageanalysis.cs">
+      <DependentUpon>ageanalysis.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\AgeAnalysis\ageanalysisstores.cs">
+      <DependentUpon>ageanalysisstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\blendstock.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Stock\blendstock1.cs">
+      <DependentUpon>blendstock.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\blendstockstores.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Stock\blendstockstores1.cs">
+      <DependentUpon>blendstockstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\FullStock\fullstock.cs">
+      <DependentUpon>fullstock.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\StoresAnalysis\storeanalysis.cs">
+      <DependentUpon>storeanalysis.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\straightlinestock.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\Stock\straightlinestock1.cs">
+      <DependentUpon>straightlinestock.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Stock\straightlinestockstores.cs">
+      <DependentUpon>straightlinestockstores.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="App\Authentication\Login\login.controller.js" />
+    <Content Include="App\Authentication\Login\login.html" />
+    <Content Include="App\Authentication\Login\login.service.js" />
+    <Content Include="App\Authentication\Login\logoff.html" />
+    <Content Include="App\Authentication\MyProfile\ChangePassword.html" />
+    <Content Include="App\Authentication\MyProfile\controller.js" />
+    <Content Include="App\Authentication\MyProfile\Options.html" />
+    <Content Include="App\Authentication\Register\controller.js" />
+    <Content Include="App\Authentication\Register\messages.html" />
+    <Content Include="App\Authentication\Register\Register.html" />
+    <Content Include="App\Authentication\Register\service.js" />
+    <Content Include="App\Authentication\Roles\AccessLevel.html" />
+    <Content Include="App\Authentication\Roles\AddUser.html" />
+    <Content Include="App\Authentication\Roles\CreateRole.html" />
+    <Content Include="App\Authentication\Roles\RemoveUser.html" />
+    <Content Include="App\Authentication\Roles\Roles.html" />
+    <Content Include="App\Authentication\Roles\role_accesslevelcontroller.js" />
+    <Content Include="App\Authentication\Roles\role_addusercontroller.js" />
+    <Content Include="App\Authentication\Roles\role_controller.js" />
+    <Content Include="App\Authentication\Roles\role_createcontroller.js" />
+    <Content Include="App\Authentication\Roles\role_removeusercontroller.js" />
+    <Content Include="App\Document\controller.js" />
+    <Content Include="App\Document\Document.html" />
+    <Content Include="App\Packing\ItemReturn\controller.js" />
+    <Content Include="App\Packing\ItemReturn\Email.html" />
+    <Content Include="App\Packing\ItemReturn\EmailHistory.html" />
+    <Content Include="App\Packing\ItemReturn\Options.html" />
+    <Content Include="App\Packing\ItemReturn\ReturnItem.html" />
+    <Content Include="App\Packing\ItemReturn\Create.html" />
+    <Content Include="App\Packing\ItemReturn\ReturnNoteItems.html" />
+    <Content Include="App\Packing\ItemReturn\Items.html" />
+    <Content Include="App\Packing\ItemReturn\List.html" />
+    <Content Include="App\Packing\ItemIssue\controller.js" />
+    <Content Include="App\Packing\ItemIssue\Create.html" />
+    <Content Include="App\Packing\ItemIssue\in_itemscontroller.js" />
+    <Content Include="App\Packing\ItemIssue\Items.html" />
+    <Content Include="App\Packing\ItemIssue\List.html" />
+    <Content Include="App\Packing\ItemIssue\IssueNoteItems.html" />
+    <Content Include="App\Packing\ItemMaster\CreateItem.html" />
+    <Content Include="App\Packing\ItemMaster\CreateItemProperty.html" />
+    <Content Include="App\Packing\ItemMaster\controller.js" />
+    <Content Include="App\Packing\ItemMaster\Items.html" />
+    <Content Include="App\Packing\ItemReceive\UpdateItem.html" />
+    <Content Include="App\Packing\ItemReceive\ReceiveNoteItems.html" />
+    <Content Include="App\Packing\ItemReceive\controller.js" />
+    <Content Include="App\Packing\ItemReceive\Create.html" />
+    <Content Include="App\Packing\ItemReceive\List.html" />
+    <Content Include="App\Packing\ItemReceive\irn_itemscontroller.js" />
+    <Content Include="App\Packing\PO\AddItem.html" />
+    <Content Include="App\Packing\PO\EmailHistory.html" />
+    <Content Include="App\Packing\PO\Email.html" />
+    <Content Include="App\Packing\PO\po_addlines.js" />
+    <Content Include="App\Packing\PO\controller.js" />
+    <Content Include="App\Packing\PO\Create.html" />
+    <Content Include="App\Packing\PO\Items.html" />
+    <Content Include="App\Packing\PO\List.html" />
+    <Content Include="App\Packing\PO\po_itemscontroller.js" />
+    <Content Include="App\Packing\Supplier\Create.html" />
+    <Content Include="App\Packing\Supplier\controller.js" />
+    <Content Include="App\Packing\Supplier\List.html" />
+    <Content Include="App\Tea\Adjustment\Approvals\controller.js" />
+    <Content Include="App\Tea\Adjustment\Approvals\StraightLines.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\adjustmentopscontroller.js" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\Adjustments.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\AdjustmentsCancel.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\controller.js" />
+    <Content Include="App\Tea\BlendCreation\AddedBlends.html" />
+    <Content Include="App\Tea\BlendCreation\AddLines.html" />
+    <Content Include="App\Tea\BlendCreation\bl_addlines.js" />
+    <Content Include="App\Tea\BlendCreation\bl_storesins.js" />
+    <Content Include="App\Tea\BlendCreation\bl_download.js" />
+    <Content Include="App\Tea\BlendCreation\BlendDownload.html" />
+    <Content Include="App\Tea\BlendCreation\ModelContent.html" />
+    <Content Include="App\Tea\BlendCreation\StoresInstructions.html" />
+    <Content Include="App\Tea\Collection\controller.js" />
+    <Content Include="App\Tea\Collection\CollectionNotes.html" />
+    <Content Include="App\Tea\Collection\PrintCollectionNote.html" />
+    <Content Include="App\Tea\Collection\MarkStoreLocation.html" />
+    <Content Include="App\Tea\Collection\CreateNote.html" />
+    <Content Include="App\Tea\Collection\MarkCollectionNote.html" />
+    <Content Include="App\Tea\Reports\Blend\PrintOptions.html" />
+    <Content Include="App\Tea\Reports\Purchase\BrokerPurchaseOptions.html" />
+    <Content Include="App\Tea\Reports\Reject-Short\ClaimNote\controller.js" />
+    <Content Include="App\Tea\Reports\Reject-Short\ClaimNote\PrintOptions.html" />
+    <Content Include="App\Tea\Reports\Reject-Short\controller.js" />
+    <Content Include="App\Tea\Reports\Reject-Short\DO\controller.js" />
+    <Content Include="App\Tea\Reports\Reject-Short\DO\PrintOptions.html" />
+    <Content Include="App\Tea\Reports\Reject-Short\ShortNote\controller.js" />
+    <Content Include="App\Tea\Reports\Reject-Short\ShortNote\PrintOptions.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\rejectcontroller.js" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\RejectLine.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\shortcontroller.js" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\ShortLine.html" />
+    <Content Include="App\Tea\Adjustment\Reject_Short\StraightLines.html" />
+    <Content Include="App\Tea\Approval\BlendCloseCancel\BlendCloseRequest.html" />
+    <Content Include="App\Tea\Approval\BlendCloseCancel\controller.js" />
+    <Content Include="App\Tea\BlendClose\AddCloseAmount.html" />
+    <Content Include="App\Tea\BlendClose\AddSiftedAmount.html" />
+    <Content Include="App\Tea\BlendClose\BlendClose.html" />
+    <Content Include="App\Tea\BlendClose\blendclose.js" />
+    <Content Include="App\Tea\BlendClose\BlendCloseCancel.html" />
+    <Content Include="App\Tea\BlendClose\BlendDetails.html" />
+    <Content Include="App\Tea\BlendClose\MoreOptions.html" />
+    <Content Include="App\Tea\BlendCreation\AddBL.html" />
+    <Content Include="App\Tea\BlendCreation\AddSL.html" />
+    <Content Include="App\Tea\BlendCreation\Blend.html" />
+    <Content Include="App\Tea\BlendCreation\blendcreation.js" />
+    <Content Include="App\Tea\BlendCreation\BlendDetail.html" />
+    <Content Include="App\Tea\BlendCreation\bl_addblendbalance.js" />
+    <Content Include="App\Tea\BlendCreation\bl_addstraightline.js" />
+    <Content Include="App\Tea\BlendCreation\bl_createblend.js" />
+    <Content Include="App\Tea\BlendCreation\bl_editblend.js" />
+    <Content Include="App\Tea\BlendCreation\bl_trace.js" />
+    <Content Include="App\Tea\BlendCreation\CreateBlend.html" />
+    <Content Include="App\Tea\BlendCreation\TraceBlend.html" />
+    <Content Include="App\Tea\Broker\BrokerDetail.html" />
+    <Content Include="App\Tea\Broker\CreateBroker.html" />
+    <Content Include="App\Tea\Contracts\contract.js" />
+    <Content Include="App\Tea\Contracts\ContractDetail.html" />
+    <Content Include="App\Tea\Contracts\CreateContract.html" />
+    <Content Include="App\Tea\Contracts\StandardDetail.html" />
+    <Content Include="App\Tea\LineSummary\controller.js" />
+    <Content Include="App\Tea\LineSummary\StraightLines.html" />
+    <Content Include="App\Tea\LineSummary\SummaryView.html" />
+    <Content Include="App\Tea\Purchase\AddLines.html" />
+    <Content Include="App\Tea\Purchase\Certificates.html" />
+    <Content Include="App\Tea\Purchase\CreateSale.html" />
+    <Content Include="App\Tea\Purchase\purchase.js" />
+    <Content Include="App\Tea\Purchase\Sale.html" />
+    <Content Include="App\Tea\Purchase\StraightLines.html" />
+    <Content Include="App\Tea\Purchase\UploadData\UploadStatus.html" />
+    <Content Include="App\Tea\Reports\Blend\BlendReport.html" />
+    <Content Include="App\Tea\Reports\Blend\controller.js" />
+    <Content Include="App\Tea\Reports\PrintOptions.html" />
+    <Content Include="App\Tea\Reports\Purchase\AdvanceOptions.html" />
+    <Content Include="App\Tea\Reports\Purchase\controller.js" />
+    <Content Include="App\Tea\Reports\Purchase\PurchaseReport.html" />
+    <Content Include="App\Tea\Reports\Reject-Short\Options.html" />
+    <Content Include="App\Tea\Reports\ReportView.html" />
+    <Content Include="App\Tea\Reports\reportviewcontroller.js" />
+    <Content Include="App\Tea\Reports\Stock\AgeAnalysisOptions.html" />
+    <Content Include="App\Tea\Reports\Stock\controller.js" />
+    <Content Include="App\Tea\Reports\Stock\StoresAnalysisReportOptions.html" />
+    <Content Include="App\Tea\Reports\Stock\FullStockReportOptions.html" />
+    <Content Include="App\Tea\Reports\Stock\StockReport.html" />
+    <Content Include="App\Tea\Reports\Stock\StockReportOptions.html" />
+    <Content Include="App\Tea\Reports\Stock\StraightLineStockReportOptions.html" />
+    <Content Include="App\Tea\Shipments\ClosedBlends.html" />
+    <Content Include="App\Tea\Shipments\controller.js" />
+    <Content Include="App\Tea\Shipments\PackGoods.html" />
+    <Content Include="App\Tea\Shipments\Shipments.html" />
+    <Content Include="App\Tea\TeaBuyer\BuyerDetail.html" />
+    <Content Include="App\Tea\TeaBuyer\buyersvc.js" />
+    <Content Include="App\Tea\TeaBuyer\CreateBuyer.html" />
+    <Content Include="App\Tea\TeaStandards\CreateStandard.html" />
+    <Content Include="App\Tea\TeaStandards\standards.js" />
+    <Content Include="App\Tea\TeaStandards\TeaStandard.html" />
+    <Content Include="App\Tea\Purchase\UploadData\UploadData.html" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\icon_right.png" />
+    <Content Include="Content\icon_wrong.png" />
+    <Content Include="Content\spinner.gif" />
+    <Content Include="Controllers\AccessRights\Role\RoleSqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Packing\ItemIssue\SqlFile.xml" />
+    <Content Include="Controllers\Packing\ItemReceive\SqlFile.xml" />
+    <Content Include="Controllers\Packing\ItemReturn\SqlFile.xml" />
+    <Content Include="Controllers\Packing\PO\SqlFile.xml" />
+    <Content Include="Controllers\Packing\Supplier\SqlFile.xml" />
+    <Content Include="Controllers\Packing\ItemMaster\SqlFile.xml" />
+    <Content Include="Controllers\Packing\UOM\SqlFile.xml" />
+    <Content Include="Controllers\Tea\Adjustment\LineAdjustmentSqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\BlendCloseReversal\SqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\BlendClose\BlendCloseSqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\BlendCreation\BlendCreationSqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\Broker\BrokerSqlFile.xml" />
+    <Content Include="Controllers\Tea\Buyer\BuyerSqlFile.xml" />
+    <Content Include="Controllers\Company\SqlFile.xml" />
+    <Content Include="Controllers\Tea\Contracts\ContractSqlFile.xml" />
+    <Content Include="Controllers\Document\DocumentSqlFile.xml" />
+    <Content Include="Controllers\Menu\MenuSqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\style.css" />
+    <Content Include="Controllers\Authentication\AuthenticationSqlFile.xml" />
+    <Content Include="Controllers\Authentication\UserAuthorizeSqlFile.xml" />
+    <Content Include="Controllers\Authentication\UserSqlFile.xml" />
+    <Content Include="Controllers\Tea\LineSummary\LineSummarySqlFile.xml" />
+    <Content Include="Controllers\Tea\Purchases\AuctionSaleSqlFile.xml" />
+    <Content Include="Controllers\Tea\Report\Blend\SqlFile.xml" />
+    <Content Include="Controllers\Tea\Report\Purchase\SqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\Report\Stock\SqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Controllers\Tea\Shipment\ShipmentSqlFile.xml" />
+    <Content Include="Controllers\Tea\TeaCollection\SqlFile.xml" />
+    <Content Include="Controllers\Tea\TeaStandard\StandardSqlFile.xml" />
+    <Content Include="Create.html" />
+    <Content Include="Global.asax" />
+    <Content Include="gulpfile.js" />
+    <Content Include="index.html" />
+    <Content Include="lib\ui-bootstrap-tpls-0.11.2.min.js" />
+    <Content Include="Reports\Blendsheet\blendsheet.xml" />
+    <Content Include="Reports\Blendsheet\canistersheet.xml" />
+    <Content Include="Reports\Blendsheet\storesinstruction.xml" />
+    <Content Include="Reports\Letters\ClaimNote\claimnote.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Letters\DONote\donote.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Letters\ShortNote\shortnote.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Packing\IN\in.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Packing\IR\ir.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Packing\PO\po.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Packing\RN\rn.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Purchase\Canisters\canistersheet.xml" />
+    <Content Include="Reports\Purchase\Collection\collectionnote.xml" />
+    <Content Include="Reports\Purchase\PurchaseSheet\purchasesheet.xml" />
+    <Content Include="Reports\Purchase\SalesSummary\salessummary.xml" />
+    <Content Include="Reports\Stock\AgeAnalysis\ageanalysis.xml" />
+    <Content Include="Reports\Stock\blendstock.xml" />
+    <Content Include="Reports\Stock\FullStock\fullstock.xml" />
+    <Content Include="Reports\Stock\StoresAnalysis\storesanalysis.xml" />
+    <Content Include="Reports\Stock\straghtlinestock.xml" />
+    <Content Include="Script\all.min.js" />
+    <Content Include="Script\app.js" />
+    <Content Include="Script\data.service.js" />
+    <Content Include="Script\global.service.js" />
+    <Content Include="App\Tea\Purchase\UploadData\controller.js" />
+    <Content Include="Script\jquery.autocomplete.min.js" />
+    <Content Include="Script\jszip.js" />
+    <Content Include="Script\xlsx.full.min.js" />
+    <Content Include="Script\main.controller.js" />
+    <Content Include="App\Tea\Broker\broker.js" />
+    <Content Include="Script\validator.js" />
+    <Content Include="Utility\controller.js" />
+    <Content Include="Utility\Loading.html" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App\Tea\BlendCreation\Services\" />
+    <Folder Include="App_Data\" />
+    <Folder Include="Downloads\" />
+    <Folder Include="Logs\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Blend.BuisnessEntities\Blend.BuisnessEntities.csproj">
+      <Project>{3e7fc6fa-c666-45ad-9008-af59fba6138a}</Project>
+      <Name>Blend.BuisnessEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.BuisnessService\Blend.BuisnessService.csproj">
+      <Project>{d3cd4741-bdf8-48af-a516-154832c684ba}</Project>
+      <Name>Blend.BuisnessService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.DataModel\Blend.DataModel.csproj">
+      <Project>{cd2ecc77-7490-45da-9cbb-4ec2dac8309a}</Project>
+      <Name>Blend.DataModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.Data\Blend.Data.csproj">
+      <Project>{1e36ce49-c5dd-4030-b4fd-044e6cb111cd}</Project>
+      <Name>Blend.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Blend.Resolver\Blend.Resolver.csproj">
+      <Project>{3d4d9724-deee-4243-a30c-4d430514ac45}</Project>
+      <Name>Blend.Resolver</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="providers.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqlMap.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\Blendsheet\blendreport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendreport1.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\blendreportstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendreportstores.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\canistersheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>canistersheet.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\storesinstructions.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>storesinstructions.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\storessheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>storessheet1.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\VN\blendreport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendreport1.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Blendsheet\VN\blendreportstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendreportstores.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CrystalReport1.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CrystalReport11.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Letters\ClaimNote\claimnote.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>claimnote.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Letters\DONote\donote.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>donote.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Letters\ShortNote\shortnote.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>shortnote.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Packing\IN\in.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>in.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Packing\IR\ir.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ir.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Packing\PO\po.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>po.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Packing\RN\rn.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>rn.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\Canisters\canistersheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>canistersheet1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\Canisters\canistersheet_rowtype.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>canistersheet_rowtype.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\Collection\collectionnote.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>collectionnote.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\PurchaseSheet\brokerpurchases.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>brokerpurchases.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\PurchaseSheet\advancepurchasesheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>advancepurchasesheet.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\PurchaseSheet\purchasesheet.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>purchasesheet.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\PurchaseSheet\purchasesheetstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>purchasesheetstores.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\SalesSummary\salessummarynew.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>salessummarynew.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Purchase\SalesSummary\salessummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>salessummary1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\AgeAnalysis\ageanalysis.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ageanalysis.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\AgeAnalysis\ageanalysisstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ageanalysisstores.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\blendstock.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendstock1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\blendstockstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>blendstockstores1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\FullStock\fullstock.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>fullstock.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\StoresAnalysis\storeanalysis.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>storeanalysis.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\straightlinestock.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>straightlinestock1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Stock\straightlinestockstores.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>straightlinestockstores.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\NoData.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\Purchase\Download\blnd.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Script\report.service.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App\Authentication\Login\login.v2.html" />
+    <None Include="Properties\PublishProfiles\webpack.pubxml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:56720/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

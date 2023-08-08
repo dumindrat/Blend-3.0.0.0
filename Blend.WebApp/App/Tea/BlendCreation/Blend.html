@@ -1,0 +1,60 @@
+﻿<div>
+    <h4>Blend Creation {{recordCount}}</h4>
+</div>
+
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Blend" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchblend()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-disabled="accessLevels.C" ng-click="openCreateBlendWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in BlendData" id="{{c.BlendId}}" data-status="pagado">
+
+                        <td style="width: 100%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <!--<span class="media-meta pull-right">Created : {{c.AddedDate}} By {{c.User}}</span>-->
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">{{c.BlendNo}} 
+                                    </h4>
+                                    <p class="summary">Contract : {{c.ContractNo}} | Standard : {{c.StandardName}} | ExportQty : {{c.ExportQty}} Kg | LineQty : {{c.LineQty}}</p>
+                                    <p class="summary">Completion on : {{c.CompleteDate}} | {{c.CloseStatus}} | Created : {{c.AddedDate}} By {{c.User}}</p>
+                                </div>
+                                <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M || CheckCloseStatus(c)" ng-click="openCreateBlendWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit Blend">Edit</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openViewAddedLines(c)" data-toggle="tooltip" data-placement="top" title="Add and Remove lines">Lines</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.P || !CheckAddedLine(c) || !CheckEnabledTeaBoard(c)" ng-click="openDownloadWindow(c)" data-toggle="tooltip" data-placement="top" title="Download as excel file">Download</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M || CheckEnabledTeaBoard(c)" ng-click="enableTeaBoard(c)" data-toggle="tooltip" data-placement="top" title="Enable TeaBoard">Teaboard Enable</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.P" ng-click="openTraceBlendWindow(c)" data-toggle="tooltip" data-placement="top" title="Check the whole trace info">Summary</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.P" ng-click="openStoresInsWindow(c)" data-toggle="tooltip" data-placement="top" title="Create Stores Instruction">Stores Instructions</button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D || CheckCloseStatus(c) || CheckAddedLine(c)" ng-click="delete(c.BlendId)" data-toggle="tooltip" data-placement="top" title="Delete Blend">Delete</button>
+                            </div>
+                            </div>
+                        </td>
+                   
+                        
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+

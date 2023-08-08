@@ -1,0 +1,60 @@
+﻿<div class="modal-header">
+    <div>
+
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+        <h3>{{buttonstatus}} Blend</h3>
+    </div>
+</div>
+<div class="modal-body">
+
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="form-group">
+
+        <input id="chkAutoDoc" type="checkbox" ng-value="true" ng-change="setAutoDocNo(New.IsAutoDocNo)" ng-model="New.IsAutoDocNo" ng-hide="boxnodisabled" />
+        <label for="blendngen" ng-hide="boxnodisabled">Auto Generated BlendNo</label>
+        <!--<label for="blendno">Blend No:</label>-->
+        <input type="text" class="form-control" ng-model="New.BlendNo" id="blendno" style="width: 100%" ng-disabled="boxnodisabled" />
+        <!--<div ng-show="showLoader">
+            <img src="../../Content/themes/base/images/spinner.gif" style="width: 50px; height: 50px" />
+        </div>-->
+
+    </div>
+    <div class="form-group">
+        <input type="text" id="id" class="form-control" ng-model="New.BlendId" ng-hide="true" />
+        <label for="contract">Contract:</label>
+        <select id="contract" name="contract" class="form-control" ng-change="getStandard(New.ContractId)" ng-options="c.ContractId as c.ContractName for c in ContractData" ng-model="New.ContractId" style="width: 100%">
+            <option style="display: none" value="">---Select---</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="standard">Standard:</label>
+        <select id="standard" name="standard" class="form-control" ng-change="setDisplayData(New.ContractId,New.StandardId)" ng-options="c.StandardId as c.StandardName for c in StandardData" ng-model="New.StandardId" style="width: 100%">
+            <option style="display: none" value="">---Select---</option>
+        </select>
+        <span class="badge">Order Qty : {{New.OrderQty}}</span>
+        <span class="badge"  ng-click="openViewAddedBlends(BlendData)">Added Blends :{{BlendData.length}}</span>
+    </div>
+
+    <div class="form-group">
+        <label for="standard">Export Qty:</label>
+        <input type="text" class="form-control" ng-model="New.ExportQty" id="expQty" style="width: 100%" ng-disabled="false" only-digits />
+
+    </div>
+    <div class="form-group">
+        <label for="buyername">Date of Completion:</label>
+        <input type="date" class="form-control" ng-value="New.CompleteDate" ng-model="New.CompleteDate" id="completedate" style="width: 100%" placeholder="MM-DD-YYYY" required />
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button id="btnSave" class="btn btn-primary btn-sm" ng-click="create(New);" type="submit" ng-disabled="button.disabled">Save</button>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="button.disabled">Close</button>
+
+    </div>
+</div>

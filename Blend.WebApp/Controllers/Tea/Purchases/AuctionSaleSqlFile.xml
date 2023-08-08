@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="straightline" type="Blend.BuisnessEntities.Purchase.Sale"/>
+    <typeAlias alias="straightlines" type="Blend.BuisnessEntities.Purchase.StraightLine"/>
+    <typeAlias alias="teacertificate" type="Blend.BuisnessEntities.Purchase.TeaCertificates"/>
+    <typeAlias alias="gardenmarks" type="Blend.BuisnessEntities.Purchase.GardenMark"/>
+    <typeAlias alias="grades" type="Blend.BuisnessEntities.TeaGrade.Grade"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetSales" parameterMap="get-allsales-params"  resultMap="get-allsales-result">
+      trn_PurchaseHeaderGet
+    </procedure>
+    <procedure id="GetStraightLineBySale" parameterMap="get-salesitem-params"  resultMap="get-salesitem-result">
+      trn_PurchaseDetailGetBySaleId
+    </procedure>
+    <procedure id="GetStraightLineByReservedNoAndSale" parameterMap="get-straightline-params"  resultMap="get-straightline-result">
+      trn_PurchaseDetailGetByReservedNoId
+    </procedure>
+    <procedure id="GetTeaCertificates" parameterMap="get-teacertificates-params"  resultMap="get-teacertificates-result">
+      trn_TeaCertificateGet
+    </procedure>
+    <procedure id="GetGardenMarks" parameterMap="get-gardenmarks-params"  resultMap="get-gardenmarks-result">
+      trn_GardenMarkGet
+    </procedure>
+    <procedure id="GetGrades" parameterMap="get-grades-params"  resultMap="get-grades-result">
+      trn_GradeGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allsales-params">
+      <parameter property="SaleDate" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-salesitem-params">
+      <parameter property="SaleId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-straightline-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-teacertificates-params">
+    </parameterMap>
+    <parameterMap id="get-gardenmarks-params">
+    </parameterMap>
+    <parameterMap id="get-grades-params">
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allsales-result" class="Blend.BuisnessEntities.Purchase.Sale">
+      <result property="SaleId" column="Id" dbType="Int"/>
+      <result property="SaleDate" column="SaleDate" dbType="Date"/>
+      <result property="IsClosed" column="IsClosed" dbType="Varchar"/>
+      <result property="SaleStatus" column="SaleStatus" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+
+
+    </resultMap>
+    <resultMap id="get-salesitem-result" class="Blend.BuisnessEntities.Purchase.StraightLine">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="BrokerId" column="BrokerId" dbType="Int"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="int"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-straightline-result" class="Blend.BuisnessEntities.Purchase.StraightLine">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockId" column="StockId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="BrokerId" column="BrokerId" dbType="Int"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="int"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-teacertificates-result" class="Blend.BuisnessEntities.Purchase.TeaCertificates">
+      <result property="CertifiedName" column="CertifiedName" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-gardenmarks-result" class="Blend.BuisnessEntities.Purchase.GardenMark">
+      <result property="GardenMarkName" column="GardenMarkName" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-grades-result" class="Blend.BuisnessEntities.TeaGrade.Grade">
+      <result property="GradeName" column="GradeName" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+
+</sqlMap>

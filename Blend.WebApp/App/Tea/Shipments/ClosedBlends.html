@@ -1,0 +1,49 @@
+﻿<div>
+    <h4>Closed Blends {{recordCount}}</h4>
+</div>
+
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Blends" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchblend()" />
+
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in BlendData" id="{{c.BlendId}}" data-status="pagado">
+
+                        <td style="width: 70%">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Closed Date : {{c.ClosedDate}}</span>
+
+                                    <h4 class="title">{{c.BlendNo}}
+                                       
+                                    </h4>
+                                    <p class="summary" >Contract : {{c.ContractName}}  </p>
+                                    <p class="summary">Standard : {{c.StandardName}} | BlendQty : {{c.LineQty}} | ShipQty :{{c.TotShipQty }} | Closed by : {{c.ClosedUser}} </p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td style="width: 30%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openShipmentWindow(c)" data-toggle="tooltip" data-placement="top" title="Ship Tea">Create Shipment</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openPackGoodWindow(c)" ng-disabled="CheckPackGoodConvertion(c)" data-toggle="tooltip" data-placement="top" title="Pack Goods Tea">Cretate Pack Goods</button>
+                            
+                            </div>
+                        </td>
+                        
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

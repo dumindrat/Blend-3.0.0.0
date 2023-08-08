@@ -1,0 +1,51 @@
+alter table dbo.collectionnote add Prefix varchar(3)
+
+ALTER   PROCEDURE [dbo].[trn_CollectionNoteInsert](@user varchar(45))
+as
+BEGIN
+INSERT INTO collectionnote
+(CreateUser,CreateDate,Prefix)
+VALUES
+(@user,getdate(),'CN');
+END
+
+
+go
+
+alter table purchase_detail add CollectionNoteNo int,CollectionDate date,CollectionBy varchar(45),StoreLocation varchar(10)
+go
+
+USE [DB_tmxventure]
+GO
+/****** Object:  StoredProcedure [dbo].[trn_CollectionNoteItemsGet]    Script Date: 09/23/2018 23:26:39 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER   PROCEDURE [dbo].[trn_CollectionNoteItemsGet](@searchStr varchar(45))  
+as  
+BEGIN  
+select p.Id PurchaseId,p.BoxNo,p.LotNo,p.Invoice,convert(varchar,h.SaleDate,101)SaleDate,b.BrokerCode,p.Grade
+,p.GardenMark,p.NetWeight,p.Packs,p.Rate,p.Weight   
+,p.CollectionNoteNo,convert(varchar,p.CollectionDate,101)CollectionDate,p.StoreLocation  
+ from purchase_detail p 
+ inner join purchase_header h on p.SaleId=h.Id  
+ inner join broker b on p.BrokerId = b.BrokerId  and h.IsClosed=0 and p.BoxNo like '%'+@searchStr+'%'
+  
+  
+END
+
+go
+
+
+create   PROCEDURE [dbo].[trn_CollectionNoteMaxGet]
+as
+BEGIN
+select top 1 Id,Prefix + convert(varchar(10),Id) CollectionNo
+,convert(varchar,CreateDate,101)CreateDate,CreateUser from collectionnote 
+ order by Id desc
+END
+go
+
+alter table purchase_detail add StockReceived bit
+go

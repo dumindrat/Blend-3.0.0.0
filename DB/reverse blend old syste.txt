@@ -1,0 +1,12 @@
+declare @blendno varchar(20)
+declare @Qty decimal(18,2)
+set @blendno = '000154/2018'
+set @Qty = 410
+select * from dbo.tblShipments where strblendnum =@blendno
+delete from dbo.tblShipments where strblendnum =@blendno
+select * from dbo.tblStockMain where strBlendID = @blendno and strBlendCategory <>'BB'
+delete from dbo.tblStockMain where strBlendID = @blendno and strBlendCategory <>'BB'
+select * from dbo.tblStockMain where strBlendID = @blendno and strBlendCategory ='BB'
+update dbo.tblStockMain set nvrStkNW=@Qty where strBlendID = @blendno and strBlendCategory ='BB'
+select * from dbo.tblBlendCategorizing where strBlNumber = @blendno
+update dbo.tblBlendCategorizing set fltCreatedQty=0 where strBlNumber = @blendno

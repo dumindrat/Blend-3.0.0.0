@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="blend" type="Blend.BuisnessEntities.BlendCreation.BlendInfo"/>
+    <typeAlias alias="linestock" type="Blend.BuisnessEntities.BlendCreation.StraightLineStockItem"/>
+    <typeAlias alias="blenddet" type="Blend.BuisnessEntities.BlendCreation.BlendDetail"/>
+    <typeAlias alias="blendstock" type="Blend.BuisnessEntities.BlendCreation.BlendStockItem"/>
+    <typeAlias alias="asycudaS" type="Blend.BuisnessEntities.Download.Asycuda.AsycudaDataSL"/>
+    <typeAlias alias="asycudaB" type="Blend.BuisnessEntities.Download.Asycuda.AsycudaDataBL"/>
+    <typeAlias alias="blendheader" type="Blend.BuisnessEntities.BlendCreation.BlendHeader"/>
+    <typeAlias alias="blendallocinfo" type="Blend.BuisnessEntities.BlendCreation.BlendItemAllocation"/>
+    <typeAlias alias="quicksearchitem" type="Blend.BuisnessEntities.BlendCreation.BlendQuickSearchItem"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetBlends" parameterMap="get-blendno-params"  resultMap="get-blendno-result">
+      trn_BlendGet
+    </procedure>
+    <procedure id="GetStraightLineStock" parameterMap="get-stlstk-params"  resultMap="get-stlstk-result">
+      trn_TeaStockStraightLineSearch
+    </procedure>
+    <procedure id="GetStraightLineStockByBoxNo" parameterMap="get-stkbybox-params"  resultMap="get-stkbybox-result">
+      trn_TeaStockStraightGetByBoxNo
+    </procedure>
+    <procedure id="GetBlendDetailById" parameterMap="get-blenddet-params"  resultMap="get-blenddet-result">
+      trn_BlendDetailGetById
+    </procedure>
+    <procedure id="GetBlendStock" parameterMap="get-blendstk-params"  resultMap="get-blendstk-result">
+      trn_TeaStockBlendSearch
+    </procedure>
+    <procedure id="GetAsycudaS" parameterMap="get-asycudas-params"  resultMap="get-asycudas-result">
+      trn_DownloadAsycudaDataL
+    </procedure>
+    <procedure id="GetAsycudaB" parameterMap="get-asycudab-params"  resultMap="get-asycudab-result">
+      trn_DownloadAsycudaDataB
+    </procedure>
+    <procedure id="GetBlendInfoById" parameterMap="get-blendinfo-params"  resultMap="get-blendinfo-result">
+      trn_BlendInfoGetById
+    </procedure>
+    <procedure id="GetBlendAllocationsById" parameterMap="get-alendalloc-params"  resultMap="get-alendalloc-result">
+      trn_BlendAllocationsGetByBlendId
+    </procedure>
+    <procedure id="GetBlendAllocationsByBoxNo" parameterMap="get-alendallocbox-params"  resultMap="get-alendallocbox-result">
+      trn_BlendAllocationsGetByBoxNo
+    </procedure>
+    <procedure id="GetStoresInstructionByBlend" parameterMap="get-storesins-params"  resultMap="get-storesins-result">
+      trn_BlendStoresInsructionGet
+    </procedure>
+    <procedure id="GetBlendQuickSearchItems" parameterMap="get-quicksearchitem-params"  resultMap="get-quicksearchitem-result">
+      trn_BlendQuickSearchItems
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-blendno-params">
+      <parameter property="BlendNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stlstk-params">
+      <parameter property="BoxNo" direction  ="Input" />
+      <parameter property="SearchType" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stkbybox-params">
+      <parameter property="BoxNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blenddet-params">
+      <parameter property="BlendId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blendstk-params">
+      <parameter property="StockName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-asycudas-params">
+      <parameter property="BlendId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-asycudab-params">
+      <parameter property="BlendId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blendinfo-params">
+      <parameter property="BlendId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-alendalloc-params">
+      <parameter property="BlendId" direction  ="Input" />
+      <parameter property="ItemType" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-alendallocbox-params">
+      <parameter property="BoxNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-storesins-params">
+      <parameter property="BlendId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-quicksearchitem-params">
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-blendno-result" class="Blend.BuisnessEntities.BlendCreation.BlendInfo">
+      <result property="BlendId" column="Id" dbType="Int"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="ContractId" column="Contract" dbType="Int"/>
+      <result property="ContractNo" column="ContractName" dbType="Varchar"/>
+      <result property="StandardId" column="Standard" dbType="Int"/>
+      <result property="CompleteDate" column="DateOfCompletion" dbType="Varchar"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+      <result property="LineQty" column="LineQty" dbType="Decimal"/>
+      <result property="IsClosed" column="IsClosed" dbType="Int"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="AddedDate" column="Createdate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="CloseStatus" column="CloseStatus" dbType="Int"/>
+      <result property="IsTeaBoardEnabled" column="IsTeaBoardEnabled" dbType="Int"/>
+
+
+    </resultMap>
+    <resultMap id="get-stlstk-result" class="Blend.BuisnessEntities.BlendCreation.StraightLineStockItem">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="ADPacks" column="ADPacks" dbType="Decimal"/>
+      <result property="ADQty" column="ADQty" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="int"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-stkbybox-result" class="Blend.BuisnessEntities.BlendCreation.StraightLineStockItem">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Int"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="Int"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-blenddet-result" class="Blend.BuisnessEntities.BlendCreation.BlendDetail">
+      <result property="BlendDetailId" column="BlendDetailId" dbType="Int"/>
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="ItemType" column="ItemType" dbType="Varchar"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Date"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+
+    </resultMap>
+    <resultMap id="get-blendstk-result" class="Blend.BuisnessEntities.BlendCreation.BlendStockItem">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="StockName" column="StockName" dbType="Varchar"/>
+      <result property="ItemType" column="ItemType" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsClosed" column="IsClosed" dbType="Int"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+
+    </resultMap>
+    <resultMap id="get-asycudas-result" class="Blend.BuisnessEntities.Download.Asycuda.AsycudaDataSL">
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-asycudab-result" class="Blend.BuisnessEntities.Download.Asycuda.AsycudaDataBL">
+      <result property="ClosedDate" column="ClosedDate" dbType="Varchar"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="BB" column="BB" dbType="Varchar"/>
+      <result property="BG" column="BG" dbType="Varchar"/>
+      <result property="ClosedRate" column="ClosedRate" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-blendinfo-result" class="Blend.BuisnessEntities.BlendCreation.BlendHeader">
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+    </resultMap>
+    <resultMap id="get-alendalloc-result" class="Blend.BuisnessEntities.BlendCreation.BlendItemAllocation">
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-alendallocbox-result" class="Blend.BuisnessEntities.BlendCreation.BlendItemAllocation">
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-storesins-result" class="Blend.BuisnessEntities.StoresInstruction.StoresInstructions">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="BlendId" column="BlendId" dbType="Int"/>
+      <result property="StoresInstruction" column="Instruction" dbType="Varchar"/>
+
+    </resultMap>
+  <resultMap id="get-quicksearchitem-result" class="Blend.BuisnessEntities.BlendCreation.BlendQuickSearchItem">
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

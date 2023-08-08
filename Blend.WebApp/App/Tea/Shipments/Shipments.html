@@ -1,0 +1,131 @@
+﻿<div class="modal-header">
+    <div>
+        <h4>Shipment Information</h4>
+    </div>
+</div>
+<div class="modal-body">
+    <div ng-show="message" class="{{messageclass}}" role="alert">
+        <label>{{message}}</label>
+
+    </div>
+    <div class="container-fluid">
+        <div class="col-sm-6">
+            <fieldset class="the-fieldset">
+                <legend class="the-legend">Blend Details 
+                </legend>
+                <table class="table table-hover" style="width: 100%; font-size: small">
+                    <tbody>
+                        <tr>
+                            <td>Contract</td>
+                            <td>{{SelectedBlend.ContractName}}</td>
+                        </tr>
+                        <tr>
+                            <td>Standard</td>
+                            <td>{{SelectedBlend.StandardName}}</td>
+                        </tr>
+                        <tr>
+                            <td>Blend No</td>
+                            <td>{{SelectedBlend.BlendNo}}</td>
+                        </tr>
+                        <tr>
+                            <td>Closed Date</td>
+                            <td>{{SelectedBlend.ClosedDate}}</td>
+                        </tr>
+                        <tr>
+                            <td>Closed By</td>
+                            <td>{{SelectedBlend.ClosedUser}}</td>
+                        </tr>
+                        <tr>
+                            <td>Rate</td>
+                            <td>{{SelectedBlend.ClosedRate | number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Export Qty</td>
+                            <td>{{SelectedBlend.ExportQty | number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Line Qty</td>
+                            <td>{{SelectedBlend.LineQty | number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>BB</td>
+                            <td>{{SelectedBlend.STDBB | number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Completion Date</td>
+                            <td>{{SelectedBlend.DateOfCompletion}}</td>
+                        </tr>
+                        <tr>
+                            <td>Total Shipped Qty</td>
+                            <td>{{SelectedBlend.TotShipQty  | number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>Available stock to be Shipped</td>
+                            <td>{{SelectedBlend.AvailableStock  | number:2}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div class="col-sm-6">
+            <div class="container-fluid">
+                <form class="form-horizontal" data-toggle="validator" role="form" ng-submit="save()">
+                    <div>
+                        <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+                        <input type="text" ng-model="New.BlendId" ng-hide="true" />
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6" for="exptype">Export Type:</label>
+                        <div class="col-sm-6">
+                            <select id="buyer" class="form-control" ng-options="item.exptype as item.exptype for item in ExportTypes" ng-model="New.ExportType" required>
+                                <option style="display: none" value="">---Select---</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6" for="packs">No of Packets:</label>
+                        <div class="col-sm-6">
+                            <input id="packs" type="text" class="form-control" name="packs" placeholder="Packets" ng-model="New.Packs" ng-change="calqty()" required valid-number>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6" for="packs">Net Qty of a Pack:</label>
+                        <div class="col-sm-6">
+                            <input id="Text1" type="text" class="form-control" name="packs" placeholder="Nett" ng-model="New.Net" ng-change="calqty()" required only-digits>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6" for="packs">Shipping Qty:</label>
+                        <div class="col-sm-6">
+                            <input id="Text2" type="text" class="form-control" name="packs" placeholder="Qty" ng-model="New.Qty" ng-disabled="true" required only-digits>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-6" for="packs"></label>
+                        <div class="col-sm-6">
+                            <button type="submit" class="btn btn-primary btn-sm" ng-disabled="dataLoading">Submit</button>
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal-footer" style="text-align: right">
+    <span style="margin-left: 8px;" ng-show="dataLoading">
+        <img class="savedata" />
+    </span>
+    <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading">Cancel</button>
+
+
+</div>
+
+
+

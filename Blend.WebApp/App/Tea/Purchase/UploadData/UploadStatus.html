@@ -1,0 +1,37 @@
+﻿<div class="modal-header">
+    <h4>Upload Status</h4>
+</div>
+
+<div class="modal-body">
+    <button type="button" class="btn btn-success">Success Records :<span class="badge">{{successrecords}}</span></button>
+    <button type="button" class="btn btn-danger">Error Records :<span class="badge">{{errorrecords}}</span></button>
+
+    <div style="height: 400px; overflow-y: auto">
+
+        <table class="table table-filter">
+            <thead>
+                <tr>
+                    <th>LOT</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr ng-repeat="c in data">
+                    <td>{{c.LotNo}}</td>
+                    <td>{{c.Status}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="dataloading">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataloading">Ok</button>
+
+    </div>
+</div>

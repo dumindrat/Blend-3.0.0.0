@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="blendsheet" type="Blend.BuisnessEntities.BlendCreation.BlendSheetDto"/>
+    <typeAlias alias="blendsheetparam" type="Blend.BuisnessEntities.BlendCreation.BlendSheetParam"/>
+    <typeAlias alias="blendcanistre" type="Blend.BuisnessEntities.Report.BlendCanister"/>
+
+  </alias>
+
+  <statements>
+
+    <procedure id="GetBlendSheet" parameterMap="get-blndsheet-params"  resultMap="get-blndsheet-result">
+      rpt_BlendSheet
+    </procedure>
+    <procedure id="GetBlendSheetParam" parameterMap="get-blndsheetparam-params"  resultMap="get-blndsheetparam-result">
+      rpt_BlendSheetParam
+    </procedure>
+    <procedure id="GetBlendCanister" parameterMap="get-blndcanister-params"  resultMap="get-blndcanister-result">
+      rpt_BlendCanister
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-blndsheet-params">
+      <parameter property="BlendId" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-blndsheetparam-params">
+      <parameter property="BlendId" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-blndcanister-params">
+      <parameter property="BlendId" direction  ="Input"/>
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-blndsheet-result" class="Blend.BuisnessEntities.BlendCreation.BlendSheetDto">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="ItemType" column="ItemType" dbType="Int"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar" />
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="TeaCertificates" column="TeaCertificates" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar" />
+      <result property="Packs" column="Packs" dbType="Varchar" />
+      <result property="NetWeight" column="NetWeight" dbType="Varchar" />
+      <result property="Qty" column="Qty" dbType="Varchar" />
+      <result property="Rate" column="Rate" dbType="Varchar" />
+      <result property="Value" column="Value" dbType="Varchar" />
+      <result property="TinNo" column="TinNo" dbType="Varchar" />
+      
+
+    </resultMap>
+    <resultMap id="get-blndsheetparam-result" class="Blend.BuisnessEntities.BlendCreation.BlendSheetParam">
+      <result property="ContractName" column="ContractName" dbType="Varchar"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="DateOfCompletion" column="DateOfCompletion" dbType="Varchar"/>
+      <result property="ClosedRate" column="ClosedRate" dbType="Decimal"/>
+      <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
+      <result property="BB" column="BB" dbType="Decimal"/>
+      <result property="BG" column="BG" dbType="Decimal"/>
+      <result property="BL" column="BL" dbType="Decimal"/>
+      <result property="IsClosed" column="IsClosed" dbType="Int"/>
+
+    </resultMap>
+
+    <resultMap id="get-blndcanister-result" class="Blend.BuisnessEntities.Report.BlendCanister">
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="StockQty" column="StockQty" dbType="Varchar"/>
+      <result property="Rate" column="Rate" dbType="Varchar"/>
+      <result property="StockType" column="StockType" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

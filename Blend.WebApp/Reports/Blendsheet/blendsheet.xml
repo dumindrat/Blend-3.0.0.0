@@ -1,0 +1,22 @@
+<blenditems>
+  <item>
+    <Id></Id>
+    <ItemName></ItemName>
+    <ItemType></ItemType>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <BrokerCode></BrokerCode>
+    <SaleCode></SaleCode>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <Standard></Standard>
+    <TeaCertificates></TeaCertificates>
+    <Grade></Grade>
+    <GardenMark></GardenMark>
+    <Packs></Packs>
+    <NetWeight></NetWeight>
+    <Rate></Rate>
+    <Qty></Qty>
+    <TinNo></TinNo>
+  </item>
+</blenditems>

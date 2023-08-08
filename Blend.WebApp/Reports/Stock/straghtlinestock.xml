@@ -1,0 +1,23 @@
+<slstocks>
+  <item>
+    <AllocatedBlend></AllocatedBlend>
+    <Id></Id>
+    <TinNo></TinNo>
+    <BoxNo></BoxNo>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <BrokerCode></BrokerCode>
+    <SaleCode></SaleCode>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <Grade></Grade>
+    <Standard></Standard>
+    <GardenMark></GardenMark>
+    <TeaCertificates></TeaCertificates>
+    <Packs></Packs>
+    <NetWeight></NetWeight>
+    <Rate></Rate>
+    <Qty></Qty>
+    <Value></Value>
+  </item>
+</slstocks>

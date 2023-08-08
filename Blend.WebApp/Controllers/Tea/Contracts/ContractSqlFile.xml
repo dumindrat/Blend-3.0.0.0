@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="booc" type="Blend.BuisnessEntities.Contract.BuyerContract"/>
+    <typeAlias alias="availablestnd" type="Blend.BuisnessEntities.Standard.TeaStandardForContract"/>
+   
+  </alias>
+
+  <statements>
+    
+    <procedure id="GetBuyerContractDetailById" parameterMap="get-contractsdet-params"  resultMap="get-contractsdet-result">
+      trn_ContractDetailGetByContractId
+    </procedure>
+    <procedure id="GetAvailableStandardsById" parameterMap="get-availablestandard-params"  resultMap="get-availablestandard-result">
+      trn_ContractAvailableStandards
+    </procedure>
+    <procedure id="GetAvailableStandardsByIdAndSerchKey" parameterMap="get-availablestandardsearch-params"  resultMap="get-availablestandardsearch-result">
+      trn_ContractAvailableStandardsBySearch
+    </procedure>
+    <procedure id="GetContracts" parameterMap="get-allcontracts-params"  resultMap="get-allcontracts-result">
+      trn_ContractHeaderGet
+    </procedure>
+    <procedure id="GetOpenContracts" parameterMap="get-opencontracts-params"  resultMap="get-opencontracts-result">
+      trn_ContractOpenGet
+    </procedure>
+    <procedure id="GetBlendNoByContractAndStandard" parameterMap="get-blendnobycon-params"  resultMap="get-blendnobycon-result">
+      trn_BlendNoGetByContractAndStandard
+    </procedure>
+  </statements>
+  <parameterMaps>
+    
+    <parameterMap id="get-contractsdet-params" class ="Blend.BuisnessEntities.Contract.BuyerContract">
+      <parameter property="ContractId" direction  ="Input"/>
+    </parameterMap>
+    <parameterMap id="get-availablestandard-params" class ="Blend.BuisnessEntities.Standard.TeaStandardForContract">
+      <parameter property="ContractId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-availablestandardsearch-params" class ="Blend.BuisnessEntities.Standard.TeaStandardForContract">
+      <parameter property="ContractId" direction  ="Input" />
+      <parameter property="StandardName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-allcontracts-params">
+      <parameter property="ContractName" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-opencontracts-params">
+    </parameterMap>
+    <parameterMap id="get-blendnobycon-params">
+      <parameter property="ContractId" direction  ="Input" />
+      <parameter property="StandardId" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-blendnobycon-result" class="Blend.BuisnessEntities.Contract.BlendNoByCon">
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="ClosedStatus" column="ClosedStatus" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-contractsdet-result" class="Blend.BuisnessEntities.Contract.BuyerContractDetail">
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="StandardId" column="StandardId" dbType="Int"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="OrderQty" column="OrderQty" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-allcontracts-result" class="Blend.BuisnessEntities.Contract.BuyerContract">
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="ContractName" column="ContractName" dbType="Varchar"/>
+      <result property="BuyerId" column="BuyerId" dbType="Int"/>
+      <result property="BuyerCode" column="BuyerCode" dbType="Varchar"/>
+      <result property="BuyerName" column="BuyerName" dbType="Varchar"/>
+      <result property="CompletionDate" column="CompletionDate" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+      <result property="IsClosed" column="IsClosed" dbType="Int"/>
+      <result property="CloseStatus" column="CloseStatus" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-opencontracts-result" class="Blend.BuisnessEntities.Contract.BuyerContract">
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="ContractName" column="ContractName" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-availablestandard-result" class="Blend.BuisnessEntities.Standard.TeaStandardForContract">
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="StandardId" column="StandardId" dbType="Int"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="OrderQty" column="OrderQty" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-availablestandardsearch-result" class="Blend.BuisnessEntities.Standard.TeaStandardForContract">
+      <result property="ContractId" column="ContractId" dbType="Int"/>
+      <result property="StandardId" column="StandardId" dbType="Int"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>
+      <result property="OrderQty" column="OrderQty" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

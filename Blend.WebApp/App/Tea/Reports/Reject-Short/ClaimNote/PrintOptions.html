@@ -1,0 +1,97 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+    <h4>Print Claim Notes - Rejected Lines</h4>
+</div>
+
+<div class="modal-body">
+    <!--<div class="form-group">
+        <label for="bk">Select Broker:</label>
+        <select id="bk" style="width: 50%" ng-options="broker.BrokerId as broker.BrokerName for broker  in BrokerData" class="form-control" ng-change="getLines(BrokerId)" ng-model="BrokerId" required>
+            <option style="display: none" value="">---Select Broker---</option>
+        </select>
+    </div>-->
+    <div class="form-group">
+        <div class="row" style="padding: 10px 10px 10px 10px;">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="bk">Select Broker:</label>
+                    <select id="bk" style="width: 100%" ng-options="broker.BrokerId as broker.BrokerName for broker  in BrokerData" class="form-control" ng-change="getLines(BrokerId)" ng-model="BrokerId" required>
+                        <option style="display: none" value="">---Select Broker---</option>
+                    </select>
+                </div>
+                <div style="height: 150px; overflow-y: auto">
+                    <table class="table" style="width: 100%; font-size: smaller;">
+                        <thead>
+                            <tr>
+                                <th>Box No</th>
+                                <th>Qty</th>
+                                <th>Select</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="c in ClaimNoteDto.BoxNoList" id="{{c.BoxNo}}" animate-on-change='c.BoxNo' ng-animate=" 'animate'" style="font: small">
+                                <td width="80%">{{c.ItemName}}</td>
+                                <td width="10%">{{c.Qty}}</td>
+                                <td width="10%">
+                                    <div class="material-switch pull-right">
+                                        <input id="Checkbox1" name="someSwitchOption001" type="checkbox" ng-value="c.IsSelected" ng-model="c.IsSelected" />
+                                        <label for="optallocatedlines" class="label-info"></label>
+                                    </div>
+                                </td>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <span style="margin-left: 8px;" ng-show="disablestatus">
+                        <img class="savedata" />
+                    </span>
+                    <button class="btn btn-primary btn-sm" ng-click="print();" ng-disabled="disablestatus">Print</button>
+
+                    <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="disablestatus">Close</button>
+
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group" style="text-align: left">
+                    <label for="ap">Authorized Person:</label>
+                    <input type="text" class="form-control" ng-model="ClaimNoteDto.AuthorizedPerson" id="ap" style="width: 100%" />
+                </div>
+                <div class="form-group" style="text-align: left">
+                    <label for="fh">For whom:</label>
+                    <input type="text" class="form-control" ng-model="ClaimNoteDto.ForWhom" id="fh" style="width: 100%" />
+                </div>
+
+                <div class="form-group" style="text-align: left">
+                    <label>
+                        <input type="radio" name="project" value="Option 1" ng-model="Option1" ng-click="setOpt1()" />
+                        Option 1
+                    </label>
+                    <label>
+                        <input type="radio" name="project" value="Option 2" ng-model="Option2" ng-click="setOpt2()" />
+                        Option 2
+                    </label>
+                    <label>
+                        <input type="radio" name="project" value="Other" ng-model="Option3" ng-click="setOpt3()" />
+                        Other
+                    </label>
+                    <textarea id="reason" rows="2" class="form-control" ng-model="ClaimNoteDto.Reason" ng-disabled="setreasondisable" style="width: 100%" />
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-primary btn-sm" ng-click="print();" ng-disabled="disablestatus">Print</button>
+
+        <button class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="disablestatus">Close</button>
+
+    </div>
+</div>

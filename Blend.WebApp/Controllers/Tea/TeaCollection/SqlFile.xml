@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="teacollections" type="Blend.BuisnessEntities.TeaCollection.CollectionNote"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetCollectionNotes" parameterMap="get-allcollectionnotes-params"  resultMap="get-allcollectionnotes-result">
+      trn_CollectionNoteGet
+    </procedure>
+    <procedure id="GetCollectionNote" parameterMap="get-collectionnote-params"  resultMap="get-collectionnote-result">
+      trn_CollectionNoteMaxGet
+    </procedure>
+    <procedure id="GetCollectionNotesItems" parameterMap="get-collectionnoteitems-params"  resultMap="get-collectionnoteitems-result">
+      trn_CollectionNoteItemsGet
+    </procedure>
+   <procedure id="PrintCollectionNote" parameterMap="get-printcollectionnote-params"  resultMap="get-printcollectionnote-result">
+      rpt_CollectionNote
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-allcollectionnotes-params">
+      <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-collectionnoteitems-params">
+      <parameter property="BoxNo" direction  ="Input" />
+      <parameter property="LotNo" direction  ="Input" />
+      <parameter property="Invoice" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-collectionnote-params">
+      <!--<parameter property="BoxNo" direction  ="Input" />-->
+    </parameterMap>
+  <parameterMap id="get-printcollectionnote-params">
+      <parameter property="CollectionNoteNo" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-allcollectionnotes-result" class="Blend.BuisnessEntities.TeaCollection.CollectionNote">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="CollectionNo" column="CollectionNo" dbType="Varchar"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-collectionnote-result" class="Blend.BuisnessEntities.TeaCollection.CollectionNote">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="CollectionNo" column="CollectionNo" dbType="Varchar"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-collectionnoteitems-result" class="Blend.BuisnessEntities.TeaCollection.StraightLIneCollection">
+      <result property="PurchaseId" column="PurchaseId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <!--<result property="Standard" column="Standard" dbType="Varchar"/>-->
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Weight" column="Weight" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="CollectionNoteNo" column="CollectionNoteNo" dbType="Varchar"/>
+      <result property="CollectionNoteId" column="CollectionNoteId" dbType="Int"/>
+      <result property="CollectionDate" column="CollectionDate" dbType="Varchar"/>
+      <result property="StoreLocation" column="StoreLocation" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-printcollectionnote-result" class="Blend.BuisnessEntities.TeaCollection.CollectionReportDto">
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <!--<result property="Standard" column="Standard" dbType="Varchar"/>-->
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Varchar"/>
+      <result property="Weight" column="Weight" dbType="Varchar"/>
+      <result property="StockReceived" column="StockReceived" dbType="Int"/>
+      <result property="StockReceivedDate" column="StockReceivedDate" dbType="Varchar"/>
+      <result property="CollectionDate" column="CollectionDate" dbType="Varchar"/>
+      <result property="StoreLocation" column="StoreLocation" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

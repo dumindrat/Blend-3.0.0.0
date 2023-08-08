@@ -1,0 +1,51 @@
+﻿<div class="modal-header">
+    <div>
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+        <button type="button" class="btn btn-default" ng-attr-autofocus="false">Stock Name : <span class="badge">{{ItemName}}</span></button>
+        <button type="button" class="btn btn-default" ng-attr-autofocus="false">Selected Blend No : <span class="badge">{{SelectedBlend.BlendNo}}</span></button>
+
+    </div>
+</div>
+
+<div class="modal-body">
+    <div class="div-table  " style="text-align: left">
+        <div class="div-table-row" style="width: 100%">
+            <div ng-show="message" class="{{messageclass}}" role="alert">
+                <label>{{message}}</label>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+
+    </div>
+    <div class="div-table  " style="text-align: center">
+        <div class="div-table-row">
+            <div class="div-table-input-col">
+                <label>Required Qty</label>
+                <input type="text" id="blenditemqty" class="form-control" ng-click="onTextClick($event)" ng-model="BL.BlendItemQty" style="width: 100px" ng-keypress="focusFunc($event,'btnBLAdd')" placeholder="Required Qty" only-digits />
+            </div>
+            <div class="div-table-input-col">
+                <label>Available Qty</label>
+                <input type="text" id="blenditemstock" class="form-control" ng-model="BL.BlendItemStockQty" style="width: 100px" ng-disabled="true" placeholder="Packs" valid-number />
+            </div>
+            <div class="div-table-input-col">
+                <label>Rate</label>
+                <input type="text" id="blenditemrate" class="form-control" ng-model="BL.BlendItemRate" style="width: 100px" ng-disabled="true" placeholder="Packs" valid-number />
+            </div>
+            <div class="div-table-input-col">
+                <label>Value</label>
+                <input type="text" id="blenditemvalue" class="form-control" ng-model="BL.BlendItemValue" style="width: 100px" ng-disabled="true" valid-number />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel-footer">
+    <div class="text-right">
+       <span style="margin-left: 8px;" ng-show="showLoader">
+            <img class="savedata" />
+        </span>
+        <input type="button" id="btnBLAdd" value="Add" ng-click="AddBLToBlend(BL);" ng-disabled="accessLevels.C"  ng-disabled="showLoader" class="btn btn-primary" style="width: 75px" />
+        <input type="button" id="btnBLCancel" value="Close" class="btn btn-danger"  ng-disabled="showLoader" ng-click="cancel();" />
+
+    </div>
+</div>

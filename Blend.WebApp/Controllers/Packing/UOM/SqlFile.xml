@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="uom" type="Blend.BuisnessEntities.Packing.UnitOfMeasure.Uom"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetUom" parameterMap="get-uom-params"  resultMap="get-uom-result">
+      pack_uomGet
+    </procedure>
+    
+  </statements>
+  <parameterMaps>
+    <parameterMap id="get-uom-params">
+    </parameterMap>
+
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-uom-result" class="Blend.BuisnessEntities.Packing.UnitOfMeasure.Uom">
+      <result property="UomId" column="Id" dbType="Int"/>
+      <result property="UomName" column="UOM" dbType="Varchar"/>
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

@@ -1,0 +1,16 @@
+<claimnote>
+  <item>
+    <ItemName></ItemName>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <Grade></Grade>
+    <Standard></Standard>
+    <BrokerName></BrokerName>
+    <GardenMark></GardenMark>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <Packs></Packs>
+    <Rate></Rate>    
+    <Qty></Qty>
+  </item>
+</claimnote>

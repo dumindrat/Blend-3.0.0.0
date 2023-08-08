@@ -1,0 +1,15 @@
+<salesummary>
+  <item>
+    <BrokerId></BrokerId>
+    <NoOfLots></NoOfLots>
+    <BrokerName></BrokerName>
+    <SaleDate></SaleDate>
+    <Weight></Weight>
+    <Value></Value>
+    <SaleType></SaleType>
+    <NinetyPercVal></NinetyPercVal>
+    <TenPercVal></TenPercVal>
+    <HundredPercVal></HundredPercVal>
+  </item>
+  
+</salesummary>

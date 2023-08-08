@@ -1,0 +1,26 @@
+﻿<form data-toggle="validator" role="form">
+
+    <div class="modal-header">
+        <div>
+            <h3>Cancel Confirmation</h3>
+        </div>
+        <div>
+        </div>
+
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you need to request for a cancelation ? </p>
+        <div class="form-group">
+            <label for="confreason">Reason</label>
+            <input type="text" class="form-control" ng-model="confirmReason" id="confreason" style="width: 100%" autofocus required />
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary btn-sm" ng-click="CancelRequest()">Submit</button>
+            <button class="btn btn-danger btn-sm" ng-click="cancel()">Cancel</button>
+        </div>
+    </div>
+</form>
+

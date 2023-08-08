@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="usraces" type="Blend.BuisnessEntities.Menu.MenuEntity"/>
+  </alias>
+
+  <statements>
+    <procedure id="GetUserAccessLevelByUserName" parameterMap="get-useraccess-params"  resultMap="get-useraccess-result">
+      auth_UserRoleAccessLevelGetByUserNameAndMenu
+    </procedure>
+  </statements>
+  <parameterMaps>
+    <parameterMap id="get-useraccess-params">
+      <parameter property="UserName" direction  ="Input" />
+      <parameter property="MenuName" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+
+    <resultMap id="get-useraccess-result" class="Blend.BuisnessEntities.Menu.MenuEntity">
+      <result property="RoleId" column="RoleId" dbType="int"/>
+      <result property="AccessLevel" column="AccessLevel" dbType="Varchar"/>
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

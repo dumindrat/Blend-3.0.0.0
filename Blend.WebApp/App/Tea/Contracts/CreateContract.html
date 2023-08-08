@@ -1,0 +1,48 @@
+﻿<form data-toggle="validator" role="form" ng-submit="save()">
+
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+            <h4>{{buttonstatus}} Order</h4>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div id="container" style="padding: 25px">
+            <div ng-show="message" class="{{messageclass}}" role="alert">
+                <label>{{message}}</label>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <input type="text" ng-model="New.ContractId" ng-hide="true" />
+                <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+            </div>
+            <div class="form-group">
+                <label for="buyer">Buyer:</label>
+                <select id="buyer" class="form-control" ng-options="buyer.BuyerId as buyer.BuyerCode for buyer in buyers" ng-model="New.BuyerId" required>
+                    <option style="display: none" value="">---Select---</option>
+
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contractname">Contract Name:</label>
+                <input id="contractname" class="form-control" type="text" ng-model="New.ContractName" required />
+            </div>
+            <div class="form-group">
+                <label for="date">Date of Completion </label>
+                <input id="inputdate" type="date" class="d1" ng-value="New.CompletionDate" ng-model="New.CompletionDate" style="width: 100%" placeholder="MM-DD-YYYY" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="dataLoading">
+                <img class="savedata" />
+            </span>
+            <button id="btnSave" class="btn btn-primary btn-sm" ng-disabled="dataLoading" type="submit">{{buttonstatus}}</button>
+            <input type="button" class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading" value="Cancel" />
+
+        </div>
+    </div>
+</form>
+
+
+

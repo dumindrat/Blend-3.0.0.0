@@ -1,0 +1,53 @@
+﻿<div class="modal-header modal-header-info">
+    <h4 class="modal-title">Print Options : Age Analysis Report</h4>
+</div>
+<div class="modal-body">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="form-group">
+                <label for="buyername">As At Date:</label>
+                <input type="date" class="form-control" ng-value="New.AsAtDate" ng-model="New.AsAtDate" id="asatdate" style="width: 50%" placeholder="MM-DD-YYYY" required autofocus />
+            </div>
+        </li>
+
+        <li class="list-group-item">
+            <div class="form-group" style="text-align: left">
+                <label for="grade">Filter by Grade:</label>
+                <input type="text" class="form-control" ng-model="New.Grade" id="grade" style="width: 50%" />
+            </div>
+
+        </li>
+
+        <li class="list-group-item">
+            <div class="form-group" style="text-align: left">
+                <label for="standard">Filter by Standard:</label>
+                <input type="text" class="form-control" ng-model="New.Standard" id="standard" style="width: 50%" />
+            </div>
+
+        </li>
+
+        <li class="list-group-item">With Values
+                    <div class="material-switch pull-right">
+                        <input id="optallocatedlines" name="someSwitchOption001" type="checkbox" ng-value="New.IsWithValues" ng-model="New.IsWithValues" />
+                        <label for="optallocatedlines" class="label-info"></label>
+                    </div>
+        </li>
+        <li class="list-group-item">Download as Excel
+            <div class="material-switch pull-right">
+                <input id="optexcel" name="someSwitchOption002" type="checkbox" ng-value="New.IsExcelFormat" ng-model="New.IsExcelFormat" />
+                <label for="optexcel" class="label-info"></label>
+            </div>
+
+        </li>
+    </ul>
+
+</div>
+<div class="modal-footer modal-footer-primary">
+
+    <div class="form-group">
+        <input type="button" name="sl" id="btn" class="btn btn-info" value="Print" ng-click="printlines()" />
+
+        <button type="button" class="btn btn-danger" ng-click="cancel()">Cancel</button>
+    </div>
+
+</div>

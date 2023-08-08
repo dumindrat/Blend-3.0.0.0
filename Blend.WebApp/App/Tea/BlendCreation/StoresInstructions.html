@@ -1,0 +1,59 @@
+﻿<div class="modal-header">
+    <div>
+        <h4>Stores Instructions {{ SelectedBlend.BlendNo}}</h4>
+    </div>
+</div>
+<div class="modal-body">
+    <div id="container" style="padding: 25px">
+        <form name="storesins_form" class="form-horizontal" data-toggle="validator" role="form" ng-submit="AddInstruction(New.Instruction)">
+
+            <div ng-show="message" class="{{messageclass}}" role="alert">
+                <label>{{message}}</label>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Stores Instruction" class="form-control" ng-model="New.Instruction" id="instruction" style="width: 100%" required />
+                <br />
+                <button type="submit" class="btn btn-primary btn-sm" value="Add Instruction" style="width:125px;height:35px">Add Instruction</button>
+
+            </div>
+
+
+            <table class="table" style="width: 100%; font-size: smaller">
+
+                <thead>
+                    <tr>
+                        <th>Instructions to follow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="c in storesInstructions" id="{{c.Id}}" animate-on-change='c.BoxNo' ng-animate=" 'animate'" style="font: small">
+                        <td width="5%" ng-hide="true">{{c.Id}}</td>
+                        <td width="5%" ng-hide="true">{{c.BlendId}}</td>
+
+                        <td width="90%" ng-hide="false">{{c.StoresInstruction}}</td>
+                        <td width="10%">
+                            <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Remove Instruction" ng-disabled="accessLevels.M"
+                                ng-click="RemoveInstruction(c.Id)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </td>
+
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+
+</div>
+<div class="modal-footer" style="text-align: right">
+    <div class="form-group">
+        <span style="margin-left: 8px;" ng-show="disablestatus">
+            <img class="savedata" />
+        </span>
+        <button class="btn btn-info btn-sm" ng-click="print();">Print</button>
+
+        <button class="btn btn-danger btn-sm" ng-click="cancel();">Close</button>
+
+    </div>
+</div>

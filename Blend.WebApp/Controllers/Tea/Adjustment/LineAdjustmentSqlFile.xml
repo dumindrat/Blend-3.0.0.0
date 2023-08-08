@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="rejectline" type="Blend.BuisnessEntities.BlendCreation.StraightLineStockItem"/>
+    <typeAlias alias="adjustedline" type="Blend.BuisnessEntities.Adjustment.AdjutedLineDto"/>
+    <typeAlias alias="adjustedcancel" type="Blend.BuisnessEntities.Adjustment.AdjutLineCancelRequest"/>
+    <typeAlias alias="adjustedlineprint" type="Blend.BuisnessEntities.Adjustment.PrintNoteDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetLinesForReject" parameterMap="get-rejectline-params"  resultMap="get-rejectline-result">
+      trn_StraightLineSearchForAdjustments
+    </procedure>
+    <procedure id="GetAdjustedLine" parameterMap="get-adjusted-params"  resultMap="get-adjusted-result">
+      trn_LineAdjustmentGetById
+    </procedure>
+    <procedure id="GetAdjustedLineByBox" parameterMap="get-adjustedbybox-params"  resultMap="get-adjustedbybox-result">
+      trn_LineAdjustmentGetByBoxNo
+    </procedure>
+    <procedure id="GetAdjustedCancelRequest" parameterMap="get-adjustedcancel-params"  resultMap="get-adjustedcancel-result">
+      trn_LineAdjustmentCancelRequestGet
+    </procedure>
+    <procedure id="GetAdjustedLineByBrokerAndType" parameterMap="get-adjustedline-params"  resultMap="get-adjustedline-result">
+      trn_LineAdjustmentGetByBrokerAndType
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-rejectline-params">
+      <parameter property="BoxNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-adjusted-params">
+      <parameter property="StockId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-adjustedbybox-params">
+      <parameter property="BoxNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-adjustedcancel-params">
+      <parameter property="BoxNo" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-adjustedline-params">
+      <parameter property="BrokerId" direction  ="Input" />
+      <parameter property="Type" direction  ="Input" />
+      <parameter property="Status" direction  ="Input" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-rejectline-result" class="Blend.BuisnessEntities.BlendCreation.StraightLineStockItem">
+      <result property="Id" column="Id" dbType="Int"/>
+      <result property="StockItemId" column="StockItemId" dbType="Int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsRepeated" column="IsRepeated" dbType="int"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+    
+    </resultMap>
+    
+    <resultMap id="get-adjusted-result" class="Blend.BuisnessEntities.Adjustment.AdjutedLineDto">
+      <result property="AdjustmentId" column="AdjustmentId" dbType="int"/>
+      <result property="PurchaseId" column="PurchaseId" dbType="long"/>
+      <result property="StockItemId" column="StockItemId" dbType="long"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="AdjustmentType" column="AdjustmentType" dbType="Varchar"/>
+      <result property="Reason" column="Reason" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="IsSelected" column="IsSelected" dbType="int"/>
+      <result property="StatusId" column="StatusId" dbType="int"/>
+    </resultMap>
+    
+    <resultMap id="get-adjustedbybox-result" class="Blend.BuisnessEntities.Adjustment.AdjutedLineDto">
+      <result property="AdjustmentId" column="AdjustmentId" dbType="int"/>
+      <result property="PurchaseId" column="PurchaseId" dbType="long"/>
+      <result property="StockItemId" column="StockItemId" dbType="long"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="AdjustmentType" column="AdjustmentType" dbType="Varchar"/>
+      <result property="Reason" column="Reason" dbType="Varchar"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+      <result property="Status" column="Status" dbType="Varchar"/>
+      <result property="User" column="CreateUser" dbType="Varchar"/>
+    </resultMap>
+
+    <resultMap id="get-adjustedcancel-result" class="Blend.BuisnessEntities.Adjustment.AdjutLineCancelRequest">
+      <result property="Id" column="Id" dbType="int"/>
+      <result property="AdjustmentId" column="AdjustmentId" dbType="int"/>
+      <result property="StockId" column="StockId" dbType="int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="RequestDate" column="RequestDate" dbType="Varchar"/>
+      <result property="RequestBy" column="RequestBy" dbType="Varchar"/>
+      <result property="CancelReason" column="CancelReason" dbType="Varchar"/>
+      <result property="AdjustReason" column="AdjustReason" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+    </resultMap>
+    <resultMap id="get-adjustedline-result" class="Blend.BuisnessEntities.Adjustment.PrintNoteDto">
+      <result property="AdjustmentId" column="AdjustmentId" dbType="int"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="IsSelected" column="IsSelected" dbType="Int"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

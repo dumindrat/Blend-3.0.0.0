@@ -1,0 +1,48 @@
+﻿<form data-toggle="validator" role="form" ng-submit="save()">
+
+    <div class="modal-header">
+        <div>
+            <h4>{{buttonstatus}} Item</h4>
+        </div>
+    </div>
+    <div class="modal-body">
+
+        <div ng-show="message" class="{{messageclass}}" role="alert">
+            <label>{{message}}</label>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <input type="text" ng-model="New.Id" ng-hide="true" /></td>
+            <input type="text" ng-model="New.RowVersion" ng-hide="true" />
+
+        </div>
+        <div class="form-group">
+            <label for="itemname">Item Name:</label>
+            <input id="itemname" class="form-control" type="text" ng-model="New.ItemName" required />
+        </div>
+        <div class="form-group" ng-hide="false">
+            <label for="itemname">Item Code:</label>
+            <input id="itemcode" class="form-control" type="text" ng-model="New.ItemCode" ng-disabled="false" required />
+        </div>
+        <div class="form-group">
+            <label for="contract">UOM:</label>
+            <select id="uom" name="uom" class="form-control" ng-options="c.UomId as c.UomName for c in uomData" ng-model="New.UomId" style="width: 100%">
+                <option style="display: none" value="">---Select---</option>
+            </select>
+        </div>
+        <div class="form-group" ng-hide="false">
+            <label for="itemname">Short Description:</label>
+            <input id="shortdesc" class="form-control" type="text" ng-model="New.ShortDescription" ng-disabled="false" />
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="dataLoading">
+                <img class="savedata" />
+
+            </span>
+            <button type="submit" class="btn btn-primary btn-sm" ng-disabled="dataLoading">Save</button>
+
+            <input type="button" class="btn btn-danger btn-sm" ng-click="cancel();" ng-disabled="dataLoading" value="Cancel" />
+
+        </div>
+    </div>
+</form>

@@ -1,0 +1,86 @@
+﻿<div modal="isOpenAddSLModals" close="close()">
+
+    <div class="modal-header">
+        <div>
+            <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+            <button type="button" class="btn btn-default" ng-attr-autofocus="false">Box No : <span class="badge">{{New.BoxNo}}</span></button>
+            <button type="button" class="btn btn-default" ng-attr-autofocus="false">Blend No : <span class="badge">{{SelectedBlend.BlendNo}}</span></button>
+
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="div-table  " style="text-align: left">
+            <div class="div-table-row" style="width: 100%">
+                <div ng-show="message" class="{{messageclass}}" role="alert">
+                    <label>{{message}}</label>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+            </div>
+            <div class="div-table-row">
+                <div class="div-table-lable-col" style="width: 100px">
+                    <label>Add by :</label>
+                </div>
+                <div class="div-table-input-col" id="Div1" style="width: 100px">
+                    <select id="addby" name="addby" class="form-control" ng-options="s.addtype as s.desc for s in addtypes" ng-model="AddType" style="width: 150px" ng-change="switchEnterBox()">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="div-table  " style="text-align: center">
+
+            <div class="div-table-row">
+
+                <div class="div-table  " style="text-align: center">
+
+                    <div class="div-table-row">
+
+                        <div class="div-table-input-col">
+                            <label>Packs({{PackD}},{{PackDR}})</label>
+                            <input type="text" id="packs1" class="form-control" ng-click="onTextClick($event)" ng-model="New.Pack" style="width: 100px" ng-keypress="focusFunc($event,'packs2')" ng-disabled="packdisablestatus()" placeholder="Packs"  valid-number  ng-attr-autofocus="true"/>
+                            <input type="text" id="packs2" class="form-control" ng-click="onTextClick($event)" ng-model="New.PackR" style="width: 100px" ng-disabled="packdisablestatus()" valid-number />
+                        </div>
+
+
+                        <div class="div-table-input-col">
+                            <label>Net </label>
+                            <input type="text" id="net1" name="net1" class="form-control" ng-disabled="true" ng-model="New.Net" style="width: 100px" step="0.01" />
+                            <input type="text" id="net2" class="form-control" ng-disabled="true" ng-model="New.NetR" style="width: 100px" />
+                        </div>
+
+
+                        <div class="div-table-input-col">
+                            <label>Required Qty</label>
+                            <input type="text" id="blndqty" name="blndqty" class="form-control" ng-click="onTextClick($event)" ng-model="New.BlendQty" style="width: 100px" ng-disabled="qtydisablestatus()" only-digits />
+                            <input type="text" id="blndqtyr" name="blndqtyr" class="form-control" ng-click="onTextClick($event)" ng-model="New.BlendQtyR" style="width: 100px" ng-disabled="qtydisablestatus()" only-digits />
+                        </div>
+
+                        <div class="div-table-input-col">
+                            <label>Stock </label>
+                            <input type="text" id="Number1" name="net1" class="form-control" ng-disabled="true" ng-model="New.Qty" style="width: 100px" step="0.01" />
+                            <input type="text" id="Number2" name="net1" class="form-control" ng-disabled="true" ng-model="New.QtyR" style="width: 100px" required />
+                        </div>
+
+                        <div class="div-table-input-col">
+                            <label>Reduced </label>
+                            <input type="text" id="reducedqty" name="net1" class="form-control" ng-disabled="true" ng-model="New.ReducedQty" style="width: 100px" />
+                            <input type="reducedqtyr" id="reducedqtyr" name="net1" class="form-control" ng-disabled="true" ng-model="New.ReducedQtyR" style="width: 100px" />
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer" style="text-align: right">
+        <div class="form-group">
+            <span style="margin-left: 8px;" ng-show="showLoader">
+                <img class="savedata" />
+            </span>
+            <input type="button" id="btnAdd" value="Add to Blend" ng-click="AddSLToBlend(New);" ng-disabled="btnAddDisable" class="btn btn-primary btn-sm" />
+            <input type="button" id="btnSLCancel" value="Close" class="btn btn-danger btn-sm" ng-disabled="showLoader" ng-click="cancel();" />
+        </div>
+    </div>
+</div>

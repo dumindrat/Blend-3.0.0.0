@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="linesummary" type="Blend.BuisnessEntities.LineSummary.LineSummaryDto"/>
+    <typeAlias alias="linehistory" type="Blend.BuisnessEntities.LineSummary.LineTransHistory"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetLineSummaryDet" parameterMap="get-linesummarydet-params"  resultMap="get-linesummarydet-result">
+      trn_LineSummaryDetailGet
+    </procedure>
+    <procedure id="GetLineHistoryDet" parameterMap="get-linehistorydet-params"  resultMap="get-linehistorydet-result">
+      trn_LineHistoryGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-linesummarydet-params">
+      <parameter property="BoxNo" column="BoxNo" />
+    </parameterMap>
+     <parameterMap id="get-linehistorydet-params">
+      <parameter property="Id" column="Id" />
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-linesummarydet-result" class="Blend.BuisnessEntities.LineSummary.LineSummaryDto">
+      <result property="Id" column="Id" dbType="int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="StockPacks" column="StockPacks" dbType="Decimal"/>
+      <result property="StockQty" column="StockQty" dbType="Decimal"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+      <result property="CreateUser" column="CreateUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
+
+    </resultMap>
+
+    <resultMap id="get-linehistorydet-result" class="Blend.BuisnessEntities.LineSummary.LineTransHistory">
+      <result property="Qty" column="Qty" dbType="Decimal"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="TransTo" column="TransTo" dbType="Varchar"/>
+      <result property="TransType" column="TransType" dbType="Varchar"/>
+      <result property="Date" column="Date" dbType="Varchar"/>
+      <result property="User" column="User" dbType="Varchar"/>
+      
+    </resultMap>
+  </resultMaps>
+</sqlMap>

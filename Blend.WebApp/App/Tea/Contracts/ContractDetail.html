@@ -1,0 +1,60 @@
+﻿<div>
+    <h4>Order Details {{recordCount}}</h4>
+</div>
+<div class="input-group">
+    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+    <input placeholder="Search Contract" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+    <span class="input-group-btn">
+        <button class="btn btn-info btn-sm" ng-click="openCreateWindow();">Create New</button>
+
+    </span>
+</div>
+<br />
+
+<div class="panel panel-default">
+    <div class="panel-body" style="height: 100%">
+        <div class="table-container">
+            <table class="table table-filter">
+
+                <tbody>
+
+                    <tr ng-repeat="c in contractData" id="{{c.ContractId}}" data-status="pagado">
+
+                        <td style="width: 75%" ng-click="openCreateWindow(c)">
+
+                            <div class="media">
+                                <div class="media-body" style="width: 100%">
+                                    <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}}</span>
+
+                                    <h4 class="title">{{c.ContractName}}
+                                    </h4>
+                                    <p class="summary">Buyer : {{c.BuyerCode}}  </p>
+                                    <p class="summary">Completion on : {{c.CompletionDate}} | {{c.CloseStatus}}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 25%">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="openCreateWindow(c)" data-toggle="tooltip" data-placement="top" title="Edit Contract">Edit</button>
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="accessLevels.M" ng-click="openViewAddedStandard(c)" data-toggle="tooltip" data-placement="top" title="Add Standards">Standards</button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-disabled="accessLevels.D" ng-click="delete(c.ContractId)" data-toggle="tooltip" data-placement="top" title="Delete Contract">Delete</button>
+
+                            </div>
+                        </td>
+                        <!--<td class="table-addstandard-col">
+                            <a ng-click="openViewAddedStandard(c)" data-toggle="tooltip" data-placement="top" title="Add Standards">
+                                <i class="glyphicon glyphicon-th-list"></i>
+
+                            </a>
+                        </td>
+                        <td class="table-del-col">
+                            <a ng-click="delete(c.ContractId)" data-toggle="tooltip" data-placement="top" title="Delete">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </a>
+                        </td>-->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

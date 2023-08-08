@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="company" type="Blend.BuisnessEntities.CompanyRegistration.CompanyDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetCompanyInfo" parameterMap="get-company-params"  resultMap="get-company-result">
+      reg_CompanyInfoGet
+    </procedure>
+    <procedure id="GetStoresInfo" parameterMap="get-store-params"  resultMap="get-store-result">
+      reg_StoreInfoGet
+    </procedure>
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-company-params">
+      <!--<parameter property="BlendId" direction  ="Input"/>-->
+    </parameterMap>
+    <parameterMap id="get-store-params">
+      <!--<parameter property="BlendId" direction  ="Input"/>-->
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-company-result" class="Blend.BuisnessEntities.CompanyRegistration.CompanyDto">
+      <result property="CompanyId" column="CompanyId" dbType="Int"/>
+      <result property="CompanyName" column="CompanyName" dbType="Varchar"/>
+      <result property="TCEPR" column="TCEPR" dbType="Varchar"/>
+      <result property="Address1" column="Address1" dbType="Varchar"/>
+      <result property="Address2" column="Address2" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar" />
+      <result property="Telephone" column="Telephone" dbType="Varchar"/>
+      <result property="StoresAddress1" column="StoresAddress1" dbType="Varchar"/>
+      <result property="StoresAddress2" column="StoresAddress2" dbType="Varchar"/>
+      <result property="SubscriptionEndDate" column="SubscriptionEndDate" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-store-result" class="Blend.BuisnessEntities.CompanyRegistration.StoresDto">
+      <result property="StoreId" column="Id" dbType="Int"/>
+      <result property="StoreName" column="StoreName" dbType="Varchar"/>
+      <result property="ContactPerson" column="ContactPerson" dbType="Varchar"/>
+      <result property="Address1" column="Address1" dbType="Varchar"/>
+      <result property="Address2" column="Address2" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar" />
+      <result property="Telephone" column="Telephone" dbType="Varchar"/>
+    </resultMap>
+  </resultMaps>
+</sqlMap>

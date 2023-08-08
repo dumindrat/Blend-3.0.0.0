@@ -1,0 +1,20 @@
+<ageanalysis>
+  <item>
+    <CollectionCode></CollectionCode>
+    <BoxNo></BoxNo>
+    <LotNo></LotNo>
+    <Invoice></Invoice>
+    <BrokerCode></BrokerCode>
+    <SaleCode></SaleCode>
+    <SaleDate></SaleDate>
+    <SaleType></SaleType>
+    <Grade></Grade>
+    <Standard></Standard>
+    <GardenMark></GardenMark>
+    <Packs></Packs>
+    <NetWeight></NetWeight>
+    <Rate></Rate>
+    <Qty></Qty>
+    <Value></Value>
+  </item>
+</ageanalysis>

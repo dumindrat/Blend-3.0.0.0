@@ -1,0 +1,69 @@
+﻿<div class="modal-header">
+    <!--<label class="modal-title">{{selectedSale.SaleDate}}</</label>-->
+    <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+
+    <button type="button" class="btn btn-warning">Sale Date <span class="badge">{{selectedSale.SaleDate}}</span></button>
+    <span style="margin-left: 8px;" ng-show="selectedSale.IsClosed">
+        <img src="../../Content/themes/base/images/closed.jpg" style="width: 40px; height: 40px" />
+    </span>
+</div>
+
+<div class="modal-body">
+
+    <div class="table-responsive">
+        <div class="text-left">
+            <p>List of added Straight Lines : {{addedStarightLine.length}} </p>
+
+            <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-click="AddLines();">Add Lines</button>
+            <button type="button" class="btn btn-info btn-sm" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-click="uploadData();">Upload File</button>
+
+        </div>
+        <table class="table" style="width: 100%; font-size: smaller">
+
+            <thead>
+                <tr>
+                    <th ng-repeat="c in addedtealinecolumns" style="font: small" ng-hide="{{c.hide}}">{{c.text}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="c in addedStarightLine" id="{{c.BoxNo}}"
+                    animate-on-change='c.BoxNo' ng-animate=" 'animate'" style="font: small">
+                    <td width="5%" ng-hide="true">{{c.StockId}}</td>
+                    <td width="5%" ng-hide="true">{{c.Id}}</td>
+                    <td width="5%">{{c.BoxNo}}</td>
+                    <!-- <td width="5%">{{c.SaleCode}}</td>-->
+                    <td width="10%">{{c.SaleType}} {{c.SaleCode}}</td>
+                    <td width="5%">{{c.Invoice}}</td>
+                    <td width="5%">{{c.LotNo}}</td>
+                    <td ng-hide="true" width="5%">{{c.BrokerId}}</td>
+                    <td width="5%">{{c.BrokerCode}}</td>
+                    <td width="15%">{{c.Grade}}</td>
+                    <td width="30%">{{c.GardenMark}}</td>
+                    <td width="5%">{{c.NetWeight | number: 2}}</td>
+                    <td width="5%">{{c.Packs}}</td>
+                    <td width="5%">{{c.ReducedQty | number: 2}}</td>
+                    <td width="5%">{{c.VirtualWeight| number: 2}}</td>
+                    <td width="5%">{{c.Rate | number: 2}}</td>
+                    <td width="20%">{{c.VirtualValue| number: 2}}</td>
+                    <td width="5%" ng-hide="true">{{c.TinNo}}</td>
+
+                    <td width="5%">
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="top" title="Edit line" ng-disabled="accessLevels.M || selectedSale.IsClosed" ng-hide="Repeated(c.IsRepeated)" ng-click="AddLines(c)">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </button>
+                    </td>
+                    <td width="5%">
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="Delete line" ng-hide="accessLevels.D || selectedSale.IsClosed" ng-click="DeleteFromSale(c)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </td>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <a class="btn btn-danger btn-sm" ng-click="cancel()">Close</a>
+    </div>
+</div>
