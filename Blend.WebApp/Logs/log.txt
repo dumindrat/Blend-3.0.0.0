@@ -7230,3 +7230,9 @@ Details: errorKind.
 5:48:45 PM. Monday, August 7, 2023. . Service providr found on [OnAuthorizeUser].
 5:48:46 PM. Monday, August 7, 2023. . Authenticated User success :Dumindra.
 5:48:46 PM. Monday, August 7, 2023. . Get by menu items :24.
+2:16:47 PM. Tuesday, August 8, 2023. . Service providr found on [OnAuthorizeUser].
+2:16:49 PM. Tuesday, August 8, 2023. . Authenticated User success :Dumindra.
+2:16:49 PM. Tuesday, August 8, 2023. . Login success for user: dumindra.
+2:16:50 PM. Tuesday, August 8, 2023. . Service providr found on [OnAuthorizeUser].
+2:16:51 PM. Tuesday, August 8, 2023. . Authenticated User success :Dumindra.
+2:16:51 PM. Tuesday, August 8, 2023. . Get by menu items :24.
