@@ -16,6 +16,7 @@
   <parameterMaps>
     <parameterMap id="get-allbuyers-params">
       <parameter property="Name" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     
   </parameterMaps>

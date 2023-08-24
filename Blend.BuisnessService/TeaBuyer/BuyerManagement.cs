@@ -27,9 +27,12 @@ namespace Blend.BuisnessService.TeaBuyer
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Buyer> GetAllBuyers()
+        public IEnumerable<Buyer> GetAllBuyers(string serchStr, int companyId)
         {
-            throw new NotImplementedException();
+            var mapper = new DataMapper<Buyer>("GetBuyers", new Hashtable() { { "CompanyId", companyId }, { "searchstring", serchStr } });
+
+            var result = mapper.ObjectList();
+            return result;
         }
 
         public bool CreateBuyer(Buyer buyerEntity)
@@ -40,6 +43,7 @@ namespace Blend.BuisnessService.TeaBuyer
             dataOperation.AddParam("@Address", buyerEntity.Address);
             dataOperation.AddParam("@Email", buyerEntity.Email);
             dataOperation.AddParam("@User", buyerEntity.User);
+            dataOperation.AddParam("@CompanyId", buyerEntity.CompanyId);
             dataOperation.DoExecute();
             return true;
 
@@ -70,12 +74,14 @@ namespace Blend.BuisnessService.TeaBuyer
         }
 
 
-        IList<Buyer> IBuyerService.GetAllBuyers(string serchStr)
+        IList<Buyer> IBuyerService.GetAllBuyers(string serchStr, int companyId)
         {
             try
             {
                 var searchBy = serchStr == "all" ? "" : serchStr;
-                var mapper = new DataMapper<Buyer>("GetBuyers", new Hashtable() { { "Name", searchBy } });
+                //var mapper = new DataMapper<Buyer>("GetBuyers", new Hashtable() { { "Name", searchBy } });
+                var mapper = new DataMapper<Buyer>("GetBuyers", new Hashtable() { { "CompanyId", companyId }, { "Name", searchBy } });
+
 
                 var result = mapper.ObjectList();
                 return result;
@@ -85,7 +91,7 @@ namespace Blend.BuisnessService.TeaBuyer
                 logger.LogWrite("Create Buyer fails. Error " + ex.Message);
                 throw ex;
             }
-            
+
         }
     }
 }

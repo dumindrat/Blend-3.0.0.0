@@ -476,6 +476,8 @@
     <Content Include="App\Authentication\Roles\role_controller.js" />
     <Content Include="App\Authentication\Roles\role_createcontroller.js" />
     <Content Include="App\Authentication\Roles\role_removeusercontroller.js" />
+    <Content Include="App\Authentication\UserCompany\controller.js" />
+    <Content Include="App\Authentication\UserCompany\UserCompany.html" />
     <Content Include="App\Document\controller.js" />
     <Content Include="App\Document\Document.html" />
     <Content Include="App\Packing\ItemReturn\controller.js" />

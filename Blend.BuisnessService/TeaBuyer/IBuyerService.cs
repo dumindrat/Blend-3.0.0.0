@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.TeaBuyer
     public interface IBuyerService
     {
         Buyer GetBuyerById(int buyerId);
-        IList<Buyer> GetAllBuyers(string serchStr);
+        IList<Buyer> GetAllBuyers(string serchStr,int companyId);
         bool CreateBuyer(Buyer buyerEntity);
         bool UpdateBuyer(int buyerId, Buyer buyerEntity);
         bool DeleteBuyer(int buyerId);

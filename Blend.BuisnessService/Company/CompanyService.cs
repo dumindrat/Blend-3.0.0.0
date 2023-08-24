@@ -51,5 +51,57 @@ namespace Blend.BuisnessService.Company
                 dataOperation.ConnectionClose();
             }
         }
+
+
+        public IList<UserCompanyDto> GetUserCompanyInfo(string userName)
+        {
+            try
+            {
+                var mapper = new DataMapper<UserCompanyDto>("GetUserCompanyInfo", new Hashtable() { { "UserName", userName } });
+
+                var result = mapper.ObjectList();// Mapper.QueryForObject<CompanyDto>("GetCompanyInfo", new Hashtable() { });
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite("GetCompanyInfo fails. Error " + ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                dataOperation.ConnectionClose();
+            }
+        }
+
+
+        public UserCompanyDto GetDefaultUserCompanyInfo(string userName)
+        {
+            try
+            {
+                var mapper = new DataMapper<UserCompanyDto>("GetUserCompanyInfo", new Hashtable() { { "UserName", userName } });
+
+                var result = mapper.ObjectList();
+                return result.Where(c => c.IsDefault == true).SingleOrDefault();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite("GetCompanyInfo fails. Error " + ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                dataOperation.ConnectionClose();
+            }
+        }
+
+
+        public bool SetAsDefaultCompany(UserCompanyDto userCompany)
+        {
+            dataOperation.CommandText("auth_UserCompanySetDefault");
+            dataOperation.AddParam("@LoginId", userCompany.UserName);
+            dataOperation.AddParam("@CompanyId", userCompany.CompanyId);
+            dataOperation.DoExecute();
+            return true;
+        }
     }
 }

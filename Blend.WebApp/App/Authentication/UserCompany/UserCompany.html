@@ -1,0 +1,44 @@
+﻿<div class="modal-dialog" style="padding-top: 100px; width: 800px">
+    <div class="modal-content">
+        <form name="form" role="form">
+
+            <div class="modal-header modal-header-info">
+                <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">×</button>
+                <h4 class="modal-title">Change workng company.</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div style="height: 300px; overflow-y: auto">
+                        <table class="table table-filter">
+                            <thead>
+                                <tr>
+                                    <th width="25%">#</th>
+                                    <th width="75%">Company</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr ng-repeat="c in companyData">
+                                    <td width="5%">{{c.CompanyId}}</td>
+                                    <td width="70%">{{c.CompanyName}}</td>
+                                    <td style="width: 25%">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default btn-sm" ng-disabled="isDefault(c)" ng-click="setCompany(c.CompanyId)">Set as Working Company</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+</div>

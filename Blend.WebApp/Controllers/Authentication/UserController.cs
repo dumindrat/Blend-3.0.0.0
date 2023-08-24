@@ -67,6 +67,32 @@ namespace Blend.webv1.Controllers.Authentication
 
         }
 
+        [HttpGet]
+        [ActionName("GetUserCompanyInfo")]
+        public PasswordExpireInfo GetUserCompanyInfo(string id)
+        {
+            PasswordExpireInfo passwordInfo = new PasswordExpireInfo();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = _userService.GetUserById(id);
+                    var expireDates = (user.PasswordExpireDate - DateTime.Now).TotalDays;
+                    passwordInfo.PasswordExpireDate = user.PasswordExpireDate;
+                    passwordInfo.ExpirationDays = expireDates;
+                    passwordInfo.IsRequireReset = expireDates <= 5 ? true : false;
+                }
+                catch (Exception ex)
+                {
+                    // logger.Error(ex.Message);
+                    return passwordInfo;
+                }
+
+            }
+            return passwordInfo;
+
+        }
+
         // GET api/user/5
         public string Get(int id)
         {

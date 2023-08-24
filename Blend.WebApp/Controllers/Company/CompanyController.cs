@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace Blend.WebApp.Controllers.Company
 {
-    public class CompanyController : ApiController
+    public class CompanyController : BaseApi
     {
         private ICompanyService _companyService;
 
@@ -18,30 +18,79 @@ namespace Blend.WebApp.Controllers.Company
             _companyService = companyService;
         }
         // GET api/company
-        public CompanyDto Get()
+        //public CompanyDto Get()
+        //{
+        //    return _companyService.GetCompanyInfo();
+        //}
+
+        [HttpGet]
+        [ActionName("GetUserCompanies")]
+        public IEnumerable<CompanyDto> Get(string id)
         {
-            return _companyService.GetCompanyInfo();
+            IEnumerable<CompanyDto> userCompanies = new List<CompanyDto>();
+            try
+            {
+                id = id.Replace("~", "/");
+                userCompanies = _companyService.GetUserCompanyInfo(id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+                return userCompanies;
+            }
+            return userCompanies;
         }
 
-        // GET api/company/5
-        public string Get(int id)
+        [HttpGet]
+        [ActionName("GetDefaultUserCompany")]
+        public CompanyDto GetDefaultUserCompany(string id, string status)
         {
-            return "value";
+            CompanyDto userCompanies = new CompanyDto();
+            try
+            {
+                id = id.Replace("~", "/");
+                userCompanies = _companyService.GetDefaultUserCompanyInfo(id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+                return userCompanies;
+            }
+            return userCompanies;
         }
 
-        // POST api/company
-        public void Post([FromBody]string value)
+        [HttpPost]
+        [ActionName("SetAsDefaultUserCompany")]
+        public HttpResponseMessage Post([FromBody]UserCompanyDto userCompany)
         {
+            if (ModelState.IsValid && SetUser(userCompany))
+            {
+                try
+                {
+                    _companyService.SetAsDefaultCompany(userCompany);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+                catch (Exception ex)
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                }
+            }
+            return new HttpResponseMessage(HttpStatusCode.BadRequest);
         }
 
-        // PUT api/company/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+        //// POST api/company
+        //public void Post([FromBody]string value)
+        //{
+        //}
 
-        // DELETE api/company/5
-        public void Delete(int id)
-        {
-        }
+        //// PUT api/company/5
+        //public void Put(int id, [FromBody]string value)
+        //{
+        //}
+
+        //// DELETE api/company/5
+        //public void Delete(int id)
+        //{
+        //}
     }
 }

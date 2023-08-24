@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blend.BuisnessEntities.CompanyRegistration
 {
-    public class CompanyDto
+    public class CompanyDto : BaseEntity
     {
         public int CompanyId { get; set; }
         public int SubscriptionId { get; set; }
@@ -20,6 +20,7 @@ namespace Blend.BuisnessEntities.CompanyRegistration
         public string StoresAddress2 { get; set; }
         public string StoreTelephone { get; set; }
         public string SubscriptionEndDate { get; set; }
+        public bool IsMasterCompany { get; set; }
 
     }
 
@@ -32,5 +33,12 @@ namespace Blend.BuisnessEntities.CompanyRegistration
         public string Address2 { get; set; }
         public string Email { get; set; }
         public string Telephone { get; set; }
+    }
+
+    public class UserCompanyDto : CompanyDto
+    {
+        public int UserId { get; set; }
+        public string UserName { get; set; }
+        public bool IsDefault { get; set; }
     }
 }

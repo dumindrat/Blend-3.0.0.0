@@ -127,6 +127,10 @@ function ($routeProvider) {
             templateUrl: '/App/Document/Document.html',
             controller: 'resetDocumetController'
         }).
+        when('/UserCompany', {
+            templateUrl: '/App/Authentication/UserCompany/UserCompany.html',
+            controller: 'userCompanyController'
+        }).
         otherwise({
             redirectTo: '/'
         });
@@ -144,6 +148,9 @@ app.config(['$httpProvider', function ($httpProvider, $rootScope, $route, global
                 req.headers['SysUser'] = $rootScope.currentUser.username;
                 req.headers['Token'] = $rootScope.currentUser.token;
                 req.headers['AccessLink'] = $rootScope.menuAccess.AccessLink;
+                if ($rootScope.userCompany != undefined) {
+                    req.headers['SysCompany'] = $rootScope.userCompany.CompanyId;
+                }
                 return req;
             }
         };
