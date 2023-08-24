@@ -69,7 +69,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Reject_Short
                     if (obj.BoxNoList.Count == 0)
                         return GetNoDataPage();
                     var companyInfo = _companyService.GetCompanyInfo();
-                    var brokerInfo = _brokerSvc.GetAllBrokers().Where(c => c.BrokerId == obj.BrokerId).Single(); 
+                    var brokerInfo = _brokerSvc.GetBrokerById(obj.BrokerId); 
 
                     var xmlfromLINQ = GetXmlElement(obj.BoxNoList.Where(c => c.IsSelected == true).ToList());
 

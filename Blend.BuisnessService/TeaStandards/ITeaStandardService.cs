@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.TeaStandards
     public interface ITeaStandardService
     {
         TeaStandard GetTeaStandardById(int id);
-        IList<TeaStandard> GetAllTeaStandard(string searchstr);
+        IList<TeaStandard> GetAllTeaStandard(string searchstr, int companyId);
         bool CreateStandard(TeaStandard obj);
         bool UpdateStandard(TeaStandard obj);
         bool Deletetandard(TeaStandard obj);

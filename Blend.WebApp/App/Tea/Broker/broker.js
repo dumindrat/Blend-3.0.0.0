@@ -7,18 +7,18 @@
         var renderAction = $route.current.$$route.originalPath;
         $scope.accessLevels = globalService.getaccess(renderAction);
         $rootScope.$on('BROKER_EVENT', function (event, data) {
-            getBrokers();
+            getBrokers("all");
         });
 
         $scope.dataLoading = false;
         $scope.recordCount = globalService.getDataLoadingMessage();
 
-        getBrokers();
+        getBrokers("all");
 
-        function getBrokers() {
+        function getBrokers(searchstr) {
             $scope.dataLoading = true;
             $scope.recordCount = globalService.getDataLoadingMessage();
-            httpService.getdata(urlBroker, function (results) {
+            httpService.getdata(urlBroker + '/GetBrokers/' + searchstr, function (results) {
                 $scope.BrokerData = results.data;
                 $scope.dataLoading = false;
                 $scope.recordCount = globalService.getDataCountMessage(results.data.length);
@@ -46,7 +46,7 @@
                 globalService.openLoadingWindow('Removing..');
                 httpService.deletedata(urlBroker + '/' + id, function () {
                     alert('Data deleted successfully');
-                    getBrokers();
+                    getBrokers("all");
                     $scope.$emit('LOAD_DATA_EVENT', true);
 
                 })

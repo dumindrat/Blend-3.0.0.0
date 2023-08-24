@@ -17,17 +17,21 @@ namespace Blend.WebApp.Controllers.Tea.Broker
         {
             _brokerService = brokerService;
         }
-        // GET api/broker
-        public IEnumerable<TeaBroker> Get()
+
+        [HttpGet]
+        [ActionName("GetBrokers")]
+        public IEnumerable<TeaBroker> Get(string id)
         {
-            return _brokerService.GetAllBrokers();
+            //var broker = _brokerService.GetBrokerById(1);
+            return _brokerService.GetAllBrokers(id, GetCompanyId());
+            
         }
 
-        // GET api/broker/5
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //// GET api/broker/5
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST api/broker
         public HttpResponseMessage Post([FromBody]TeaBroker broker)

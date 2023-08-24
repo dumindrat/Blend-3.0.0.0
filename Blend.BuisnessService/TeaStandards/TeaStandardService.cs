@@ -15,10 +15,10 @@ namespace Blend.BuisnessService.TeaStandards
             throw new NotImplementedException();
         }
 
-        public IList<TeaStandard> GetAllTeaStandard(string searchstr)
+        public IList<TeaStandard> GetAllTeaStandard(string searchstr, int companyId)
         {
             var searchBy = searchstr == "all" ? "" : searchstr;
-            var mapper = new DataMapper<TeaStandard>("GetStandards", new Hashtable() { { "StandardName", searchBy } });
+            var mapper = new DataMapper<TeaStandard>("GetStandards", new Hashtable() { { "StandardName", searchBy }, { "CompanyId", companyId } });
 
             var result = mapper.ObjectList();
             return result;
@@ -29,6 +29,7 @@ namespace Blend.BuisnessService.TeaStandards
             dataOperation.CommandText("trn_StandardInsert");
             dataOperation.AddParam("StandardName", obj.StandardName);
             dataOperation.AddParam("User", obj.User);
+            dataOperation.AddParam("CompanyId", obj.CompanyId);
             dataOperation.DoExecute();
             return true;
         }

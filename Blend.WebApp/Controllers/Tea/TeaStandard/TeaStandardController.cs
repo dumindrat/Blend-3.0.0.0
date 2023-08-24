@@ -27,7 +27,7 @@ namespace Blend.WebApp.Controllers.Tea.TeaStandard
             {
                 try
                 {
-                    standards = _teaStandardsvc.GetAllTeaStandard(id);
+                    standards = _teaStandardsvc.GetAllTeaStandard(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {
@@ -56,7 +56,7 @@ namespace Blend.WebApp.Controllers.Tea.TeaStandard
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWrite(ex.Message,"Error");
+                    logger.LogWrite(ex.Message, "Error");
                     return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
 
                 }
