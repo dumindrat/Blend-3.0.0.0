@@ -39,9 +39,11 @@
     <parameterMap id="get-availablestandardsearch-params" class ="Blend.BuisnessEntities.Standard.TeaStandardForContract">
       <parameter property="ContractId" direction  ="Input" />
       <parameter property="StandardName" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-allcontracts-params">
       <parameter property="ContractName" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-opencontracts-params">
     </parameterMap>

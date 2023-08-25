@@ -28,7 +28,7 @@ namespace Blend.BuisnessService.Packing.ItemReceive
             var result = mapper.ObjectList();
             return result;
         }
-        
+
         public bool Create(BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto receivenote)
         {
             SqlTransaction trans = null;
@@ -42,7 +42,7 @@ namespace Blend.BuisnessService.Packing.ItemReceive
             {
                 var blendNo = new DocumentNo();
                 if (receivenote.IsAutoDocNo)
-                    receivenote.ReceiveNoteNo = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    receivenote.ReceiveNoteNo = _documentService.GetDocumentNo(poDocType, receivenote.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 
@@ -150,7 +150,7 @@ namespace Blend.BuisnessService.Packing.ItemReceive
         {
             throw new NotImplementedException();
         }
-        
+
         public IEnumerable<AvailablePoDto> GetPoList()
         {
             var mapper = new DataMapper<AvailablePoDto>("GetRnPo", new Hashtable() { });

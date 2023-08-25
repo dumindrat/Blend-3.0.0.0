@@ -11,12 +11,12 @@ namespace Blend.BuisnessService.Contract
 {
     public class ContractService : BaseManagement<BuyerContract>, IContractService
     {
-        public IEnumerable<BuyerContract> GetContractList(string serchStr)
+        public IEnumerable<BuyerContract> GetContractList(string serchStr, int companyId)
         {
             try
             {
                 var searchBy = serchStr == "all" ? "" : serchStr;
-                var mapper = new DataMapper<BuyerContract>("GetContracts", new Hashtable() { { "ContractName", searchBy } });
+                var mapper = new DataMapper<BuyerContract>("GetContracts", new Hashtable() { { "ContractName", searchBy }, { "CompanyId", companyId } });
 
                 var result = mapper.ObjectList();
                 return result;
@@ -52,10 +52,11 @@ namespace Blend.BuisnessService.Contract
         public bool CreateContract(BuyerContract obj)
         {
             dataOperation.CommandText("trn_ContractHeaderInsert");
-            dataOperation.AddParam("ContractName", obj.ContractName);
-            dataOperation.AddParam("BuyerId", obj.BuyerId);
-            dataOperation.AddParam("CompletionDate", obj.CompletionDate);
-            dataOperation.AddParam("CreateUser", obj.User);
+            dataOperation.AddParam("@ContractName", obj.ContractName);
+            dataOperation.AddParam("@BuyerId", obj.BuyerId);
+            dataOperation.AddParam("@CompletionDate", obj.CompletionDate);
+            dataOperation.AddParam("@CreateUser", obj.User);
+            dataOperation.AddParam("@CompanyId", obj.CompanyId);
             dataOperation.DoExecute();
             return true;
         }
@@ -161,12 +162,15 @@ namespace Blend.BuisnessService.Contract
 
 
 
-        public IList<TeaStandardForContract> GetAvailableStandardsByIdAndSearchStr(long key, string searchstr)
+        public IList<TeaStandardForContract> GetAvailableStandardsByIdAndSearchStr(long key, string searchstr, int companyId)
         {
             try
             {
                 var searchBy = searchstr == "all" ? "" : searchstr;
-                var mapper = new DataMapper<TeaStandardForContract>("GetAvailableStandardsByIdAndSerchKey", new Hashtable() { { "ContractId", key }, { "StandardName", searchBy } });
+                var mapper = new DataMapper<TeaStandardForContract>("GetAvailableStandardsByIdAndSerchKey", new Hashtable() { 
+                { "ContractId", key }, 
+                { "StandardName", searchBy },
+                { "CompanyId", companyId } });
                 var result = mapper.ObjectList();
                 return result;
             }

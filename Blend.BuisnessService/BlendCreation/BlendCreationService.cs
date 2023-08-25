@@ -76,7 +76,7 @@ namespace Blend.BuisnessService.BlendCreation
             {
                 var blendNo = new DocumentNo();
                 if (obj.IsAutoDocNo)
-                    obj.BlendNo = _documentService.GetDocumentNo(2).FormattedDocNo;
+                    obj.BlendNo = _documentService.GetDocumentNo(2, obj.CompanyId).FormattedDocNo;
 
                 connection.Open();
                 trans = connection.BeginTransaction();

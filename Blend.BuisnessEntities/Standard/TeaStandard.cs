@@ -18,5 +18,6 @@ namespace Blend.BuisnessEntities.Standard
         public int StandardId { get; set; }
         public string StandardName { get; set; }
         public string OrderQty { get; set; }
+        public int CompanyId { get; set; }
     }
 }

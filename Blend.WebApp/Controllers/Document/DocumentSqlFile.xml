@@ -38,6 +38,7 @@
       <result property="DocFormat" column="DocFormat" dbType="Varchar"/>
       <result property="Description" column="Description" dbType="Varchar"/>
       <result property="ModuleId" column="ModuleId" dbType="Int"/>
+      <result property="CompanyId" column="CompanyId" dbType="Int"/>
     </resultMap>
   </resultMaps>
 </sqlMap>

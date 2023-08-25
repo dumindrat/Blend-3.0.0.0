@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.Contract
 {
     public interface IContractService
     {
-        IEnumerable<BuyerContract> GetContractList(string serchStr);
+        IEnumerable<BuyerContract> GetContractList(string serchStr, int companyId);
         IEnumerable<BuyerContract> GetOpenContractList();
         bool CreateContract(BuyerContract obj);
         bool UpdateContract(BuyerContract obj);
@@ -18,11 +18,11 @@ namespace Blend.BuisnessService.Contract
         BuyerContract GetContractById(int id);
         IEnumerable<BuyerContractDetail> GetBuyerContractDetailById(long key);
         IList<TeaStandardForContract> GetAvailableStandardsById(long key);
-        IList<TeaStandardForContract> GetAvailableStandardsByIdAndSearchStr(long key,string searchstr);
+        IList<TeaStandardForContract> GetAvailableStandardsByIdAndSearchStr(long key, string searchstr, int companyId);
         bool CreateBuyerContractDetail(BuyerContractDetail obj);
         bool UpdateBuyerContractDetail(BuyerContractDetail obj);
         bool DeleteBuyerContractDetail(BuyerContractDetail obj);
-        IEnumerable<BlendNoByCon> GetBlendListByConAndStanList(int contractId,int standardId);
+        IEnumerable<BlendNoByCon> GetBlendListByConAndStanList(int contractId, int standardId);
 
     }
 }

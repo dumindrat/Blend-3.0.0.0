@@ -39,7 +39,7 @@ namespace Blend.BuisnessService.Packing.ItemIssue
             {
                 var blendNo = new DocumentNo();
                 if (obj.IsAutoDocNo)
-                    obj.IssueNoteNo = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    obj.IssueNoteNo = _documentService.GetDocumentNo(poDocType, obj.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 

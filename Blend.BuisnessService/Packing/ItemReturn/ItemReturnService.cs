@@ -45,7 +45,7 @@ namespace Blend.BuisnessService.Packing.ItemReturn
             {
                 var blendNo = new DocumentNo();
                 if (obj.IsAutoDocNo)
-                    obj.ReturnNoteNo = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    obj.ReturnNoteNo = _documentService.GetDocumentNo(poDocType, obj.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 

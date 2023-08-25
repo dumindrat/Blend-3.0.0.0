@@ -49,7 +49,7 @@ namespace Blend.BuisnessService.Packing.PO
                 }
                 var blendNo = new DocumentNo();
                 if (po.IsAutoDocNo)
-                    po.PONumber = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    po.PONumber = _documentService.GetDocumentNo(poDocType, po.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 

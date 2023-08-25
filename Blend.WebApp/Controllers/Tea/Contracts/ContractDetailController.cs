@@ -47,7 +47,7 @@ namespace Blend.WebApp.Controllers.Tea.Contracts
             {
                 try
                 {
-                    standards = _contractSvc.GetAvailableStandardsByIdAndSearchStr(id, standard);
+                    standards = _contractSvc.GetAvailableStandardsByIdAndSearchStr(id, standard, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

@@ -26,14 +26,14 @@ namespace Blend.WebApp.Controllers.Document
 
         public DocumentNo GetDocumentNo(int id)
         {
-            return _docService.GetDocumentNo(id);
+            return _docService.GetDocumentNo(id, GetCompanyId());
         }
         // GET api/document/5
         public IEnumerable<DocumentNo> GetDocumentNosByModule(int id)
         {
             try
             {
-                return _docService.GetDocumentDataByModule(id);
+                return _docService.GetDocumentDataByModule(id, GetCompanyId());
             }
             catch (Exception ex)
             {

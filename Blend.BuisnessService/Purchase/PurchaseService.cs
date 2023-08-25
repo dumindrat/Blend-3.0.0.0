@@ -89,7 +89,7 @@ namespace Blend.BuisnessService.Purchase
             var lastIncerementId = 0;
             try
             {
-                var boxNo = _documentService.GetDocumentNo(1);
+                var boxNo = _documentService.GetDocumentNo(1, StrightLineEntity.CompanyId);
                 connection.Open();
                 trans = connection.BeginTransaction();
 

@@ -8,6 +8,7 @@ namespace Blend.BuisnessEntities.TransDocument
 {
     public class DocumentNo : BaseEntity
     {
+        public int Id { get; set; }
         public int DocType { get; set; }
         public int DocNo { get; set; }
         public string Prefix { get; set; }
