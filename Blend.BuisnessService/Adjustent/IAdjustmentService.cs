@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.Adjustent
 {
     public interface IAdjustmentService
     {
-        IEnumerable<StraightLineStockItem> GetStraightLines(string serchStr);
+        IEnumerable<StraightLineStockItem> GetStraightLines(string serchStr, int companyId);
         IEnumerable<AdjutedLineDto> GetAdjustedLineById(int Id);
         IEnumerable<AdjutedLineDto> GetAdjustedLineByBoxNo(string boxNo);
         IEnumerable<AdjutLineCancelRequest> GetAdjusteLineCancelRequests(string serchStr);

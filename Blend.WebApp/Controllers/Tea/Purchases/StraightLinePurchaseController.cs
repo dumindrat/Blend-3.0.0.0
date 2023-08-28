@@ -31,7 +31,7 @@ namespace Blend.WebApp.Controllers.Tea.Purchases
             IEnumerable<Sale> sales = new List<Sale>();
             try
             {
-                sales = _purchaseSvc.GetAllSales(id);
+                sales = _purchaseSvc.GetAllSales(id, GetCompanyId());
             }
             catch (Exception ex)
             {

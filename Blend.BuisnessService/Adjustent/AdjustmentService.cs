@@ -16,10 +16,10 @@ namespace Blend.BuisnessService.Adjustent
     {
         private int reject = 1;
         private int shortline = 2;
-        public IEnumerable<BuisnessEntities.BlendCreation.StraightLineStockItem> GetStraightLines(string serchStr)
+        public IEnumerable<BuisnessEntities.BlendCreation.StraightLineStockItem> GetStraightLines(string serchStr, int companyId)
         {
             var searchBy = serchStr == "all" ? "" : serchStr;
-            var mapper = new DataMapper<StraightLineStockItem>("GetLinesForReject", new Hashtable() { { "BoxNo", searchBy } });
+            var mapper = new DataMapper<StraightLineStockItem>("GetLinesForReject", new Hashtable() { { "BoxNo", searchBy }, { "CompanyId", companyId } });
 
             var result = mapper.ObjectList();
             return result;

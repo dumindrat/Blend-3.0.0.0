@@ -34,6 +34,7 @@
   <parameterMaps>
     <parameterMap id="get-allsales-params">
       <parameter property="SaleDate" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-salesitem-params">
       <parameter property="SaleId" direction  ="Input" />

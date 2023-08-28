@@ -23,12 +23,12 @@ namespace Blend.BuisnessService.BlendCreation
         {
             _documentService = documentService;
         }
-        public IList<BlendInfo> GetBlendList(string serchBlendNo)
+        public IList<BlendInfo> GetBlendList(string serchBlendNo, int companyId)
         {
             try
             {
                 var searchBy = serchBlendNo == "all" ? "" : serchBlendNo;
-                var mapper = new DataMapper<BlendInfo>("GetBlends", new Hashtable() { { "BlendNo", searchBy } });
+                var mapper = new DataMapper<BlendInfo>("GetBlends", new Hashtable() { { "BlendNo", searchBy }, { "CompanyId", companyId } });
                 var result = mapper.ObjectList();
                 return result;
             }
@@ -85,16 +85,17 @@ namespace Blend.BuisnessService.BlendCreation
                 cmd.Connection = connection;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "trn_BlendInsert";
-                cmd.Parameters.AddWithValue("BlendNo", obj.BlendNo);
-                cmd.Parameters.AddWithValue("ContractId", obj.ContractId);
-                cmd.Parameters.AddWithValue("StandardId", obj.StandardId);
-                cmd.Parameters.AddWithValue("completeDate", obj.CompleteDate);
-                cmd.Parameters.AddWithValue("ExpQty", obj.ExportQty);
-                cmd.Parameters.AddWithValue("User", obj.User);
-                cmd.Parameters.AddWithValue("lastId", lastIncerementId);
-                cmd.Parameters["lastId"].Direction = ParameterDirection.Output;
+                cmd.Parameters.AddWithValue("@BlendNo", obj.BlendNo);
+                cmd.Parameters.AddWithValue("@ContractId", obj.ContractId);
+                cmd.Parameters.AddWithValue("@StandardId", obj.StandardId);
+                cmd.Parameters.AddWithValue("@completeDate", obj.CompleteDate);
+                cmd.Parameters.AddWithValue("@ExpQty", obj.ExportQty);
+                cmd.Parameters.AddWithValue("@User", obj.User);
+                cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
+                cmd.Parameters.AddWithValue("@lastId", lastIncerementId);
+                cmd.Parameters["@lastId"].Direction = ParameterDirection.Output;
                 cmd.ExecuteNonQuery();
-                var lastIncrementedId = (Int32)cmd.Parameters["lastId"].Value;
+                var lastIncrementedId = (Int32)cmd.Parameters["@lastId"].Value;
 
                 //Increase DocNo
                 cmd = new SqlCommand();
@@ -102,7 +103,8 @@ namespace Blend.BuisnessService.BlendCreation
                 cmd.Connection = connection;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "trn_DocumentNoGenerate";
-                cmd.Parameters.AddWithValue("DocTypes", blend);
+                cmd.Parameters.AddWithValue("@DocTypes", blend);
+                cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
                 cmd.ExecuteNonQuery();
 
                 //Initial entry
@@ -442,12 +444,12 @@ namespace Blend.BuisnessService.BlendCreation
             return true;
         }
 
-        public IList<StraightLineStockItem> GetStraightLIneStock(string serchString)
+        public IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId)
         {
             try
             {
                 var searchBy = serchString == "all" ? "" : serchString.Replace('~', '/');
-                var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStock", new Hashtable() { { "BoxNo", searchBy }, { "SearchType", 1 } });
+                var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStock", new Hashtable() { { "BoxNo", searchBy }, { "SearchType", 1 }, { "CompanyId", companyId } });
                 var result = mapper.ObjectList();
                 return result;
             }
@@ -506,12 +508,12 @@ namespace Blend.BuisnessService.BlendCreation
         }
 
 
-        public IList<BlendStockItem> GetBlendStock(string serchString)
+        public IList<BlendStockItem> GetBlendStock(string serchString, int companyId)
         {
             try
             {
                 var searchBy = serchString == "all" ? "" : serchString;
-                var mapper = new DataMapper<BlendStockItem>("GetBlendStock", new Hashtable() { { "StockName", searchBy } });
+                var mapper = new DataMapper<BlendStockItem>("GetBlendStock", new Hashtable() { { "StockName", searchBy }, { "CompanyId", companyId } });
 
                 var result = mapper.ObjectList();
 

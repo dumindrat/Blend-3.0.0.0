@@ -25,13 +25,13 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
         private IPurchaseReportService _purchaseRptService;
         private ICompanyService _companyService;
         private string sysver, syscontact;
-        private CompanyDto companyInfo;
+        //private CompanyDto companyInfo;
 
         public PurchaseReportController(IPurchaseReportService purchaseRptService, ICompanyService companyService)
         {
             _purchaseRptService = purchaseRptService;
             _companyService = companyService;
-            companyInfo = _companyService.GetCompanyInfo();
+            //companyInfo = _companyService.GetCompanyInfo();
 
             sysver = ConfigurationManager.AppSettings["sys_ver"];
             syscontact = ConfigurationManager.AppSettings["sys_contact"];
@@ -61,6 +61,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                 var xmlfromLINQ = GetSalesSummaryXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
 
                 var strReportName = "salessummarynew.rpt";
                 var rd = new ReportDocument();
@@ -246,7 +247,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
 
         public HttpResponseMessage Post([FromBody]PurchaseSheetRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -254,7 +255,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     var data = _purchaseRptService.GetPurchaseSheet(obj.SaleId);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetPurchaseSheetXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

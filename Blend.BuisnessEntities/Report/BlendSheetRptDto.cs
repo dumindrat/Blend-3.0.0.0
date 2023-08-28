@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blend.BuisnessEntities.Report
 {
-    public class BlendSheetRptDto
+    public class BlendSheetRptDto : BaseEntity
     {
         public int BlendId { get; set; }
         public bool IsWithValues { get; set; }

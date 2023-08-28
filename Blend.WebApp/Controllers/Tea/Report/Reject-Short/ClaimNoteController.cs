@@ -59,7 +59,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Reject_Short
 
         public HttpResponseMessage Post([FromBody]ClaimNotePrint obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -68,7 +68,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Reject_Short
                     var syscontact = ConfigurationManager.AppSettings["sys_contact"];
                     if (obj.BoxNoList.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var brokerInfo = _brokerSvc.GetBrokerById(obj.BrokerId); 
 
                     var xmlfromLINQ = GetXmlElement(obj.BoxNoList.Where(c => c.IsSelected == true).ToList());

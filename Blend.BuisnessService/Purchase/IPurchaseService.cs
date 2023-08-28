@@ -9,7 +9,7 @@ namespace Blend.BuisnessService.Purchase
 {
     public interface IPurchaseService
     {
-        IEnumerable<Sale> GetAllSales(string searchString);
+        IEnumerable<Sale> GetAllSales(string searchString, int companyId);
         StraightLine GetStraightLineByReservedNo(long straighlineId);
         bool CreateSale(Sale SaleEntity);
         bool UpdateSale(Sale SaleEntity);

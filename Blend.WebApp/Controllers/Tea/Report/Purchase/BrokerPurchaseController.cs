@@ -25,13 +25,11 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
         private IPurchaseReportService _purchaseRptService;
         private ICompanyService _companyService;
         private string sysver, syscontact;
-        private CompanyDto companyInfo;
 
         public BrokerPurchaseController(IPurchaseReportService purchaseRptService, ICompanyService companyService)
         {
             _purchaseRptService = purchaseRptService;
             _companyService = companyService;
-            companyInfo = _companyService.GetCompanyInfo();
 
             sysver = ConfigurationManager.AppSettings["sys_ver"];
             syscontact = ConfigurationManager.AppSettings["sys_contact"];
@@ -74,14 +72,14 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
         public HttpResponseMessage Post([FromBody]BrokerPurchaeRptDto obj)
         {
             var result = Request.CreateResponse(HttpStatusCode.OK);
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 try
                 {
                     var data = _purchaseRptService.GetPurchaseSheetByBroker(obj);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetPurchaseSheetXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

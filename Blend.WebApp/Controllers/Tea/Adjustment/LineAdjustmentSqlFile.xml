@@ -30,6 +30,7 @@
   <parameterMaps>
     <parameterMap id="get-rejectline-params">
       <parameter property="BoxNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-adjusted-params">
       <parameter property="StockId" direction  ="Input" />

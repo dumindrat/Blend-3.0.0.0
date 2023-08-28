@@ -59,7 +59,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -124,7 +124,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -183,7 +183,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetCanisterXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -264,7 +264,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
         public HttpResponseMessage Post([FromBody]BlendSheetRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -291,7 +291,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

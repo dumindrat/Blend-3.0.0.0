@@ -41,7 +41,7 @@ namespace Blend.WebApp.Controllers.BlendCreation
             try
             {
                 id = id.Replace("~", "/");
-                blends = _blendSvc.GetBlendList(id);
+                blends = _blendSvc.GetBlendList(id, GetCompanyId());
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace Blend.WebApp.Controllers.BlendCreation
             IEnumerable<StraightLineStockItem> stocks = new List<StraightLineStockItem>();
             try
             {
-                stocks = _blendSvc.GetStraightLIneStock(id);
+                stocks = _blendSvc.GetStraightLIneStock(id, GetCompanyId());
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace Blend.WebApp.Controllers.BlendCreation
             try
             {
                 id = id.Replace("~", "/");
-                stocks = _blendSvc.GetBlendStock(id);
+                stocks = _blendSvc.GetBlendStock(id, GetCompanyId());
             }
             catch (Exception ex)
             {

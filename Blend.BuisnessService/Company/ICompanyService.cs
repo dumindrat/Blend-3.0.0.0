@@ -9,7 +9,7 @@ namespace Blend.BuisnessService.Company
 {
     public interface ICompanyService
     {
-        CompanyDto GetCompanyInfo();
+        CompanyDto GetCompanyInfo(int companyId);
         IList<UserCompanyDto> GetUserCompanyInfo(string userName);
         UserCompanyDto GetDefaultUserCompanyInfo(string userName);
         StoresDto GetStoteInfo(int id);

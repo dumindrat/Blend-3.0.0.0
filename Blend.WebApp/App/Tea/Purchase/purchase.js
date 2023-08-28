@@ -448,10 +448,10 @@
             }
         };
 
-        getBrokers();
+        getBrokers("all");
 
-        function getBrokers() {
-            httpService.getdata('api/Broker', function (results) {
+        function getBrokers(searchstr) {
+            httpService.getdata('api/Broker/GetBrokers/' + searchstr, function (results) {
                 $scope.BrokerData = results.data;
             });
 

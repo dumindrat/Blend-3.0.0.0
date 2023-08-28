@@ -21,7 +21,7 @@
 
   <parameterMaps>
     <parameterMap id="get-company-params">
-      <!--<parameter property="BlendId" direction  ="Input"/>-->
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-store-params">
       <!--<parameter property="BlendId" direction  ="Input"/>-->

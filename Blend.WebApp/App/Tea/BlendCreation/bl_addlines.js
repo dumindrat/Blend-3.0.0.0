@@ -223,6 +223,12 @@
 
         };
         
+        $scope.blendselectdisable = function (stockItemId) {
+            if ($scope.SelectedBlend.BlendId === stockItemId) {
+                return true;
+            }
+            return false;
+        };
 
     });
 })();

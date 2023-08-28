@@ -57,7 +57,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
         public Stream CreateStream(ItemReceiveNoteDto receiveNote)
         {
             var store = _companyService.GetStoteInfo(1);
-            var company = _companyService.GetCompanyInfo();
+            var company = _companyService.GetCompanyInfo(receiveNote.CompanyId);
             var data = _itemReceiveSvc.GetReceiveNoteItems(receiveNote.Id);
             var po = _poSvc.GetPOById(receiveNote.PoId);
             var supplier = _supplierService.GetSupplierById(po.SupplierId);

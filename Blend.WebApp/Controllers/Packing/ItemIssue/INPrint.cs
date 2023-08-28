@@ -55,7 +55,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
         public Stream CreateStream(ItemIssueNoteDto issueNote)
         {
             var store = _companyService.GetStoteInfo(1);
-            var company = _companyService.GetCompanyInfo();
+            var company = _companyService.GetCompanyInfo(issueNote.CompanyId);
             var data = _itemIssueSvc.GetIssueNoteItemById(issueNote.Id);
             var blend = _blSvc.GetBlendSheetParam(issueNote.BlendId);
 

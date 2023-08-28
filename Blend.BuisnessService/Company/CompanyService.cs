@@ -10,11 +10,11 @@ namespace Blend.BuisnessService.Company
 {
     public class CompanyService : BaseManagement<CompanyDto>, ICompanyService
     {
-        public CompanyDto GetCompanyInfo()
+        public CompanyDto GetCompanyInfo(int companyId)
         {
             try
             {
-                var mapper = new DataMapper<CompanyDto>("GetCompanyInfo", new Hashtable() { });
+                var mapper = new DataMapper<CompanyDto>("GetCompanyInfo", new Hashtable() { { "CompanyId", companyId } });
 
                 var result = mapper.Object();// Mapper.QueryForObject<CompanyDto>("GetCompanyInfo", new Hashtable() { });
                 return result;

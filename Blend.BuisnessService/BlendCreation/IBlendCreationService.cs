@@ -9,7 +9,7 @@ namespace Blend.BuisnessService.BlendCreation
 {
     public interface IBlendCreationService
     {
-        IList<BlendInfo> GetBlendList(string serchBlendNo);
+        IList<BlendInfo> GetBlendList(string serchBlendNo, int companyId);
         BlendDetailDto GetBlendById(long id);
         BlendHeader GetBlendInfoById(long id);
         IList<BlendItemAllocation> GetBlendAllocationsById(long id, string itemType);
@@ -19,8 +19,8 @@ namespace Blend.BuisnessService.BlendCreation
         bool DeleteBlend(long blendId);
         bool AddItem(BlendItem obj);
         bool RemoveItem(BlendItem obj);
-        IList<StraightLineStockItem> GetStraightLIneStock(string serchString);
-        IList<BlendStockItem> GetBlendStock(string serchString);
+        IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId);
+        IList<BlendStockItem> GetBlendStock(string serchString, int companyId);
         StraighLineStockDto GetStraightLIneStockByBoxNo(string boxNo);
         IList<BlendQuickSearchItem> GetBlendQuickSearchItem(string boxno);
         BlendStockItem GetBlendStockItemByStockId(long id);
