@@ -254,7 +254,7 @@
         getBrokers();
 
         function getBrokers() {
-            httpService.getdata('api/Broker', function (results) {
+            httpService.getdata('api/Broker/GetBrokers/all', function (results) {
                 $scope.BrokerData = results.data;
                 $scope.filterOptions = $scope.BrokerData[0];
             });
