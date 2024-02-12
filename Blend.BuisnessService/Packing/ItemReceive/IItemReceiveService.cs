@@ -9,11 +9,11 @@ namespace Blend.BuisnessService.Packing.ItemReceive
 {
     public interface IItemReceiveService
     {
-        IEnumerable<ItemReceiveNoteDto> GetItemReceiveNoteList(string id);
+        IEnumerable<ItemReceiveNoteDto> GetItemReceiveNoteList(string id,int companyId);
         bool Create(ItemReceiveNoteDto receivenote);
         bool AddItemQty(UpdateReceivedItemDto receivenoteitem);
         bool UpdateItemQty(UpdateReceivedItemDto receivenoteitem);
-        IEnumerable<AvailablePoDto> GetPoList();
+        IEnumerable<AvailablePoDto> GetPoList(int companyId);
         IEnumerable<ReceiveNoteItems> GetReceiveNoteItems(int id);
         ItemReceiveNoteDto GetReceiveNoteById(int id);
 

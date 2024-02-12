@@ -71,6 +71,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     rd.SetDataSource(ds_fldDef);
                     rd.SetParameterValue("companyname", companyInfo.CompanyName == null ? "" : companyInfo.CompanyName);
                     rd.SetParameterValue("saledate", saleDate);
+                    rd.SetParameterValue("saleaverage", data.Sum(c => c.Value) / data.Sum(c => c.Weight));
 
                     Stream ms = null;
                     ms = obj.IsExcelFormat ? rd.ExportToStream(ExportFormatType.Excel) : rd.ExportToStream(ExportFormatType.PortableDocFormat);

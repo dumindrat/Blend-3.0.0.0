@@ -18,6 +18,7 @@
   <parameterMaps>
     <parameterMap id="get-allsupplier-params">
       <parameter property="SupplierName" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-supplier-params">
       <parameter property="Id" direction  ="Input" />

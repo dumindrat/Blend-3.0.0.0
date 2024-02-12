@@ -16,6 +16,7 @@
   <parameterMaps>
     <parameterMap id="get-allitems-params">
       <parameter property="ItemName" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     
   </parameterMaps>

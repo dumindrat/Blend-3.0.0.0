@@ -13,14 +13,14 @@ namespace Blend.WebApp.Controllers.Packing.ItemMaster
     public class SupplierController : BaseApi
     {
         private ISupplierService _supplierSvc;
-         public SupplierController(ISupplierService supplierSvc)
+        public SupplierController(ISupplierService supplierSvc)
         {
             _supplierSvc = supplierSvc;
         }
 
         [HttpGet]
         [ActionName("GetAllSupplier")]
-         public IEnumerable<Supplier> GetAllSupplier(string id)
+        public IEnumerable<Supplier> GetAllSupplier(string id)
         {
             IEnumerable<Supplier> items = new List<Supplier>();
 
@@ -28,7 +28,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemMaster
             {
                 try
                 {
-                    items = _supplierSvc.GetAllSuppliers(id);
+                    items = _supplierSvc.GetAllSuppliers(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

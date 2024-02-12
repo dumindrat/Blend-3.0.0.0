@@ -12,15 +12,15 @@ namespace Blend.WebApp.Controllers.Packing.ItemMaster
 {
     public class ItemController : BaseApi
     {
-         private IItemService _itemSvc;
-         public ItemController(IItemService itemSvc)
+        private IItemService _itemSvc;
+        public ItemController(IItemService itemSvc)
         {
             _itemSvc = itemSvc;
         }
 
         [HttpGet]
         [ActionName("GetAllItems")]
-         public IEnumerable<Blend.BuisnessEntities.Item.ItemMaster> GetAllItems(string id)
+        public IEnumerable<Blend.BuisnessEntities.Item.ItemMaster> GetAllItems(string id)
         {
             IEnumerable<Blend.BuisnessEntities.Item.ItemMaster> items = new List<Blend.BuisnessEntities.Item.ItemMaster>();
 
@@ -28,7 +28,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemMaster
             {
                 try
                 {
-                    items = _itemSvc.GetAllItems(id);
+                    items = _itemSvc.GetAllItems(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

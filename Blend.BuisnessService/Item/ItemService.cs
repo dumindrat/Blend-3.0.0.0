@@ -10,10 +10,10 @@ namespace Blend.BuisnessService.Item
 {
     public class ItemService : BaseManagement<ItemMaster>, IItemService
     {
-        public IEnumerable<ItemMaster> GetAllItems(string searchStr)
+        public IEnumerable<ItemMaster> GetAllItems(string searchStr, int companyId)
         {
             var searchBy = searchStr == "all" ? "" : searchStr;
-            var mapper = new DataMapper<ItemMaster>("GetItems", new Hashtable() { { "ItemName", searchBy } });
+            var mapper = new DataMapper<ItemMaster>("GetItems", new Hashtable() { { "ItemName", searchBy }, { "CompanyId", companyId } });
 
             var result = mapper.ObjectList();
             return result;
@@ -27,6 +27,7 @@ namespace Blend.BuisnessService.Item
             dataOperation.AddParam("@User", item.User);
             dataOperation.AddParam("@UomId", item.UomId);
             dataOperation.AddParam("@ShortDescription", item.ShortDescription);
+            dataOperation.AddParam("@CompanyId", item.CompanyId);
             dataOperation.DoExecute();
             return true;
         }

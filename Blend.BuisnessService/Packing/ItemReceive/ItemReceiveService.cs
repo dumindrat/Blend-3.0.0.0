@@ -21,10 +21,10 @@ namespace Blend.BuisnessService.Packing.ItemReceive
             _documentService = documentService;
         }
 
-        public IEnumerable<BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto> GetItemReceiveNoteList(string id)
+        public IEnumerable<BuisnessEntities.Packing.ItemReceive.ItemReceiveNoteDto> GetItemReceiveNoteList(string id,int companyId)
         {
             var searchBy = id == "all" ? "" : id;
-            var mapper = new DataMapper<ItemReceiveNoteDto>("GetRn", new Hashtable() { { "ReceiveNoteNo", searchBy } });
+            var mapper = new DataMapper<ItemReceiveNoteDto>("GetRn", new Hashtable() { { "ReceiveNoteNo", searchBy }, { "CompanyId", companyId } });
             var result = mapper.ObjectList();
             return result;
         }
@@ -53,6 +53,7 @@ namespace Blend.BuisnessService.Packing.ItemReceive
                 cmd.Parameters.AddWithValue("@ReceiveNoteNo", receivenote.ReceiveNoteNo);
                 cmd.Parameters.AddWithValue("@PoId", receivenote.PoId);
                 cmd.Parameters.AddWithValue("@User", receivenote.User);
+                cmd.Parameters.AddWithValue("@CompanyId", receivenote.CompanyId);
                 cmd.Parameters.AddWithValue("@ReceivedNoteId", lastIncerementId);
                 cmd.Parameters["@ReceivedNoteId"].Direction = ParameterDirection.Output;
 
@@ -77,6 +78,7 @@ namespace Blend.BuisnessService.Packing.ItemReceive
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.CommandText = "trn_DocumentNoGenerate";
                     cmd.Parameters.AddWithValue("@DocTypes", poDocType);
+                    cmd.Parameters.AddWithValue("@CompanyId", receivenote.CompanyId);
                     cmd.ExecuteNonQuery();
 
                 }
@@ -151,9 +153,9 @@ namespace Blend.BuisnessService.Packing.ItemReceive
             throw new NotImplementedException();
         }
 
-        public IEnumerable<AvailablePoDto> GetPoList()
+        public IEnumerable<AvailablePoDto> GetPoList(int companyId)
         {
-            var mapper = new DataMapper<AvailablePoDto>("GetRnPo", new Hashtable() { });
+            var mapper = new DataMapper<AvailablePoDto>("GetRnPo", new Hashtable() { { "CompanyId", companyId } });
             var result = mapper.ObjectList();
             return result;
         }

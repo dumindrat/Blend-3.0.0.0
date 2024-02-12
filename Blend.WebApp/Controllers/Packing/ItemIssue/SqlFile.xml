@@ -21,6 +21,7 @@
   <parameterMaps>
     <parameterMap id="get-allissuenote-params">
       <parameter property="IssueNoteNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-stockitems-params">
       <parameter property="ItemName" direction  ="Input" />

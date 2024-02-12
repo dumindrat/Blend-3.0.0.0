@@ -9,7 +9,7 @@ namespace Blend.BuisnessService.Packing.ItemIssue
 {
     public interface IItemIssueService
     {
-        IEnumerable<ItemIssueNoteDto> GetItemIssueNoteList(string id);
+        IEnumerable<ItemIssueNoteDto> GetItemIssueNoteList(string id,int companyId);
         IEnumerable<StockItem> GetStockItemList(string id);
         IEnumerable<IssueNoteItem> GetIssueNoteItemById(int id);
         bool Create(ItemIssueNoteDto obj);

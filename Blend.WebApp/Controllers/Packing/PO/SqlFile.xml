@@ -24,6 +24,7 @@
   <parameterMaps>
     <parameterMap id="get-allpos-params">
       <parameter property="PONumber" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-allipotems-params">
       <parameter property="PoId" direction  ="Input" />

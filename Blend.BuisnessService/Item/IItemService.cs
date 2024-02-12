@@ -9,7 +9,7 @@ namespace Blend.BuisnessService.Item
 {
     public interface IItemService
     {
-        IEnumerable<ItemMaster> GetAllItems(string searchStr);
+        IEnumerable<ItemMaster> GetAllItems(string searchStr,int companyId);
         bool SaveItem(ItemMaster item);
         bool UpdateItem(ItemMaster item);
         bool DeleteItem(ItemMaster item);

@@ -33,7 +33,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemIssue
             {
                 try
                 {
-                    pos = _itemIssueSvc.GetItemIssueNoteList(id);
+                    pos = _itemIssueSvc.GetItemIssueNoteList(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

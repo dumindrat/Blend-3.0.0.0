@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.Item
 {
     public interface ISupplierService
     {
-        IEnumerable<Supplier> GetAllSuppliers(string searchStr);
+        IEnumerable<Supplier> GetAllSuppliers(string searchStr, int companyId);
         Supplier GetSupplierById(int id);
         bool SaveSupplier(Supplier supplier);
         bool UpdateSupplier(Supplier supplier);

@@ -24,9 +24,11 @@
   <parameterMaps>
     <parameterMap id="get-allreceivenote-params">
       <parameter property="ReceiveNoteNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-poforirn-params">
       <!--<parameter property="PoId" direction  ="Input" />-->
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-rinitems-params">
       <parameter property="ReceivedNoteId" direction  ="Input" />
