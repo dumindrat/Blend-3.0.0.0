@@ -171,7 +171,16 @@
             return true;
         }
 
+        $scope.CheckEnabledTeaBoard = function () {
+            return $scope.SelectedBlend.IsTeaBoardEnabled;
+        }
 
+        $scope.GetTrialLable = function () {
+            if ($scope.SelectedBlend.IsTeaBoardEnabled ) {
+                return "-Production";
+            }
+            return "-Trial Blend";
+        }
 
         $scope.blendselectdisable = function (stockItemId) {
             if ($scope.SelectedBlend.BlendId === stockItemId) {

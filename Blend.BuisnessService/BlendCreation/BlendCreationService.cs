@@ -607,6 +607,19 @@ namespace Blend.BuisnessService.BlendCreation
             return true;
         }
 
+        public bool DisableTeaBoard(BlendInfo obj)
+        {
+            var connection = MSSqlDataService.MsSQLConn;
+            connection.Open();
+            var cmd = new SqlCommand();
+            cmd.Connection = connection;
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "trn_BlendEnableFalseTeaBoard";
+            cmd.Parameters.AddWithValue("@BlendId", obj.BlendId);
+            cmd.Parameters.AddWithValue("@User", obj.User);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
 
         public IList<BlendQuickSearchItem> GetBlendQuickSearchItem(string boxno)
         {

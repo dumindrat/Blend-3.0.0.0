@@ -25,5 +25,6 @@ namespace Blend.BuisnessService.BlendCreation
         IList<BlendQuickSearchItem> GetBlendQuickSearchItem(string boxno);
         BlendStockItem GetBlendStockItemByStockId(long id);
         bool EnableTeaBoard(BlendInfo obj);
+        bool DisableTeaBoard(BlendInfo obj);
     }
 }

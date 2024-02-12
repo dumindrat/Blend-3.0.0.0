@@ -51,6 +51,13 @@
             return obj.IsTeaBoardEnabled;
         }
 
+        $scope.GetSetProdButtonStyle = function (obj) {
+            if (obj.IsTeaBoardEnabled) {
+                return "btn btn-default btn-sm";
+            }
+            return "btn btn-default btn-sm";
+        }
+
         $scope.delete = function (id) {
             var retVal = confirm("Are you sure want to delete?");
             if (retVal == true) {
@@ -167,10 +174,27 @@
         };
 
         $scope.enableTeaBoard = function (blend) {
-            var retVal = confirm("Are you sure want to enable " + blend.BlendNo + " for the Tea-Board?");
+            var retVal = confirm("Are you sure want to enable " + blend.BlendNo + " for the Production?");
             if (retVal == true) {
                 globalService.openLoadingWindow("Enabling..");
                 httpService.savedata(urlBlendEnableTeaBoard, blend.BlendId, function (response) {
+                    if (response.status === 200) {
+                        $scope.$emit('LOAD_DATA_EVENT', true);
+                        getBlendList('all');
+                    } else {
+                        $scope.message = response.message;
+                        $scope.$emit('LOAD_DATA_EVENT', true);
+
+                    }
+                });
+            }
+        }
+
+        $scope.disableTeaBoard = function (blend) {
+            var retVal = confirm("Are you sure want to enable " + blend.BlendNo + " for the Trials?");
+            if (retVal == true) {
+                globalService.openLoadingWindow("Enabling..");
+                httpService.updatedata(urlBlendEnableTeaBoard, blend.BlendId, function (response) {
                     if (response.status === 200) {
                         $scope.$emit('LOAD_DATA_EVENT', true);
                         getBlendList('all');
