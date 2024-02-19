@@ -1,4 +1,5 @@
-﻿using Blend.BuisnessEntities.Packing.ItemIssue;
+﻿using Blend.BuisnessEntities.BlendCreation;
+using Blend.BuisnessEntities.Packing.ItemIssue;
 using Blend.BuisnessEntities.TransDocument;
 using Blend.BuisnessService.Document;
 using Blend.DataModel.DataOperation;
@@ -245,6 +246,21 @@ namespace Blend.BuisnessService.Packing.ItemIssue
             var mapper = new DataMapper<IssueNoteItem>("GetInItems", new Hashtable() { { "Id", id } });
             var result = mapper.ObjectList();
             return result;
+        }
+
+
+        public IEnumerable<BuisnessEntities.BlendCreation.BlendInfo> GetBlendList(int companyId)
+        {
+            try
+            {
+                var mapper = new DataMapper<BlendInfo>("GetBlendsForIssue", new Hashtable() { { "CompanyId", companyId } });
+                var result = mapper.ObjectList();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

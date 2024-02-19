@@ -97,6 +97,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
             rd.SetParameterValue("Instructions", rn.Comment == null ? "" : rn.Comment);
             rd.SetParameterValue("Deliverydate", po.DeliveryDate == null ? "" : po.DeliveryDate);
             rd.SetParameterValue("GRNNo", receivenote.ReceiveNoteNo);
+            rd.SetParameterValue("RTNNumber", rn.ReturnNoteNo);
 
             Stream ms = rd.ExportToStream(ExportFormatType.PortableDocFormat);
             return ms;

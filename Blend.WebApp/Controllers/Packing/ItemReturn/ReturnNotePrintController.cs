@@ -53,7 +53,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
 
             try
             {
-
+                SetUser(obj);
                 var stream = new ItemReturnPrint(_poSvc, _companyService, _supplierService,_itemReturnSvc,_itemReceiveSvc).CreateStream(obj);
                 result.Content = new StreamContent(stream);
                 result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline");

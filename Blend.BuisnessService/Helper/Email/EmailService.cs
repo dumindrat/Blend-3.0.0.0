@@ -25,7 +25,7 @@ namespace Blend.BuisnessService.Helper.Email
                 using (MailMessage mail = new MailMessage(obj.From, obj.To))
                 {
                     mail.Subject = obj.Subject;
-                    mail.Body = obj.Message;
+                    mail.Body = obj.Message + System.Environment.NewLine +  "[ DO NOT REPLY FOR THIS MESSAGE ]";
                     if (obj.IsAttachment)
                     {
                         string fileName = Path.GetFileName(obj.Attachment);

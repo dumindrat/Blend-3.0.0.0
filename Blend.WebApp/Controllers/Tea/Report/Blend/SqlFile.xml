@@ -68,6 +68,7 @@
       <result property="BG" column="BG" dbType="Decimal"/>
       <result property="BL" column="BL" dbType="Decimal"/>
       <result property="IsClosed" column="IsClosed" dbType="Int"/>
+      <result property="TrialVersion" column="TrialVersion" dbType="Varchar"/>
 
     </resultMap>
 

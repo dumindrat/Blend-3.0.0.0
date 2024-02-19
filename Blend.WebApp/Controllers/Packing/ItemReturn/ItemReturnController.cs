@@ -34,7 +34,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemIssue
             {
                 try
                 {
-                    pos = _itemReturnSvc.GetItemReturNoteList(id);
+                    pos = _itemReturnSvc.GetItemReturNoteList(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {
@@ -65,7 +65,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemIssue
             return pos;
 
         }
-        
+
         [HttpGet]
         [ActionName("GetReturnNoteItemsById")]
         public IEnumerable<ReturnNoteItems> GetReturnNoteItemsById(int id)

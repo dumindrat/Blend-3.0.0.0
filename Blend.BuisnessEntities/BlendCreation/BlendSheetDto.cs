@@ -42,5 +42,6 @@ namespace Blend.BuisnessEntities.BlendCreation
         public string BG { get; set; }
         public string BL { get; set; }
         public bool IsClosed { get; set; }
+        public string TrialVersion { get; set; }
     }
 }

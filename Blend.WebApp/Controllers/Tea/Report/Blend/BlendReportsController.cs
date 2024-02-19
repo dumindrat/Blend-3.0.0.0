@@ -154,6 +154,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                 rd.SetParameterValue("totalblendbalancevalue", String.Format("{0:0.00}", blendvalue));
                 rd.SetParameterValue("sys_ver", sysver == null ? "Blend" : sysver);
                 rd.SetParameterValue("sys_contact", syscontact == null ? "Achieves" : syscontact);
+                rd.SetParameterValue("trialversion", param.IsClosed ? "Closed" : param.TrialVersion);
 
 
                 Stream ms = rd.ExportToStream(ExportFormatType.PortableDocFormat);
@@ -313,7 +314,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("datecompletion", param.DateOfCompletion == null ? "" : param.DateOfCompletion);
                     rd.SetParameterValue("avgprice", (param.IsClosed && obj.AfterClosed) ? param.ClosedRate : String.Format("{0:0.0000}", avgPrice));
                     rd.SetParameterValue("qtytobeexported", param.ExportQty == null ? "" : param.ExportQty);
-                    rd.SetParameterValue("bg", (param.IsClosed && obj.AfterClosed)  ? blendgain : "0");
+                    rd.SetParameterValue("bg", (param.IsClosed && obj.AfterClosed) ? blendgain : "0");
                     rd.SetParameterValue("bb", blendBal);
                     rd.SetParameterValue("bl", (param.IsClosed && obj.AfterClosed) ? blendloss : "0");
                     rd.SetParameterValue("totallineqty", String.Format("{0:0.00}", lineSum));
@@ -323,6 +324,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("sys_ver", sysver == null ? "Blend" : sysver);
                     rd.SetParameterValue("sys_contact", syscontact == null ? "Achieves" : syscontact);
                     //rd.SetParameterValue("iswithwatermark", obj.IsWithWaterMark == true ? "YES" : "NO");
+                    rd.SetParameterValue("trialversion", param.IsClosed ? "Closed" : param.TrialVersion);
 
                     var mediaType = "application/pdf";
 

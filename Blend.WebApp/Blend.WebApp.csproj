@@ -514,6 +514,8 @@
     <Content Include="App\Packing\PO\Items.html" />
     <Content Include="App\Packing\PO\List.html" />
     <Content Include="App\Packing\PO\po_itemscontroller.js" />
+    <Content Include="App\Packing\Reports\Stock\controller.js" />
+    <Content Include="App\Packing\Reports\Stock\StockReport.html" />
     <Content Include="App\Packing\Supplier\Create.html" />
     <Content Include="App\Packing\Supplier\controller.js" />
     <Content Include="App\Packing\Supplier\List.html" />

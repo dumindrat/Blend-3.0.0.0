@@ -27,6 +27,7 @@
   <parameterMaps>
     <parameterMap id="get-allreturnnote-params">
       <parameter property="ReturnNoteNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-receivenotelist-params">
       <!--<parameter property="ItemName" direction  ="Input" />-->

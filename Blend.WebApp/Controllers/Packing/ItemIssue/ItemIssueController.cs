@@ -1,4 +1,5 @@
-﻿using Blend.BuisnessEntities.Packing.ItemIssue;
+﻿using Blend.BuisnessEntities.BlendCreation;
+using Blend.BuisnessEntities.Packing.ItemIssue;
 using Blend.BuisnessEntities.Packing.ItemReceive;
 using Blend.BuisnessService.Helper.Email;
 using Blend.BuisnessService.Packing.ItemIssue;
@@ -84,6 +85,24 @@ namespace Blend.WebApp.Controllers.Packing.ItemIssue
             }
             return pos;
 
+        }
+
+        [HttpGet]
+        [ActionName("GetBlendList")]
+        public IEnumerable<BlendInfo> GetBlendList(string id)
+        {
+            IEnumerable<BlendInfo> blends = new List<BlendInfo>();
+            try
+            {
+                id = id.Replace("~", "/");
+                blends = _itemIssueSvc.GetBlendList(GetCompanyId());
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+
+            }
+            return blends;
         }
 
         [DataOperationAuthorization(operationType = "Create")]

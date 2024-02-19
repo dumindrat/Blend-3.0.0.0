@@ -131,6 +131,10 @@ function ($routeProvider) {
             templateUrl: '/App/Authentication/UserCompany/UserCompany.html',
             controller: 'userCompanyController'
         }).
+        when('/PackingStock', {
+            templateUrl: '/App/Packing/Reports/Stock/StockReport.html',
+            controller: 'packingStockController'
+        }).
         otherwise({
             redirectTo: '/'
         });

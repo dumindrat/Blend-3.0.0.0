@@ -1,3 +1,8 @@
+delete from [dbo].[purchasereturn_detail]
+delete from [dbo].[purchasereturn_header]
+delete from [dbo].[purchasereceived_detail]
+delete from [dbo].[purchasereceived_header]
+
 delete from purchase_detail
 delete from purchase_header
 delete from blend_detail
