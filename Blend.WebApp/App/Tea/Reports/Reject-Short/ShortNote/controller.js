@@ -21,16 +21,30 @@
                 $scope.cancel();
             });
 
-            getBrokers();
+            //getBrokers();
 
-            function getBrokers() {
-                httpService.getdata('api/Broker', function (results) {
+            //function getBrokers() {
+            //    httpService.getdata('api/GetBrokers/all', function (results) {
+            //        $scope.BrokerData = results.data;
+            //        // $scope.disablestatus = false;
+
+            //    });
+
+            //};
+
+            getBrokers("all");
+
+            function getBrokers(searchstr) {
+                $scope.dataLoading = true;
+                $scope.recordCount = globalService.getDataLoadingMessage();
+                httpService.getdata('api/Broker' + '/GetBrokers/' + searchstr, function (results) {
                     $scope.BrokerData = results.data;
-                    // $scope.disablestatus = false;
+                    $scope.dataLoading = false;
 
                 });
 
             };
+
             $scope.cancel = function () {
                 $modalInstance.dismiss('Close');
             };

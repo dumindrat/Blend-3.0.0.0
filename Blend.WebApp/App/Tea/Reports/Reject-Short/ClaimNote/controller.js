@@ -39,11 +39,14 @@
                 $scope.cancel();
             });
 
-            getBrokers();
+            getBrokers("all");
 
-            function getBrokers() {
-                httpService.getdata('api/Broker', function (results) {
+            function getBrokers(searchstr) {
+                $scope.dataLoading = true;
+                $scope.recordCount = globalService.getDataLoadingMessage();
+                httpService.getdata('api/Broker' + '/GetBrokers/' + searchstr, function (results) {
                     $scope.BrokerData = results.data;
+                    $scope.dataLoading = false;
 
                 });
 

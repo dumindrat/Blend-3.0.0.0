@@ -162,6 +162,7 @@
     <Compile Include="Controllers\Packing\PO\POPrintController.cs" />
     <Compile Include="Controllers\Packing\PO\POSendMailController.cs" />
     <Compile Include="Controllers\Packing\PO\PurchaseOrderController.cs" />
+    <Compile Include="Controllers\Packing\Reports\PackingStockController.cs" />
     <Compile Include="Controllers\Packing\Supplier\SupplierController.cs" />
     <Compile Include="Controllers\Packing\ItemMaster\ItemController.cs" />
     <Compile Include="Controllers\Packing\UOM\UomController.cs" />
@@ -330,6 +331,13 @@
     </Compile>
     <Compile Include="Reports\Packing\RN\rn.cs">
       <DependentUpon>rn.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\Packing\Stock\packingstock.cs">
+      <DependentUpon>packingstock.rpt</DependentUpon>
       <AutoGen>True</AutoGen>
       <SubType>Component</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -516,6 +524,7 @@
     <Content Include="App\Packing\PO\po_itemscontroller.js" />
     <Content Include="App\Packing\Reports\Stock\controller.js" />
     <Content Include="App\Packing\Reports\Stock\StockReport.html" />
+    <Content Include="App\Packing\Reports\Stock\StockReportOptions.html" />
     <Content Include="App\Packing\Supplier\Create.html" />
     <Content Include="App\Packing\Supplier\controller.js" />
     <Content Include="App\Packing\Supplier\List.html" />
@@ -629,6 +638,9 @@
     <Content Include="Controllers\Packing\ItemReceive\SqlFile.xml" />
     <Content Include="Controllers\Packing\ItemReturn\SqlFile.xml" />
     <Content Include="Controllers\Packing\PO\SqlFile.xml" />
+    <Content Include="Controllers\Packing\Reports\SqlFile.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Controllers\Packing\Supplier\SqlFile.xml" />
     <Content Include="Controllers\Packing\ItemMaster\SqlFile.xml" />
     <Content Include="Controllers\Packing\UOM\SqlFile.xml" />
@@ -695,6 +707,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Reports\Packing\RN\rn.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Packing\Stock\packingstock.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Reports\Purchase\Canisters\canistersheet.xml" />
@@ -841,6 +856,11 @@
     <EmbeddedResource Include="Reports\Packing\RN\rn.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>rn.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\Packing\Stock\packingstock.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>packingstock.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\Purchase\Canisters\canistersheet.rpt">

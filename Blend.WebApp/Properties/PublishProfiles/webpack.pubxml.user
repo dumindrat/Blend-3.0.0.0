@@ -342,7 +342,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/15/2018 22:22:08</publishTime>
     </File>
     <File Include="App/Packing/ItemIssue/controller.js">
-      <publishTime>08/06/2023 10:08:51</publishTime>
+      <publishTime>02/18/2024 17:21:24</publishTime>
     </File>
     <File Include="App/Packing/ItemIssue/Create.html">
       <publishTime>08/06/2023 10:08:51</publishTime>
@@ -420,13 +420,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/08/2023 15:39:37</publishTime>
     </File>
     <File Include="App/Packing/PO/controller.js">
-      <publishTime>08/08/2023 15:39:37</publishTime>
+      <publishTime>02/17/2024 19:56:26</publishTime>
     </File>
     <File Include="App/Packing/PO/Create.html">
       <publishTime>08/08/2023 15:39:37</publishTime>
     </File>
     <File Include="App/Packing/PO/Email.html">
-      <publishTime>08/06/2023 10:08:51</publishTime>
+      <publishTime>02/17/2024 19:50:52</publishTime>
     </File>
     <File Include="App/Packing/PO/EmailHistory.html">
       <publishTime>08/06/2023 10:08:51</publishTime>
@@ -442,6 +442,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="App/Packing/PO/po_itemscontroller.js">
       <publishTime>08/08/2023 15:39:37</publishTime>
+    </File>
+    <File Include="App/Packing/Reports/Stock/controller.js">
+      <publishTime>03/03/2024 20:48:22</publishTime>
+    </File>
+    <File Include="App/Packing/Reports/Stock/StockReport.html">
+      <publishTime>02/18/2024 14:45:34</publishTime>
+    </File>
+    <File Include="App/Packing/Reports/Stock/StockReportOptions.html">
+      <publishTime>02/25/2024 17:05:17</publishTime>
     </File>
     <File Include="App/Packing/Supplier/controller.js">
       <publishTime>08/08/2023 15:39:37</publishTime>
@@ -672,7 +681,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/08/2023 15:39:37</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/ClaimNote/controller.js">
-      <publishTime>03/21/2021 21:00:27</publishTime>
+      <publishTime>03/09/2024 11:50:23</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/ClaimNote/PrintOptions.html">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -681,7 +690,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/DO/controller.js">
-      <publishTime>03/21/2021 21:00:27</publishTime>
+      <publishTime>03/09/2024 11:50:39</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/DO/PrintOptions.html">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -690,7 +699,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/ShortNote/controller.js">
-      <publishTime>03/21/2021 21:00:27</publishTime>
+      <publishTime>03/09/2024 11:15:06</publishTime>
     </File>
     <File Include="App/Tea/Reports/Reject-Short/ShortNote/PrintOptions.html">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -753,22 +762,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="bin/Blend.BuisnessEntities.dll">
-      <publishTime>02/11/2024 21:09:56</publishTime>
+      <publishTime>03/09/2024 12:33:46</publishTime>
     </File>
     <File Include="bin/Blend.BuisnessService.dll">
-      <publishTime>02/11/2024 21:09:57</publishTime>
+      <publishTime>03/09/2024 12:33:49</publishTime>
     </File>
     <File Include="bin/Blend.Data.dll">
-      <publishTime>02/11/2024 21:09:56</publishTime>
+      <publishTime>03/09/2024 12:33:46</publishTime>
     </File>
     <File Include="bin/Blend.DataModel.dll">
-      <publishTime>02/11/2024 21:09:56</publishTime>
+      <publishTime>03/09/2024 12:33:47</publishTime>
     </File>
     <File Include="bin/Blend.Resolver.dll">
-      <publishTime>02/11/2024 21:09:55</publishTime>
+      <publishTime>03/09/2024 12:33:46</publishTime>
     </File>
     <File Include="bin/Blend.WebApp.dll">
-      <publishTime>02/11/2024 21:10:00</publishTime>
+      <publishTime>03/09/2024 12:33:51</publishTime>
     </File>
     <File Include="bin/Castle.DynamicProxy.dll">
       <publishTime>03/22/2021 11:11:46</publishTime>
@@ -801,16 +810,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/22/2021 11:11:47</publishTime>
     </File>
     <File Include="bin/Reports/Blendsheet/blendreport.rpt">
-      <publishTime>02/10/2024 11:25:30</publishTime>
+      <publishTime>02/17/2024 19:26:52</publishTime>
     </File>
     <File Include="bin/Reports/Blendsheet/blendreport1.cs">
-      <publishTime>02/10/2024 11:25:30</publishTime>
+      <publishTime>03/03/2024 20:37:24</publishTime>
     </File>
     <File Include="bin/Reports/Blendsheet/blendreportstores.cs">
-      <publishTime>02/11/2024 12:37:27</publishTime>
+      <publishTime>02/13/2024 22:42:41</publishTime>
     </File>
     <File Include="bin/Reports/Blendsheet/blendreportstores.rpt">
-      <publishTime>02/11/2024 12:37:26</publishTime>
+      <publishTime>02/13/2024 22:42:41</publishTime>
     </File>
     <File Include="bin/Reports/Blendsheet/storesinstructions.cs">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -855,10 +864,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/06/2023 10:08:52</publishTime>
     </File>
     <File Include="bin/Reports/Packing/IR/ir.cs">
-      <publishTime>08/06/2023 10:08:52</publishTime>
+      <publishTime>02/17/2024 22:10:21</publishTime>
     </File>
     <File Include="bin/Reports/Packing/IR/ir.rpt">
-      <publishTime>08/06/2023 10:08:52</publishTime>
+      <publishTime>02/17/2024 22:10:21</publishTime>
     </File>
     <File Include="bin/Reports/Packing/PO/po.cs">
       <publishTime>08/06/2023 10:08:52</publishTime>
@@ -867,10 +876,16 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/06/2023 10:08:52</publishTime>
     </File>
     <File Include="bin/Reports/Packing/RN/rn.cs">
-      <publishTime>08/06/2023 10:08:52</publishTime>
+      <publishTime>02/17/2024 23:15:15</publishTime>
     </File>
     <File Include="bin/Reports/Packing/RN/rn.rpt">
-      <publishTime>08/06/2023 10:08:52</publishTime>
+      <publishTime>02/17/2024 23:15:14</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/Stock/packingstock.cs">
+      <publishTime>03/03/2024 20:59:48</publishTime>
+    </File>
+    <File Include="bin/Reports/Packing/Stock/packingstock.rpt">
+      <publishTime>03/03/2024 20:59:47</publishTime>
     </File>
     <File Include="bin/Reports/Stock/StoresAnalysis/storeanalysis.cs">
       <publishTime>08/06/2023 10:08:52</publishTime>
@@ -954,7 +969,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/08/2023 15:39:37</publishTime>
     </File>
     <File Include="Controllers/Packing/ItemIssue/SqlFile.xml">
-      <publishTime>02/10/2024 20:09:49</publishTime>
+      <publishTime>02/18/2024 17:45:32</publishTime>
     </File>
     <File Include="Controllers/Packing/ItemMaster/SqlFile.xml">
       <publishTime>02/10/2024 16:55:02</publishTime>
@@ -963,10 +978,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/10/2024 18:06:01</publishTime>
     </File>
     <File Include="Controllers/Packing/ItemReturn/SqlFile.xml">
-      <publishTime>08/06/2023 10:08:52</publishTime>
+      <publishTime>02/17/2024 21:47:25</publishTime>
     </File>
     <File Include="Controllers/Packing/PO/SqlFile.xml">
       <publishTime>02/10/2024 14:25:31</publishTime>
+    </File>
+    <File Include="Controllers/Packing/Reports/SqlFile.xml">
+      <publishTime>03/03/2024 16:20:20</publishTime>
     </File>
     <File Include="Controllers/Packing/Supplier/SqlFile.xml">
       <publishTime>02/10/2024 17:18:58</publishTime>
@@ -1002,7 +1020,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/25/2023 16:36:39</publishTime>
     </File>
     <File Include="Controllers/Tea/Report/Blend/SqlFile.xml">
-      <publishTime>03/21/2021 21:00:27</publishTime>
+      <publishTime>02/13/2024 22:17:23</publishTime>
     </File>
     <File Include="Controllers/Tea/Report/Purchase/SqlFile.xml">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -1029,7 +1047,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="index.html">
-      <publishTime>08/25/2023 16:29:23</publishTime>
+      <publishTime>02/18/2024 14:41:44</publishTime>
     </File>
     <File Include="lib/angular-animate.min.js">
       <publishTime>11/07/2017 23:42:59</publishTime>
@@ -1097,6 +1115,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Reports/Packing/RN/rn.xml">
       <publishTime>08/06/2023 10:08:52</publishTime>
     </File>
+    <File Include="Reports/Packing/Stock/packingstock.xml">
+      <publishTime>03/03/2024 16:51:30</publishTime>
+    </File>
     <File Include="Reports/Purchase/Canisters/canistersheet.xml">
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
@@ -1134,7 +1155,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="Script/app.js">
-      <publishTime>08/25/2023 16:29:23</publishTime>
+      <publishTime>02/18/2024 14:37:37</publishTime>
     </File>
     <File Include="Script/data.service.js">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -1161,7 +1182,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="SqlMap.config">
-      <publishTime>02/11/2024 19:51:59</publishTime>
+      <publishTime>03/03/2024 14:07:17</publishTime>
     </File>
     <File Include="Utility/controller.js">
       <publishTime>03/21/2021 21:00:27</publishTime>
@@ -1173,7 +1194,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/21/2021 21:00:27</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/11/2024 21:10:01</publishTime>
+      <publishTime>02/18/2024 13:12:49</publishTime>
     </File>
   </ItemGroup>
 </Project>

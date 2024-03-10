@@ -94,7 +94,6 @@ namespace Blend.WebApp.Controllers.Packing.ItemIssue
             IEnumerable<BlendInfo> blends = new List<BlendInfo>();
             try
             {
-                id = id.Replace("~", "/");
                 blends = _itemIssueSvc.GetBlendList(GetCompanyId());
             }
             catch (Exception ex)

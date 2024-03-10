@@ -67,6 +67,7 @@
     <Compile Include="Packing\ItemReturn\ItemReturnNoteDto.cs" />
     <Compile Include="Packing\PO\PurchaseOrderDto.cs" />
     <Compile Include="Packing\PO\PurchaseOrderInfo.cs" />
+    <Compile Include="Packing\Reports\PackingStockDto.cs" />
     <Compile Include="Packing\UnitOfMeasure\Uom.cs" />
     <Compile Include="TeaGrade\Grade.cs" />
     <Compile Include="ItemSupplier\Supplier.cs" />

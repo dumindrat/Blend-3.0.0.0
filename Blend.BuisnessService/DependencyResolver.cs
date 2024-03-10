@@ -38,6 +38,7 @@ using Blend.BuisnessService.Packing.UOM;
 using Blend.BuisnessService.Packing.ItemReceive;
 using Blend.BuisnessService.Packing.ItemIssue;
 using Blend.BuisnessService.Packing.ItemReturn;
+using Blend.BuisnessService.Packing.Reports;
 
 namespace Blend.BuisnessService
 {
@@ -84,8 +85,7 @@ namespace Blend.BuisnessService
             registerComponent.RegisterType<IItemReceiveService, ItemReceiveService>();
             registerComponent.RegisterType<IItemIssueService, ItemIssueService>();
             registerComponent.RegisterType<IItemRetunService, ItemReturnService>();
-
-            
+            registerComponent.RegisterType<IPackingStockReportService, PackingStockReportService>();           
 
         }
     }
