@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Blend.BuisnessEntities.BlendCreation;
 using Blend.BuisnessEntities.LineSummary;
+using Blend.BuisnessEntities.Purchase;
 
 namespace Blend.BuisnessService.LineSummary
 {
@@ -14,6 +15,7 @@ namespace Blend.BuisnessService.LineSummary
         IEnumerable<LineAllocationDto> GetLineAllocations(int id);
         IEnumerable<LineAdjustmentDto> GetLineAdjustments(int id);
         IEnumerable<LineTransHistory> GetLineTransHistory(int id);
+        IEnumerable<LineSummaryDto> GetLineDetailsByAdvanceFilter(LineAdvanceFilterDto obj);
 
     }
 }

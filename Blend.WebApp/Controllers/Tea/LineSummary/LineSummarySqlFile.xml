@@ -4,6 +4,7 @@
   <alias>
     <typeAlias alias="linesummary" type="Blend.BuisnessEntities.LineSummary.LineSummaryDto"/>
     <typeAlias alias="linehistory" type="Blend.BuisnessEntities.LineSummary.LineTransHistory"/>
+    <typeAlias alias="filterdto" type="Blend.BuisnessEntities.Purchase.LineAdvanceFilterDto"/>
   </alias>
 
   <statements>
@@ -14,6 +15,9 @@
     <procedure id="GetLineHistoryDet" parameterMap="get-linehistorydet-params"  resultMap="get-linehistorydet-result">
       trn_LineHistoryGet
     </procedure>
+    <procedure id="GetLineSummaryfilter" parameterMap="get-linesummaryfilter-params"  resultMap="get-linesummaryfilter-result">
+      [trn_LineSummaryByFilter]
+    </procedure>
   </statements>
 
   <parameterMaps>
@@ -23,6 +27,15 @@
      <parameterMap id="get-linehistorydet-params">
       <parameter property="Id" column="Id" />
     </parameterMap>
+     <parameterMap id="get-linesummaryfilter-params">
+       <parameter property="FromSaleDate" direction  ="Input"/>
+       <parameter property="ToSaleDate" direction  ="Input"/>
+       <parameter property="Standard" direction  ="Input"/>
+       <parameter property="LotNo" direction  ="Input"/>
+       <parameter property="Invoice" direction  ="Input"/>
+       <parameter property="GardenMark" direction  ="Input"/>
+       <parameter property="BrokerCode" direction  ="Input"/>
+     </parameterMap>
   </parameterMaps>
 
   <resultMaps>
@@ -63,6 +76,33 @@
       <result property="Date" column="Date" dbType="Varchar"/>
       <result property="User" column="User" dbType="Varchar"/>
       
+    </resultMap>
+    <resultMap id="get-linesummaryfilter-result" class="Blend.BuisnessEntities.LineSummary.LineSummaryDto">
+      <result property="Id" column="Id" dbType="int"/>
+      <result property="BoxNo" column="BoxNo" dbType="Varchar"/>
+      <result property="SaleCode" column="SaleCode" dbType="Varchar"/>
+      <result property="SaleDate" column="SaleDate" dbType="Varchar"/>
+      <result property="Invoice" column="Invoice" dbType="Varchar"/>
+      <result property="LotNo" column="LotNo" dbType="Varchar"/>
+      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+      <result property="SaleType" column="SaleType" dbType="Varchar"/>
+      <result property="Grade" column="Grade" dbType="Varchar"/>
+      <result property="Standard" column="Standard" dbType="Varchar"/>
+      <result property="GardenMark" column="GardenMark" dbType="Varchar"/>
+      <result property="Packs" column="Packs" dbType="Decimal"/>
+      <result property="Rate" column="Rate" dbType="Decimal"/>
+      <result property="NetWeight" column="NetWeight" dbType="Decimal"/>
+      <result property="Value" column="Value" dbType="Decimal"/>
+      <result property="ReducedQty" column="ReducedQty" dbType="Decimal"/>
+      <result property="TinNo" column="TinNo" dbType="Varchar"/>
+      <result property="StockPacks" column="StockPacks" dbType="Decimal"/>
+      <result property="StockQty" column="StockQty" dbType="Decimal"/>
+      <result property="VirtualWeight" column="VirtualWeight" dbType="Decimal"/>
+      <result property="VirtualValue" column="VirtualValue" dbType="Decimal"/>
+      <result property="CreateDate" column="CreateDate" dbType="Varchar"/>
+      <result property="CreateUser" column="CreateUser" dbType="Varchar"/>
+      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+      <result property="ModifiedUser" column="ModifiedUser" dbType="Varchar"/>
     </resultMap>
   </resultMaps>
 </sqlMap>

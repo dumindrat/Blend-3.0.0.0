@@ -14,9 +14,21 @@
         $scope.searchstr = "";
         $scope.content = null;
         $scope.recordCount = globalService.getDataLoadingMessage();
+        var systemDate = globalService.getDate();
+        var initSaleDate = globalService.convertDateyyyymmdd(systemDate);
+        $scope.New = {
+            'FromSaleDate': initSaleDate,
+            'ToSaleDate': initSaleDate, 'GardenMark': '', 'Standard': '', 'BrokerCode': '', 'Invoice': '', 'LotNo': ''
+        };
 
         $rootScope.$on('ADJUSTMENT_EVENT', function (event, data) {
             getStraightLines('all');
+        });
+
+        $rootScope.$on('LOAD_BY_FILTER', function (event, results) {
+            $scope.StraightLineData = results.data;
+            $scope.recordCount = globalService.getDataCountMessage(results.data.length);
+            $('#datasearch').focus();
         });
 
         $scope.searchlines = function searchdata() {
@@ -58,6 +70,26 @@
             modalInstanceC.result.then(function (selectedObject) {
             });
         };
+
+        $scope.loadLines = function () {
+            globalService.openLoadingWindow("Loading..");
+            $scope.New.FromSaleDate = globalService.convertDateToIST($scope.New.FromSaleDate);
+            $scope.New.ToSaleDate = globalService.convertDateToIST($scope.New.ToSaleDate);
+
+            httpService.getdata('api/LineSummary/GetFilterData?' + 'fromSaleDate=' + $scope.New.FromSaleDate
+                    + '&toSaleDate=' + $scope.New.ToSaleDate + '&invoice=' + $scope.New.Invoice
+                    + '&lotNo=' + $scope.New.LotNo + '&gardenMark=' + $scope.New.GardenMark
+                    + '&brokerCode=' + $scope.New.BrokerCode + '&standard=' + $scope.New.Standard, function (results) {
+
+                        $rootScope.$emit('LOAD_BY_FILTER', results);
+                        $scope.$emit('LOAD_DATA_EVENT', true);
+
+                    }).error(function (data) {
+                        alert('Error in processing report.Contact Administrator.')
+                        $scope.$emit('LOAD_DATA_EVENT', true);
+
+                    });
+        };
     });
 
     app.controller('viewSummaryWindowController', function ($scope, $rootScope, $modalInstance, item, httpService, globalService) {
@@ -85,7 +117,7 @@
             var search = globalService.replaceSlash(boxno);
             $scope.linedataLoading = true;
 
-           httpService.getdata(urlPurchaseAndStock + '/GetLineDetails/' + search, function (results) {
+            httpService.getdata(urlPurchaseAndStock + '/GetLineDetails/' + search, function (results) {
                 $scope.StraightLineData = results.data;
                 $scope.linedataLoading = false;
 
@@ -128,4 +160,5 @@
 
     });
 
+    
 })();

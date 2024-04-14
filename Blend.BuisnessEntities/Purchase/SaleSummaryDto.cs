@@ -61,4 +61,15 @@ namespace Blend.BuisnessEntities.Purchase
         public string RepeatedLineQty { get; set; }
         public string Qty { get; set; }
     }
+
+    public class LineAdvanceFilterDto : BaseEntity
+    {
+        public string FromSaleDate { get; set; }
+        public string ToSaleDate { get; set; }
+        public string LotNo { get; set; }
+        public string Standard { get; set; }
+        public string Invoice { get; set; }
+        public string BrokerCode { get; set; }
+        public string GardenMark { get; set; }
+    }
 }

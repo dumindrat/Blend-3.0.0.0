@@ -10,6 +10,7 @@ using Blend.BuisnessEntities.LineSummary;
 using Blend.BuisnessService.Adjustent;
 using Blend.BuisnessService.BlendCreation;
 using Blend.BuisnessService.LineSummary;
+using Blend.BuisnessEntities.Purchase;
 
 namespace Blend.WebApp.Controllers.Tea.LineSummary
 {
@@ -95,6 +96,35 @@ namespace Blend.WebApp.Controllers.Tea.LineSummary
 
             }
             return data;
+        }
+
+        [HttpGet]
+        [ActionName("GetFilterData")]
+        public IEnumerable<LineSummaryDto> GetFilterData(string fromSaleDate, string toSaleDate,
+            string invoice, string lotNo, string gardenMark, string brokerCode, string standard)//[FromBody]LineAdvanceFilterDto obj
+        {
+            IEnumerable<LineSummaryDto> lines = new List<LineSummaryDto>();
+
+            try
+            {
+                var obj = new LineAdvanceFilterDto
+                {
+                    FromSaleDate = fromSaleDate,
+                    ToSaleDate = toSaleDate,
+                    Invoice = invoice == null ? "" : invoice,
+                    LotNo = lotNo == null ? "" : lotNo,
+                    GardenMark = gardenMark == null ? "" : gardenMark,
+                    Standard = standard == null ? "" : standard,
+                    BrokerCode = brokerCode == null ? "" : brokerCode
+                };
+
+                lines = _lineSummarySvc.GetLineDetailsByAdvanceFilter(obj);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+            }
+            return lines;
         }
     }
 }
