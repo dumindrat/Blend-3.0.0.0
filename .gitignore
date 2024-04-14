@@ -67,3 +67,5 @@ Blend.BuisnessEntities/bin/
 Support Chat/Chat.txt
 Blend.v12.suo
 *.pdf
+Blend.WebApp/Logs/log.txt
+Blend.WebApp/Properties/PublishProfiles/webpack.pubxml.user
