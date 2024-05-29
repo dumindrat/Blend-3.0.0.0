@@ -312,11 +312,11 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("standard", param.StandardName == null ? "" : param.StandardName);
                     rd.SetParameterValue("blendno", param.BlendNo == null ? "" : param.BlendNo);
                     rd.SetParameterValue("datecompletion", param.DateOfCompletion == null ? "" : param.DateOfCompletion);
-                    rd.SetParameterValue("avgprice", (param.IsClosed && obj.AfterClosed) ? param.ClosedRate : String.Format("{0:0.0000}", avgPrice));
+                    rd.SetParameterValue("avgprice", param.IsClosed ? param.ClosedRate : String.Format("{0:0.0000}", avgPrice));
                     rd.SetParameterValue("qtytobeexported", param.ExportQty == null ? "" : param.ExportQty);
-                    rd.SetParameterValue("bg", (param.IsClosed && obj.AfterClosed) ? blendgain : "0");
+                    rd.SetParameterValue("bg", param.IsClosed ? blendgain : "0");
                     rd.SetParameterValue("bb", blendBal);
-                    rd.SetParameterValue("bl", (param.IsClosed && obj.AfterClosed) ? blendloss : "0");
+                    rd.SetParameterValue("bl", param.IsClosed ? blendloss : "0");
                     rd.SetParameterValue("totallineqty", String.Format("{0:0.00}", lineSum));
                     rd.SetParameterValue("totalblendbalanceqty", String.Format("{0:0.00}", BlenSum));
                     rd.SetParameterValue("totallinevalue", String.Format("{0:0.00}", linevalue));
