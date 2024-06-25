@@ -22,7 +22,8 @@
 
         function getSales(seachby) {
             $scope.recordCount = globalService.getDataLoadingMessage();
-            httpService.getdata(urlStraightLinePurchase + '/GetAllSales/' + seachby, function (results) {
+            var saledate = globalService.replaceSlash(seachby);
+            httpService.getdata(urlStraightLinePurchase + '/GetAllSales/' + saledate, function (results) {
                 $scope.SaleData = results.data;
                 $scope.recordCount = globalService.getDataCountMessage(results.data.length);
                 $('#search').focus();

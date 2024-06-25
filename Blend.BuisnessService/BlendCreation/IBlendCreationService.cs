@@ -19,7 +19,7 @@ namespace Blend.BuisnessService.BlendCreation
         bool DeleteBlend(long blendId);
         bool AddItem(BlendItem obj);
         bool RemoveItem(BlendItem obj);
-        IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId);
+        IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId,string searchBy);
         IList<BlendStockItem> GetBlendStock(string serchString, int companyId);
         StraighLineStockDto GetStraightLIneStockByBoxNo(string boxNo);
         IList<BlendQuickSearchItem> GetBlendQuickSearchItem(string boxno);

@@ -55,7 +55,7 @@ namespace Blend.BuisnessService.Purchase
         {
             try
             {
-                var searchBy = searchString == "all" ? "" : searchString;
+                var searchBy = searchString == "all" ? "" : searchString.Replace('~', '/');
                 var mapper = new DataMapper<Sale>("GetSales", new Hashtable() { { "SaleDate", searchBy }, { "CompanyId", companyId } });
 
                 var results = mapper.ObjectList();

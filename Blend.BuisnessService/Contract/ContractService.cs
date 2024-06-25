@@ -15,7 +15,7 @@ namespace Blend.BuisnessService.Contract
         {
             try
             {
-                var searchBy = serchStr == "all" ? "" : serchStr;
+                var searchBy = serchStr == "all" ? "" : serchStr.Replace('~', '/');
                 var mapper = new DataMapper<BuyerContract>("GetContracts", new Hashtable() { { "ContractName", searchBy }, { "CompanyId", companyId } });
 
                 var result = mapper.ObjectList();

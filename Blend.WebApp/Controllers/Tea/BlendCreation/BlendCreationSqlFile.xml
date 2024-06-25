@@ -21,6 +21,12 @@
     <procedure id="GetStraightLineStock" parameterMap="get-stlstk-params"  resultMap="get-stlstk-result">
       trn_TeaStockStraightLineSearch
     </procedure>
+    <procedure id="GetStraightLineStockByLotNo" parameterMap="get-stlstklot-params"  resultMap="get-stlstk-result">
+      trn_TeaStockStraightLineSearchByLotNo
+    </procedure>
+    <procedure id="GetStraightLineStockByInvNo" parameterMap="get-stlstkinv-params"  resultMap="get-stlstk-result">
+      trn_TeaStockStraightLineSearchByInvNo
+    </procedure>
     <procedure id="GetStraightLineStockByBoxNo" parameterMap="get-stkbybox-params"  resultMap="get-stkbybox-result">
       trn_TeaStockStraightGetByBoxNo
     </procedure>
@@ -61,6 +67,14 @@
     <parameterMap id="get-stlstk-params">
       <parameter property="BoxNo" direction  ="Input" />
       <parameter property="SearchType" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stlstklot-params">
+      <parameter property="LotNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stlstkinv-params">
+      <parameter property="Invoice" direction  ="Input" />
       <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-stkbybox-params">

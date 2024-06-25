@@ -444,14 +444,30 @@ namespace Blend.BuisnessService.BlendCreation
             return true;
         }
 
-        public IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId)
+        public IList<StraightLineStockItem> GetStraightLIneStock(string serchString, int companyId, string searchBy)
         {
             try
             {
-                var searchBy = serchString == "all" ? "" : serchString.Replace('~', '/');
-                var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStock", new Hashtable() { { "BoxNo", searchBy }, { "SearchType", 1 }, { "CompanyId", companyId } });
-                var result = mapper.ObjectList();
-                return result;
+                var searchBystr = serchString == "all" ? "" : serchString.Replace('~', '/');
+                if (string.IsNullOrEmpty(searchBy) || searchBy == "BoxNo")
+                {
+                    var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStock", new Hashtable() { { "BoxNo", searchBystr }, { "SearchType", 1 }, { "CompanyId", companyId } });
+                    var result = mapper.ObjectList();
+                    return result;
+                }
+                if (searchBy == "LotNo")
+                {
+                    var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStockByLotNo", new Hashtable() { { "LotNo", searchBystr }, { "CompanyId", companyId } });
+                    var result = mapper.ObjectList();
+                    return result;
+                }
+                if (searchBy == "InvoiceNo")
+                {
+                    var mapper = new DataMapper<StraightLineStockItem>("GetStraightLineStockByInvNo", new Hashtable() { { "Invoice", searchBystr }, { "CompanyId", companyId } });
+                    var result = mapper.ObjectList();
+                    return result;
+                }
+                return new List<StraightLineStockItem>();
             }
             catch (Exception ex)
             {

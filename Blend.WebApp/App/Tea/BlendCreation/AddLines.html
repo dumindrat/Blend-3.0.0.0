@@ -11,7 +11,7 @@
                         <tr ng-repeat="c in StraightLIneStockData" id="{{c.Id}}" animate-on-change='c.Id' ng-animate=" 'animate'" style="font: small">
                             <td ng-hide="true">{{c.StockItemId}}</td>
                             <td width="8%">
-                                <button type="button" style="width:100%" class="btn btn-sm" ng-disabled="accessLevels.C" ng-click="openSummaryWindow(c.BoxNo)" data-placement="top" title="View summary">
+                                <button type="button" style="width:100%" class="btn btn-sm" ng-disabled="accessLevels.C" data-placement="top" title="View summary">
                                     {{c.BoxNo}}
                                 </button>
                             </td>

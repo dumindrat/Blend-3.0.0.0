@@ -60,7 +60,8 @@
         };
 
         service.replaceSlash = function (string) {
-            var result = string.replace("/", "~");
+            //var result = string.replace("/", "~");
+            var result = string.replace(/\//g, "~");
             return result;
         };
 

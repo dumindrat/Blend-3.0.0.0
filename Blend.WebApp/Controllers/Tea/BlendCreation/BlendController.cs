@@ -53,12 +53,12 @@ namespace Blend.WebApp.Controllers.BlendCreation
 
         [HttpGet]
         [ActionName("GetStraghtLineStock")]
-        public IEnumerable<StraightLineStockItem> GetStraghtLineStock(string id)
+        public IEnumerable<StraightLineStockItem> GetStraghtLineStock(string id, string searchby)
         {
             IEnumerable<StraightLineStockItem> stocks = new List<StraightLineStockItem>();
             try
             {
-                stocks = _blendSvc.GetStraightLIneStock(id, GetCompanyId());
+                stocks = _blendSvc.GetStraightLIneStock(id, GetCompanyId(), searchby);
             }
             catch (Exception ex)
             {
