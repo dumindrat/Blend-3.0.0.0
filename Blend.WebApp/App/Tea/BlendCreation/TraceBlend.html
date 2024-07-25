@@ -7,12 +7,37 @@
 <div class="modal-body">
     <div class="container-fluid" style="font-size: smaller">
         <div class="row">
-            <div class="row" style="padding: 10px 10px 10px 10px;">
-                <div class="col-sm-4">
+            <div class="container-fluid">
+                <div class="col-sm-6">
                     <fieldset class="the-fieldset">
-                        <legend class="the-legend"><span class="badge">MS-OL</span> Tot Lines : {{LineSummary.BlendItemSummaryList[0].LineCount }}. Qty : {{LineSummary.BlendItemSummaryList[0].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[0].Value| number: 2}}
+                        <legend class="the-legend">Summary</legend>
+                        <table class="table table-hover" style="width: 100%; font-size: small">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="c in BlendInfo" id="{{c.Item}}" animate-on-change='c.Item' ng-animate=" 'animate'" style="font: small">
+                                    <td>{{c.Item}}</td>
+                                    <td><b><span class="badge">{{c.Value}}</span></b></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <span style="margin-left: 8px;" ng-show="summarydataLoading">
+                            <img class="savedata" />
+                        </span>
+                    </fieldset>
+
+                </div>
+                <div class="col-sm-6">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">
+                            <span class="badge">MS-OL</span> Tot Lines : {{LineSummary.BlendItemSummaryList[0].LineCount }}. Qty : {{LineSummary.BlendItemSummaryList[0].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[0].Value| number: 2}}
                         </legend>
-                        <div class="container-fluid" style="overflow-y: auto; height: 75px">
+                        <div class="container-fluid" style="overflow-y: auto; height: 200px">
                             <ul>
                                 <li ng-repeat="c in LineSummary.BlendItemSummaryList[0].BlendItems">{{c.BoxNo}} -- {{c.SaleDate}}</li>
                             </ul>
@@ -21,10 +46,10 @@
                             </span>
                         </div>
                     </fieldset>
-                </div>
-                <div class="col-sm-4">
+                    <br />
                     <fieldset class="the-fieldset">
-                        <legend class="the-legend"><span class="badge">PS</span> Tot Lines : {{LineSummary.BlendItemSummaryList[1].LineCount}}. Qty : {{LineSummary.BlendItemSummaryList[1].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[1].Value| number: 2}}
+                        <legend class="the-legend">
+                            <span class="badge">PS</span> Tot Lines : {{LineSummary.BlendItemSummaryList[1].LineCount}}. Qty : {{LineSummary.BlendItemSummaryList[1].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[1].Value| number: 2}}
                         </legend>
                         <div class="container-fluid" style="overflow-y: auto; height: 75px">
                             <ul>
@@ -35,10 +60,10 @@
                             </span>
                         </div>
                     </fieldset>
-                </div>
-                <div class="col-sm-4">
+                    <br />
                     <fieldset class="the-fieldset">
-                        <legend class="the-legend"><span class="badge">BL</span> Tot Lines : {{LineSummary.BlendItemSummaryList[2].LineCount}}. Qty : {{LineSummary.BlendItemSummaryList[2].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[2].Value| number: 2}}
+                        <legend class="the-legend">
+                            <span class="badge">BL</span> Tot Lines : {{LineSummary.BlendItemSummaryList[2].LineCount}}. Qty : {{LineSummary.BlendItemSummaryList[2].Qty| number: 2}}. Value :  {{LineSummary.BlendItemSummaryList[2].Value| number: 2}}
                         </legend>
                         <div class="container-fluid" style="overflow-y: auto; height: 75px">
                             <ul>
@@ -49,48 +74,20 @@
                             </span>
                         </div>
                     </fieldset>
-                </div>
-            </div>
-            <div class="row">
-                <div class="container-fluid">
-                    <div class="col-sm-6">
-                        <fieldset class="the-fieldset">
-                            <legend class="the-legend">Summary</legend>
-                            <table class="table table-hover" style="width: 100%; font-size: small">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="c in BlendInfo" id="{{c.Item}}" animate-on-change='c.Item' ng-animate=" 'animate'" style="font: small">
-                                        <td>{{c.Item}}</td>
-                                        <td><b>{{c.Value}}</b></td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                            <span style="margin-left: 8px;" ng-show="summarydataLoading">
+                    <br />
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">
+                            Allocations
+                        </legend>
+                        <div class="container-fluid" style="overflow-y: auto; height: 75px">
+                            <ul>
+                                <li ng-repeat="c in Allocations">{{c.BlendNo}} -- Allocated Qty {{c.Qty}}</li>
+                            </ul>
+                            <span style="margin-left: 8px;" ng-show="allocationdataLoading">
                                 <img class="savedata" />
                             </span>
-                        </fieldset>
-
-                    </div>
-                    <div class="col-sm-6">
-                        <fieldset class="the-fieldset">
-                            <legend class="the-legend">Allocations
-                            </legend>
-                            <div class="container-fluid" style="overflow-y: auto; height: 75px">
-                                <ul>
-                                    <li ng-repeat="c in Allocations">{{c.BlendNo}} -- Allocated Qty {{c.Qty}}</li>
-                                </ul>
-                                <span style="margin-left: 8px;" ng-show="allocationdataLoading">
-                                    <img class="savedata" />
-                                </span>
-                            </div>
-                        </fieldset>
-                    </div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
         </div>

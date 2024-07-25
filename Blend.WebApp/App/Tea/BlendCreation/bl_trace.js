@@ -26,19 +26,21 @@
             $scope.linedataLoading = true;
 
             httpService.getdata(urlBlendClose + '/GetBlendCloseInfo/' + blendId, function (results) {
-                $scope.BlendInfo.push({ 'Item': 'Export Qty', 'Value': results.data.ExportQty });
-                $scope.BlendInfo.push({ 'Item': 'Total Blend Qty', 'Value': results.data.LineQty });
+                $scope.BlendInfo.push({ 'Item': 'Export Qty', 'Value': results.data.ExportQty + ' Kg'});
+                $scope.BlendInfo.push({ 'Item': 'Total Blend Qty', 'Value': results.data.LineQty + ' Kg' });
                 $scope.BlendInfo.push({ 'Item': 'Rate', 'Value': results.data.Rate });
-                $scope.BlendInfo.push({ 'Item': 'Is Closed', 'Value': results.data.IsClosed === true ? 'Yes' : 'No' });
+                $scope.BlendInfo.push({ 'Item': 'Blend Closed', 'Value': results.data.IsClosed === true ? 'Yes' : 'No' });
                 $scope.BlendInfo.push({ 'Item': 'Closed Rate', 'Value': results.data.ClosedRate });
+                $scope.BlendInfo.push({ 'Item': 'STDBB', 'Value': results.data.STDBB + ' Kg' });
+                $scope.BlendInfo.push({ 'Item': 'STDBG', 'Value': results.data.STDBG + ' Kg' });
+                $scope.BlendInfo.push({ 'Item': 'SIFTED', 'Value': results.data.SiftedQty + ' Kg' });
+                $scope.BlendInfo.push({ 'Item': 'Blend Loss', 'Value': results.data.BL + ' Kg' });
                 $scope.BlendInfo.push({ 'Item': 'Close Date', 'Value': results.data.CloseDate });
-                $scope.BlendInfo.push({ 'Item': 'Is Converted', 'Value': results.data.IsConverted === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'Is CancelRequest', 'Value': results.data.IsCancelRequest === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'Is Shipment done', 'Value': results.data.IsShipment === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'Is Rate Converted', 'Value': results.data.IsConverted === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'Is Cancel Request Sent', 'Value': results.data.IsCancelRequest === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'Is PackGoods Create', 'Value': results.data.IsPackGoodsCreate === true ? 'Yes' : 'No' });
-                $scope.BlendInfo.push({ 'Item': 'PackGoods Create Date', 'Value': results.data.PackGoodsCreateDate });
+                $scope.BlendInfo.push({ 'Item': 'Requested to Reverse the blend', 'Value': results.data.IsCancelRequest === true ? 'Yes' : 'No' });
+                $scope.BlendInfo.push({ 'Item': 'Shipment done', 'Value': results.data.IsShipment === true ? 'Yes' : 'No' });
+                $scope.BlendInfo.push({ 'Item': 'Rate Converted', 'Value': results.data.IsConverted === true ? 'Yes' : 'No' });
+                $scope.BlendInfo.push({ 'Item': 'PackGoods Created', 'Value': results.data.IsPackGoodsCreate === true ? 'Yes' : 'No' });
+                $scope.BlendInfo.push({ 'Item': 'PackGoods Created Date', 'Value': results.data.PackGoodsCreateDate });
 
                 $scope.linedataLoading = false;
 

@@ -8,8 +8,9 @@
         var loadingDelay = globalService.getDataLoadingDelay();
         $scope.accessLevels = globalService.getaccess(renderAction);
         $scope.recordCount = globalService.getDataLoadingMessage();
-
+        $scope.ContractNumbers = [];
         $scope.searchstr = "";
+        $scope.contractData = '';
         var _timeout;
 
         $scope.searchdata = function searchdata() {
@@ -37,6 +38,40 @@
 
             });
         };
+
+        //getContracts();
+
+        function getContracts() {
+            //$scope.recordCount = globalService.getDataLoadingMessage();
+            //var contractno = globalService.replaceSlash(searchstr);
+            httpService.getdata('api/Contract/GetAllContracts/all', function (results) {
+                angular.forEach(results.data, function (value, key) {
+                    $scope.addContracts(value['ContractName']);
+                })
+            });
+        };
+
+        $scope.addContracts = function (item) {
+            var ret = $scope.ContractNumbers.indexOf(item);
+            if (ret == -1) {
+                $scope.ContractNumbers.push(item);
+            }
+            //$scope.item = {};
+        }
+
+        //getAvailabaleStandards('all');
+
+        function getAvailabaleStandards(searchstr) {
+            $scope.dataloading = true;
+
+            httpService.getdata(conDeturl + '/' + 'GetAvailableStandards?id=' + $scope.selectedContract.ContractId + '&standard=' + searchstr, function (results) {
+                $scope.teastandards = results.data;
+                $scope.dataloading = false;
+
+            });
+
+        };
+
         $scope.gridOptions = {
             data: 'BlendData',
             showGroupPanel: false,

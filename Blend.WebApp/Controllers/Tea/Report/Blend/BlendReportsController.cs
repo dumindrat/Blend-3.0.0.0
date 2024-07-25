@@ -270,10 +270,17 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
                 {
+                    IList<BlendCanister> canisterDetails = new List<BlendCanister>();
+                    decimal closedRate = 0;
                     var sysver = ConfigurationManager.AppSettings["sys_ver"];
                     var syscontact = ConfigurationManager.AppSettings["sys_contact"];
                     var data = _blendRptService.GetBlendSheet(obj.BlendId);
                     var param = _blendRptService.GetBlendSheetParam(obj.BlendId);
+                    if (param.IsClosed)
+                    {
+                        canisterDetails = _blendRptService.GetBlendCanister(obj.BlendId);
+                        closedRate = canisterDetails.Count > 0 ? Convert.ToDecimal(canisterDetails[0].Rate) : 0;
+                    }
                     var exportQty = Convert.ToDecimal(param.ExportQty);
                     var closedBal = Convert.ToDecimal(param.BB) + Convert.ToDecimal(param.BG);
                     var lineSum = data.Where(c => c.ItemType == 1).Sum(c => c.Qty);
@@ -288,7 +295,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     //Avg Calculation for full decimal places
                     var totLineQty = lineSum + BlenSum;
                     //var finalQty = Convert.ToDecimal(param.BG) > 0 ? Convert.ToDecimal(param.BG) + totLineQty : totLineQty - Convert.ToDecimal(param.BL);
-                    var avgPrice = (blendvalue + linevalue) / totLineQty;
+                    var avgPrice = param.IsClosed ? closedRate : (blendvalue + linevalue) / totLineQty;
 
                     if (data.Count == 0)
                         return GetNoDataPage();
@@ -312,7 +319,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("standard", param.StandardName == null ? "" : param.StandardName);
                     rd.SetParameterValue("blendno", param.BlendNo == null ? "" : param.BlendNo);
                     rd.SetParameterValue("datecompletion", param.DateOfCompletion == null ? "" : param.DateOfCompletion);
-                    rd.SetParameterValue("avgprice", param.IsClosed ? param.ClosedRate : String.Format("{0:0.0000}", avgPrice));
+                    rd.SetParameterValue("avgprice", String.Format("{0:0.0000}", avgPrice));
                     rd.SetParameterValue("qtytobeexported", param.ExportQty == null ? "" : param.ExportQty);
                     rd.SetParameterValue("bg", param.IsClosed ? blendgain : "0");
                     rd.SetParameterValue("bb", blendBal);

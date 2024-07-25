@@ -1,6 +1,5 @@
 ﻿<style type="text/css">
-    .loading
-    {
+    .loading {
         background: url(http://www.xiconeditor.com/image/icons/loading.gif) no-repeat right center;
     }
 </style>
@@ -16,6 +15,22 @@
     <input placeholder="Search Blend" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
 
 </div>
+<!--<div class="input-group">
+    <div class="div-table-input-col" style="width: 150px">
+        <label>Cotract No</label>
+        <input type="text" name="contractno" id="contractno" class="form-control" ng-model="contractData" list="contractnos" my-enter="searchStandards(contractData)" ng-maxlength="10" />
+    </div>
+    <datalist id="contractnos">
+        <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
+    </datalist>
+    <div class="div-table-input-col" style="width: 150px">
+        <label>Standard No</label>
+        <input type="text" name="contractno" id="standard" class="form-control" ng-model="standardData" list="standards" my-enter="addQuickSearchItem(boxNoData)" ng-maxlength="10" />
+    </div>
+    <datalist id="standards">
+        <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
+    </datalist>
+</div>-->
 <br />
 <div class="panel panel-default">
     <div class="panel-body" style="height: 100%">
@@ -32,8 +47,9 @@
                                 <div class="media-body" style="width: 100%">
                                     <span class="media-meta pull-right">Last Modified : {{c.ModifiedDate}} By {{c.ModifiedUser}}</span>
 
-                                    <h4 class="title">Blend No : {{c.BlendNo}}
-                                       
+                                    <h4 class="title">
+                                        Blend No : {{c.BlendNo}}
+
                                     </h4>
                                     <p class="summary">Status : {{c.CloseStatus}} | Contract : {{c.ContractNo}} | Standard : {{c.StandardName}}  </p>
                                 </div>
