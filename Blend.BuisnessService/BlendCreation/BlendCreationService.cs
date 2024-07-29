@@ -644,5 +644,22 @@ namespace Blend.BuisnessService.BlendCreation
             return result;
 
         }
+
+
+        public IList<BlendInfo> GetBlendListByContractAndStandard(int contractId, int standardId)
+        {
+            try
+            {
+                var mapper = new DataMapper<BlendInfo>("GetBlendsByContractAndStandard", new Hashtable() { { "ContractId", contractId }
+                    , { "StandardId", standardId } });
+                var result = mapper.ObjectList();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite("GetBlendList fails. Error " + ex.Message);
+                throw ex;
+            }
+        }
     }
 }

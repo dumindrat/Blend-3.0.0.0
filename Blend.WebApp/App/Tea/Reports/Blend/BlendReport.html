@@ -10,27 +10,52 @@
 
 
 
-<div class="input-group">
+<!--<div class="input-group">
     <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
     <input placeholder="Search Blend" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
 
-</div>
-<!--<div class="input-group">
-    <div class="div-table-input-col" style="width: 150px">
-        <label>Cotract No</label>
-        <input type="text" name="contractno" id="contractno" class="form-control" ng-model="contractData" list="contractnos" my-enter="searchStandards(contractData)" ng-maxlength="10" />
-    </div>
-    <datalist id="contractnos">
-        <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
-    </datalist>
-    <div class="div-table-input-col" style="width: 150px">
-        <label>Standard No</label>
-        <input type="text" name="contractno" id="standard" class="form-control" ng-model="standardData" list="standards" my-enter="addQuickSearchItem(boxNoData)" ng-maxlength="10" />
-    </div>
-    <datalist id="standards">
-        <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
-    </datalist>
 </div>-->
+<div class="modal-body">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <table >
+                <tr>
+                    <td width="20%">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                            <input placeholder="Search by Blend" style="width: 200px" id="datasearch" type="text" class="form-control" ng-model="searchstr" ng-change="searchdata()" />
+
+                        </div>
+                    </td>
+                    <td width="5%"></td>
+                    <td width="35%">
+                        Select Contractor {{contractorloading}}
+                        <div class="form-group">
+                            <input style="width: 400px" type="text" name="contractno" id="contractno" class="form-control" ng-model="contractData" list="contractnos"
+                                   my-enter="searchStandards()" ng-change="searchStandards()" ng-maxlength="10" />
+                            <datalist id="contractnos">
+                                <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
+                            </datalist>
+                        </div>
+                    </td>
+                    <td width="5%"></td>
+                    <td width="35%">
+                        Select Standard
+                        <div class="form-group">
+                            <select style="width: 400px" ng-options="standard.StandardId as standard.StandardName for standard  in standardData" class="form-control" ng-model="StandardId" ng-change="getBlendListbyConAndStan()" required>
+                                <option style="display: none" value="">---Select---</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </li>
+        <!--<li class="list-group-item">
+
+        </li>-->
+    </ul>
+</div>
 <br />
 <div class="panel panel-default">
     <div class="panel-body" style="height: 100%">

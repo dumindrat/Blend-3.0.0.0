@@ -9,8 +9,12 @@
         $scope.accessLevels = globalService.getaccess(renderAction);
         $scope.recordCount = globalService.getDataLoadingMessage();
         $scope.ContractNumbers = [];
+        $scope.StandardNames = [];
         $scope.searchstr = "";
         $scope.contractData = '';
+        $scope.standardData = [];
+        $scope.contractorloading = '';
+        $scope.StandardId = 0;
         var _timeout;
 
         $scope.searchdata = function searchdata() {
@@ -39,15 +43,26 @@
             });
         };
 
-        //getContracts();
+        $scope.getBlendListbyConAndStan = function getBlendListByContractAbdStandard() {
+            $scope.recordCount = globalService.getDataLoadingMessage();
+            var contractName = globalService.replaceSlash($('#contractno').val());
+            httpService.getdata(urlBlenCreation + '/GetBlendsByContractAndStandard?id=' + contractName + '&standard=' + $scope.StandardId, function (results) {
+                $scope.BlendData = results.data;
+                $scope.recordCount = globalService.getDataCountMessage(results.data.length);
+                $('#datasearch').focus();
+
+            });
+        };
+
+        getContracts();
 
         function getContracts() {
-            //$scope.recordCount = globalService.getDataLoadingMessage();
-            //var contractno = globalService.replaceSlash(searchstr);
+            $scope.contractorloading = 'Loading';
             httpService.getdata('api/Contract/GetAllContracts/all', function (results) {
                 angular.forEach(results.data, function (value, key) {
-                    $scope.addContracts(value['ContractName']);
+                    $scope.addContracts(value['ContractName'] + ' | ' + value['ContractId']);
                 })
+                $scope.contractorloading = '';
             });
         };
 
@@ -56,20 +71,31 @@
             if (ret == -1) {
                 $scope.ContractNumbers.push(item);
             }
-            //$scope.item = {};
         }
 
-        //getAvailabaleStandards('all');
+        $scope.searchStandards = function searchstandarddata() {
+            if (_timeout) {
+                $timeout.cancel(_timeout);
+            }
+            _timeout = $timeout(function () {
+                searchStandards();
+                _timeout = null;
 
-        function getAvailabaleStandards(searchstr) {
+            }, loadingDelay);
+
+        };
+
+        function searchStandards() {
             $scope.dataloading = true;
-
-            httpService.getdata(conDeturl + '/' + 'GetAvailableStandards?id=' + $scope.selectedContract.ContractId + '&standard=' + searchstr, function (results) {
-                $scope.teastandards = results.data;
-                $scope.dataloading = false;
-
-            });
-
+            $scope.BlendData = [];
+            var contractName = globalService.replaceSlash($('#contractno').val());
+            if (contractName != '') {
+                globalService.openLoadingWindow("Loading Standards");
+                httpService.getdata('api/ContractDetail/GetStandardByContractName/' + contractName, function (results) {
+                    $scope.standardData = results.data;
+                    $scope.$emit('LOAD_DATA_EVENT', true);
+                });
+            }
         };
 
         $scope.gridOptions = {

@@ -52,6 +52,24 @@ namespace Blend.WebApp.Controllers.BlendCreation
         }
 
         [HttpGet]
+        [ActionName("GetBlendsByContractAndStandard")]
+        public IEnumerable<BlendInfo> GetBlendsByContractAndStandard(string id, int standard)
+        {
+            IEnumerable<BlendInfo> stocks = new List<BlendInfo>();
+            try
+            {
+                var contractId = id.Split('|').Count() > 1 ? id.Split('|').ToList()[1] : "0";
+                stocks = _blendSvc.GetBlendListByContractAndStandard(Convert.ToInt16(contractId), standard);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+
+            }
+            return stocks;
+        }
+
+        [HttpGet]
         [ActionName("GetStraghtLineStock")]
         public IEnumerable<StraightLineStockItem> GetStraghtLineStock(string id, string searchby)
         {

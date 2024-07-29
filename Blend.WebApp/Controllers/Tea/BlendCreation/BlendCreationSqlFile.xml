@@ -18,6 +18,9 @@
     <procedure id="GetBlends" parameterMap="get-blendno-params"  resultMap="get-blendno-result">
       trn_BlendGet
     </procedure>
+    <procedure id="GetBlendsByContractAndStandard" parameterMap="get-blendnobycon-params"  resultMap="get-blendno-result">
+      trn_BlendGetByContractAndStandard
+    </procedure>
     <procedure id="GetStraightLineStock" parameterMap="get-stlstk-params"  resultMap="get-stlstk-result">
       trn_TeaStockStraightLineSearch
     </procedure>
@@ -63,6 +66,10 @@
     <parameterMap id="get-blendno-params">
       <parameter property="BlendNo" direction  ="Input" />
       <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blendnobycon-params">
+      <parameter property="Contract" direction  ="Input" />
+      <parameter property="Standard" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-stlstk-params">
       <parameter property="BoxNo" direction  ="Input" />

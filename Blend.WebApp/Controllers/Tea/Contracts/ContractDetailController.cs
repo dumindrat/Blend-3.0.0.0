@@ -77,6 +77,28 @@ namespace Blend.WebApp.Controllers.Tea.Contracts
             return addedStandards;
         }
 
+        // GET api/contract/5
+        [HttpGet]
+        [ActionName("GetStandardByContractName")]
+        public IEnumerable<BuyerContractDetail> GetStandardByContractName(string id)
+        {
+            IEnumerable<BuyerContractDetail> addedStandards = new List<BuyerContractDetail>();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var contractId = id.Split('|').Count() > 1 ? id.Split('|').ToList()[1] : "0";
+                    addedStandards = _contractSvc.GetBuyerContractDetailById(Convert.ToInt16(contractId));
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWrite(ex.Message, "Error");
+                    return addedStandards;
+                }
+            }
+            return addedStandards;
+        }
+
         // POST api/contractdetail
         public HttpResponseMessage Post([FromBody]BuyerContractDetail contractDet)
         {

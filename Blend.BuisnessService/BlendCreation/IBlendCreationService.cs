@@ -10,6 +10,7 @@ namespace Blend.BuisnessService.BlendCreation
     public interface IBlendCreationService
     {
         IList<BlendInfo> GetBlendList(string serchBlendNo, int companyId);
+        IList<BlendInfo> GetBlendListByContractAndStandard(int contractId, int standardId);
         BlendDetailDto GetBlendById(long id);
         BlendHeader GetBlendInfoById(long id);
         IList<BlendItemAllocation> GetBlendAllocationsById(long id, string itemType);
