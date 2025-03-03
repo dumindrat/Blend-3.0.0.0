@@ -82,7 +82,8 @@ namespace Blend.BuisnessService.BlendClose
                 cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
                 cmd.Parameters.AddWithValue("@stkType", "BB");
                 cmd.Parameters.AddWithValue("@stkPacks", 0);
-                cmd.Parameters.AddWithValue("@stkQty", -obj.ExportQty);//Blend balance reducing export Qty and BL
+                //cmd.Parameters.AddWithValue("@stkQty", obj.BB > obj.ExportQty ? -obj.ExportQty : -obj.BB);//Blend balance reducing export Qty and BL
+                cmd.Parameters.AddWithValue("@stkQty", -obj.LineQty);
                 cmd.ExecuteNonQuery();
 
                 //Step 1.1 
@@ -99,34 +100,48 @@ namespace Blend.BuisnessService.BlendClose
                 cmd.Parameters.AddWithValue("@stkQty", obj.ExportQty); //Create Export Qty as Stock to Shipment Disposal
                 cmd.ExecuteNonQuery();
 
+                if (obj.STDBB > 0)
+                {
+                    cmd = new SqlCommand();
+                    cmd.Transaction = trans;
+                    cmd.Connection = connection;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "trn_TeaStockUpdateByStockIdAndType";
+                    cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
+                    cmd.Parameters.AddWithValue("@stkType", "BB");
+                    cmd.Parameters.AddWithValue("@stkPacks", 0);
+                    cmd.Parameters.AddWithValue("@stkQty", obj.STDBB);//Blend balance if remain bb after exported
+                    cmd.ExecuteNonQuery();
+                }
+
                 //Step 2:
-                if (obj.SFTBB > 0)
-                {
-                    cmd = new SqlCommand();
-                    cmd.Transaction = trans;
-                    cmd.Connection = connection;
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.CommandText = "trn_TeaStockUpdateByStockIdAndType";
-                    cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
-                    cmd.Parameters.AddWithValue("@stkType", "BB");
-                    cmd.Parameters.AddWithValue("@stkPacks", 0);
-                    cmd.Parameters.AddWithValue("@stkQty", -obj.SFTBB);//Blend balance reducing sifted balance Qty
-                    cmd.ExecuteNonQuery();
-                }
+                //if (obj.SFTBB > 0)
+                //{
+                //    cmd = new SqlCommand();
+                //    cmd.Transaction = trans;
+                //    cmd.Connection = connection;
+                //    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                //    cmd.CommandText = "trn_TeaStockUpdateByStockIdAndType";
+                //    cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
+                //    cmd.Parameters.AddWithValue("@stkType", "BB");
+                //    cmd.Parameters.AddWithValue("@stkPacks", 0);
+                //    cmd.Parameters.AddWithValue("@stkQty", -obj.SFTBB);//Blend balance reducing sifted balance Qty
+                //    cmd.ExecuteNonQuery();
+                //}
                 //Step 3:
-                if (obj.BL > 0)
-                {
-                    cmd = new SqlCommand();
-                    cmd.Transaction = trans;
-                    cmd.Connection = connection;
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.CommandText = "trn_TeaStockUpdateByStockIdAndType";
-                    cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
-                    cmd.Parameters.AddWithValue("@stkType", "BB");
-                    cmd.Parameters.AddWithValue("@stkPacks", 0);
-                    cmd.Parameters.AddWithValue("@stkQty", -obj.BL);//Blend Loss reducing export 
-                    cmd.ExecuteNonQuery();
-                }
+                //if (obj.BL > 0)
+                //{
+                //    cmd = new SqlCommand();
+                //    cmd.Transaction = trans;
+                //    cmd.Connection = connection;
+                //    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                //    cmd.CommandText = "trn_TeaStockUpdateByStockIdAndType";
+                //    cmd.Parameters.AddWithValue("@stkItemId", obj.BlendId);
+                //    cmd.Parameters.AddWithValue("@stkType", "BB");
+                //    cmd.Parameters.AddWithValue("@stkPacks", 0);
+                //    cmd.Parameters.AddWithValue("@stkQty", -obj.BL);//Blend Loss reducing export 
+                //    cmd.ExecuteNonQuery();
+                //}
                 //Standard Gain
                 if (obj.STDBG > 0)
                 {
@@ -306,6 +321,14 @@ namespace Blend.BuisnessService.BlendClose
                 cmd.Transaction = trans;
                 cmd.Connection = connection;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "trn_BlendCategorizeLogGenerate";
+                cmd.Parameters.AddWithValue("@StockItemId", obj.BlendId);
+                cmd.ExecuteNonQuery();
+
+                cmd = new SqlCommand();
+                cmd.Transaction = trans;
+                cmd.Connection = connection;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "trn_BlendCategorizeCancelRequestApprove";
                 //All validation is in stored proc.
                 cmd.Parameters.AddWithValue("@StockItemId", obj.BlendId);
@@ -345,14 +368,6 @@ namespace Blend.BuisnessService.BlendClose
                 cmd.CommandText = "trn_BlendHeaderUpdateCloseStatus";
                 cmd.Parameters.AddWithValue("@blendId", obj.BlendId);
                 cmd.Parameters.AddWithValue("@closeStatus", 0);
-                cmd.ExecuteNonQuery();
-
-                cmd = new SqlCommand();
-                cmd.Transaction = trans;
-                cmd.Connection = connection;
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.CommandText = "trn_BlendCategorizeLogGenerate";
-                cmd.Parameters.AddWithValue("@StockItemId", obj.BlendId);
                 cmd.ExecuteNonQuery();
 
                 cmd = new SqlCommand();

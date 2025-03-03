@@ -36,7 +36,16 @@ namespace Blend.BuisnessService.BlendRateConvert
                 cmd.Parameters.AddWithValue("@RowVersion", obj.RowVersion);
                 cmd.Parameters.AddWithValue("@User", obj.User);
                 cmd.ExecuteNonQuery();
-
+                if (obj.BG > 0)
+                {
+                    cmd = new SqlCommand();
+                    cmd.Transaction = trans;
+                    cmd.Connection = connection;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "trn_BlendCategorizeConvertBG";
+                    cmd.Parameters.AddWithValue("@BlendId", obj.BlendId);
+                    cmd.ExecuteNonQuery();
+                }
                 cmd = new SqlCommand();
                 cmd.Transaction = trans;
                 cmd.Connection = connection;

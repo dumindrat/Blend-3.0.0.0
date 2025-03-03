@@ -40,8 +40,10 @@ namespace Blend.BuisnessEntities.BlendCreation
         public string ExportQty { get; set; }
         public string BB { get; set; }
         public string BG { get; set; }
+        public string STDBG { get; set; }
         public string BL { get; set; }
         public bool IsClosed { get; set; }
+        public bool IsConverted { get; set; }
         public string TrialVersion { get; set; }
     }
 }

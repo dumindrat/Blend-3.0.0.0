@@ -2,7 +2,9 @@ delete from [dbo].[purchasereturn_detail]
 delete from [dbo].[purchasereturn_header]
 delete from [dbo].[purchasereceived_detail]
 delete from [dbo].[purchasereceived_header]
-
+delete from purchaseorder_detail
+delete from purchaseorder_header
+delete from purchase_void
 delete from purchase_detail
 delete from purchase_header
 delete from blend_detail
@@ -151,7 +153,7 @@ INSERT INTO [DB_tmxcontenental].[dbo].[blend_header]
 ,[ModifiedUser]           ,[ModifiedDate])
 SELECT 
 1,[strBlNumber]		,c.ContractId		,s.StandardId      ,[fltBlOrdQty]      ,[booBlCreated]
-,isnull([CreatedDate],getdate())      ,[CreatedDate]      ,'dumindra'      ,isnull([CreatedDate],getdate())      ,'dumindra'
+,isnull([CreatedDate],getdate())      ,[CreatedDate]      ,'migrate'      ,isnull([CreatedDate],getdate())      ,'migrate'
 ,[CreatedDate]
 
 FROM continentalnew.[dbo].[tblBlendCreationGenHeader] h 
@@ -250,5 +252,9 @@ on p.Id = s.perAutoKey
 
 go
 update blendcategorize set ClosedRate = Rate where closedrate is null
+go
+update blend_header set IsTeaBoardEnabled = 1,TeaBoardEnabledBy ='migrate' where IsClosed =1
+go
+update blend_header set IsClosed = 0 from blend_header h  inner join blendcategorize c on h.Id = c.BlendId where c.CreateQty = 0
 go
 

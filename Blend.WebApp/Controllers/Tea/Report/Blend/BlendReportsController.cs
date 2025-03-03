@@ -282,7 +282,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                         closedRate = canisterDetails.Count > 0 ? Convert.ToDecimal(canisterDetails[0].Rate) : 0;
                     }
                     var exportQty = Convert.ToDecimal(param.ExportQty);
-                    var closedBal = Convert.ToDecimal(param.BB) + Convert.ToDecimal(param.BG);
+                    var closedBal = Convert.ToDecimal(param.BB);// +Convert.ToDecimal(param.BG);
                     var lineSum = data.Where(c => c.ItemType == 1).Sum(c => c.Qty);
                     var linevalue = data.Where(c => c.ItemType == 1).Sum(c => c.Value);
 
@@ -322,6 +322,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("avgprice", String.Format("{0:0.0000}", avgPrice));
                     rd.SetParameterValue("qtytobeexported", param.ExportQty == null ? "" : param.ExportQty);
                     rd.SetParameterValue("bg", param.IsClosed ? blendgain : "0");
+                    rd.SetParameterValue("stdgain", Convert.ToDecimal(param.STDBG));
                     rd.SetParameterValue("bb", blendBal);
                     rd.SetParameterValue("bl", param.IsClosed ? blendloss : "0");
                     rd.SetParameterValue("totallineqty", String.Format("{0:0.00}", lineSum));
