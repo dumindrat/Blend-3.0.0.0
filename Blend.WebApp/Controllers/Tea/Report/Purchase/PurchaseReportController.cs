@@ -258,6 +258,8 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetPurchaseSheetXmlElement(data);
 
+                    var recordCount = data.Where(c => c.IsRepeated == false).Count();
+
                     var textReader = new StringReader(xmlfromLINQ.ToString());
 
                     var strReportName = obj.IsWithValues == true ? "purchasesheet.rpt" : "purchasesheetstores.rpt";
@@ -269,6 +271,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     ds_fldDef.ReadXml(textReader);
                     rd.SetDataSource(ds_fldDef);
                     rd.SetParameterValue("companyname", companyInfo.CompanyName == null ? "" : companyInfo.CompanyName);
+                    rd.SetParameterValue("recordcount", recordCount);
 
                     Stream ms = null;
                     //ms = obj.IsExcelFormat ? rd.ExportToStream(ExportFormatType.Excel) : rd.ExportToStream(ExportFormatType.PortableDocFormat);

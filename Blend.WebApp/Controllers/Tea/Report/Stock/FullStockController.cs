@@ -47,7 +47,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
                     }
                     else
                     {
-                        xmlfromLINQ = GetSLStockXmlElement(data.Where(c => c.SeqNo == 1 || c.SeqNo == 4).ToList());
+                        xmlfromLINQ = GetSLStockXmlElement(data.Where(c => c.SeqNo == 1 || c.SeqNo == 4 || c.SeqNo == 5).ToList());
 
                     }
                     var textReader = new StringReader(xmlfromLINQ.ToString());
