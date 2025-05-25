@@ -28,7 +28,7 @@ namespace Blend.WebApp.Controllers.Tea.Buyer
             {
                 try
                 {
-                    buyers = _buyerService.GetAllBuyers(id);
+                    buyers = _buyerService.GetAllBuyers(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

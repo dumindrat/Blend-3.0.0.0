@@ -23,11 +23,11 @@ namespace Blend.BuisnessService.Packing.PO
             _emailService = emailService;
         }
 
-        public IEnumerable<BuisnessEntities.Packing.PO.PurchaseOrderDto> GetPOList(string id)
+        public IEnumerable<BuisnessEntities.Packing.PO.PurchaseOrderDto> GetPOList(string id, int CompanyId)
         {
             var searchBy = id == "all" ? "" : id;
 
-            var mapper = new DataMapper<PurchaseOrderDto>("GetPos", new Hashtable() { { "PONumber", searchBy } });
+            var mapper = new DataMapper<PurchaseOrderDto>("GetPos", new Hashtable() { { "PONumber", searchBy }, { "CompanyId", CompanyId } });
             var result = mapper.ObjectList();
             return result;
         }
@@ -42,14 +42,14 @@ namespace Blend.BuisnessService.Packing.PO
             try
             {
                 int? contract;
-                contract = null;
+                contract = po.ContractId;
                 if (po.ContractId == 0)
                 {
                     contract = null;
                 }
                 var blendNo = new DocumentNo();
                 if (po.IsAutoDocNo)
-                    po.PONumber = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    po.PONumber = _documentService.GetDocumentNo(poDocType, po.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 
@@ -63,6 +63,7 @@ namespace Blend.BuisnessService.Packing.PO
                 cmd.Parameters.AddWithValue("@DeliveryDate", po.DeliveryDate);
                 cmd.Parameters.AddWithValue("@Instructions", po.Instructions);
                 cmd.Parameters.AddWithValue("@User", po.User);
+                cmd.Parameters.AddWithValue("@CompanyId", po.CompanyId);
                 cmd.ExecuteNonQuery();
 
                 if (po.IsAutoDocNo)
@@ -74,6 +75,7 @@ namespace Blend.BuisnessService.Packing.PO
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.CommandText = "trn_DocumentNoGenerate";
                     cmd.Parameters.AddWithValue("@DocTypes", poDocType);
+                    cmd.Parameters.AddWithValue("@CompanyId", po.CompanyId);
                     cmd.ExecuteNonQuery();
 
                 }

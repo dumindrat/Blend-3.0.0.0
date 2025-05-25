@@ -1,0 +1,12 @@
+<po>
+  <item>
+    <ItemCode></ItemCode>
+    <ItemName></ItemName>
+    <UOM></UOM>
+    <Qty></Qty>
+    <ReceivedPrice></ReceivedPrice>
+    <Value></Value>
+    <StoreLocation></StoreLocation>
+    <BlendNo></BlendNo>
+  </item>
+</po>

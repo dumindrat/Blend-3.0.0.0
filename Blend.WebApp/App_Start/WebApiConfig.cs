@@ -55,6 +55,12 @@ namespace Blend.WebApp
           routeTemplate: "api/{controller}/{id}/{poid}",
           defaults: new { id = RouteParameter.Optional }
          );
+
+            config.Routes.MapHttpRoute(
+              name: "GetDefaultUserCompany",
+              routeTemplate: "api/{controller}/{action}/{id}",
+              defaults: new { id = RouteParameter.Optional }
+          );
         }
     }
 }

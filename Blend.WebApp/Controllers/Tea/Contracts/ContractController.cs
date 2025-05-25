@@ -30,7 +30,7 @@ namespace Blend.WebApp.Controllers.Tea.Contracts
             {
                 try
                 {
-                    contracts = _contractSvc.GetContractList(id);
+                    contracts = _contractSvc.GetContractList(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {

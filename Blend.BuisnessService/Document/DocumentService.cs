@@ -10,13 +10,13 @@ namespace Blend.BuisnessService.Document
 {
     public class DocumentService : BaseManagement<DocumentNo>, IDocumentService
     {
-        public DocumentNo GetDocumentNo(int docType)
+        public DocumentNo GetDocumentNo(int docType, int companyId)
         {
             try
             {
                 var mapper = new DataMapper<DocumentNo>("GetDocumentNo", new Hashtable() { { "doctypes", docType } });
 
-                var result = mapper.Object();
+                var result = mapper.ObjectList().Where(c=>c.CompanyId == companyId).Single();
                 if (result != null)
                 {
                     var docnumwithformat = (result.DocFormat + result.DocNo);
@@ -30,7 +30,7 @@ namespace Blend.BuisnessService.Document
                 logger.LogWrite("GetContractList fails. Error " + ex.Message);
                 throw ex;
             }
-            
+
 
         }
 
@@ -43,6 +43,7 @@ namespace Blend.BuisnessService.Document
             dataOperation.AddParam("@Prefix", documentInfo.Prefix);
             dataOperation.AddParam("@DocFormat", documentInfo.DocFormat);
             dataOperation.AddParam("@User", documentInfo.User);
+            dataOperation.AddParam("@CompanyId", documentInfo.CompanyId);
             dataOperation.DoExecute();
             return true;
         }
@@ -68,7 +69,7 @@ namespace Blend.BuisnessService.Document
                 logger.LogWrite("GetDocumentData fails. Error " + ex.Message);
                 throw ex;
             }
-            
+
         }
 
         private void Validate(DocumentNo documentInfo)
@@ -82,11 +83,11 @@ namespace Blend.BuisnessService.Document
         }
 
 
-        public IEnumerable<DocumentNo> GetDocumentDataByModule(int moduleId)
+        public IEnumerable<DocumentNo> GetDocumentDataByModule(int moduleId, int companyId)
         {
             var mapper = new DataMapper<DocumentNo>("GetDocuments", new Hashtable() { });
             var result = mapper.ObjectList();
-            return result.Where(c => c.ModuleId == moduleId);
+            return result.Where(c => c.ModuleId == moduleId && c.CompanyId == companyId);
         }
     }
 }

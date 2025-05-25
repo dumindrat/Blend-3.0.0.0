@@ -29,7 +29,7 @@ namespace Blend.WebApp.Controllers.StockOut.Adjustment
             try
             {
                 id = id.Replace("~", "/");
-                data = _adjustLineService.GetStraightLines(id);
+                data = _adjustLineService.GetStraightLines(id, GetCompanyId());
             }
             catch (Exception ex)
             {

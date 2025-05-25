@@ -1,4 +1,5 @@
-﻿using Blend.BuisnessEntities.Packing.ItemIssue;
+﻿using Blend.BuisnessEntities.BlendCreation;
+using Blend.BuisnessEntities.Packing.ItemIssue;
 using Blend.BuisnessEntities.TransDocument;
 using Blend.BuisnessService.Document;
 using Blend.DataModel.DataOperation;
@@ -19,10 +20,10 @@ namespace Blend.BuisnessService.Packing.ItemIssue
         {
             _documentService = documentService;
         }
-        public IEnumerable<BuisnessEntities.Packing.ItemIssue.ItemIssueNoteDto> GetItemIssueNoteList(string id)
+        public IEnumerable<BuisnessEntities.Packing.ItemIssue.ItemIssueNoteDto> GetItemIssueNoteList(string id, int companyId)
         {
             var searchBy = id == "all" ? "" : id;
-            var mapper = new DataMapper<ItemIssueNoteDto>("GetIn", new Hashtable() { { "IssueNoteNo", searchBy } });
+            var mapper = new DataMapper<ItemIssueNoteDto>("GetIn", new Hashtable() { { "IssueNoteNo", searchBy }, { "CompanyId", companyId } });
             var result = mapper.ObjectList();
             return result;
         }
@@ -39,7 +40,7 @@ namespace Blend.BuisnessService.Packing.ItemIssue
             {
                 var blendNo = new DocumentNo();
                 if (obj.IsAutoDocNo)
-                    obj.IssueNoteNo = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    obj.IssueNoteNo = _documentService.GetDocumentNo(poDocType, obj.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 
@@ -50,6 +51,7 @@ namespace Blend.BuisnessService.Packing.ItemIssue
                 cmd.Parameters.AddWithValue("@INNumber", obj.IssueNoteNo);
                 cmd.Parameters.AddWithValue("@BlendId", obj.BlendId);
                 cmd.Parameters.AddWithValue("@User", obj.User);
+                cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
 
                 cmd.ExecuteNonQuery();
                 if (obj.IsAutoDocNo)
@@ -61,6 +63,7 @@ namespace Blend.BuisnessService.Packing.ItemIssue
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.CommandText = "trn_DocumentNoGenerate";
                     cmd.Parameters.AddWithValue("@DocTypes", poDocType);
+                    cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
                     cmd.ExecuteNonQuery();
 
                 }
@@ -243,6 +246,21 @@ namespace Blend.BuisnessService.Packing.ItemIssue
             var mapper = new DataMapper<IssueNoteItem>("GetInItems", new Hashtable() { { "Id", id } });
             var result = mapper.ObjectList();
             return result;
+        }
+
+
+        public IEnumerable<BuisnessEntities.BlendCreation.BlendInfo> GetBlendList(int companyId)
+        {
+            try
+            {
+                var mapper = new DataMapper<BlendInfo>("GetBlendsForIssue", new Hashtable() { { "CompanyId", companyId } });
+                var result = mapper.ObjectList();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

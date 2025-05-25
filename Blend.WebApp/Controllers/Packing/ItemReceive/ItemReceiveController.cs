@@ -31,7 +31,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemReceive
             {
                 try
                 {
-                    pos = _itemReceiveSvc.GetItemReceiveNoteList(id);
+                    pos = _itemReceiveSvc.GetItemReceiveNoteList(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {
@@ -73,7 +73,7 @@ namespace Blend.WebApp.Controllers.Packing.ItemReceive
             {
                 try
                 {
-                    pos = _itemReceiveSvc.GetPoList();
+                    pos = _itemReceiveSvc.GetPoList(GetCompanyId());
                 }
                 catch (Exception ex)
                 {

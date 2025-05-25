@@ -212,7 +212,7 @@
             $scope.SelectedBlend.STDBG = 0;
             $scope.SelectedBlend.SFTBG = 0;
             $scope.SelectedBlend.SFTBB = 0;
-            $scope.SelectedBlend.STDBB = $scope.SelectedBlend.BB;
+            //$scope.SelectedBlend.STDBB = $scope.SelectedBlend.BB;
 
             //$scope.SelectedBlend.SiftedQty = 0;
             $scope.physicalqtyerror = true;
@@ -221,8 +221,9 @@
                 setErrorIconForPhysicalQty();
             }
             if (value >= $scope.SelectedBlend.LineQty) {
-                $scope.SelectedBlend.BG = value - ($scope.SelectedBlend.LineQty < $scope.SelectedBlend.ExportQty ? $scope.SelectedBlend.ExportQty : $scope.SelectedBlend.LineQty);
-                $scope.SelectedBlend.STDBG = $scope.SelectedBlend.BG;
+                $scope.SelectedBlend.BB = $scope.SelectedBlend.LineQty > $scope.SelectedBlend.ExportQty ? $scope.SelectedBlend.LineQty - $scope.SelectedBlend.ExportQty : 0 //Removed BB from stock BB-LineQty
+                $scope.SelectedBlend.BG = value - $scope.SelectedBlend.LineQty;
+                $scope.SelectedBlend.STDBG = value - ($scope.SelectedBlend.LineQty < $scope.SelectedBlend.ExportQty ? $scope.SelectedBlend.ExportQty : $scope.SelectedBlend.LineQty);
                 $scope.SelectedBlend.BL = 0;
                 $scope.isValidPhysicalQty = true;
                 setOkIconForPhysicalQty();
@@ -241,7 +242,7 @@
                 $scope.isValidPhysicalQty = false;
                 setErrorIconForPhysicalQty();
             }
-            $scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
+            //$scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
         };
 
         function CalculateSFTQty(value) {
@@ -253,29 +254,38 @@
                 var difstdbg = $scope.SelectedBlend.BG - value;// $scope.SelectedBlend.PhysicalQty - $scope.SelectedBlend.LineQty - value;
                 $scope.SelectedBlend.SFTBG = value;
                 $scope.SelectedBlend.STDBG = difstdbg > 0 ? difstdbg : 0;
-                $scope.SelectedBlend.STDBB = $scope.SelectedBlend.BB;
+                //$scope.SelectedBlend.STDBB = $scope.SelectedBlend.BB;
                 $scope.SelectedBlend.SFTBB = 0;
                 angular.element(document.getElementById('btnSubmit'))[0].disabled = false;
                 setOkIconForSiftedQty();
             }
-            if (value > $scope.SelectedBlend.BG && value <= $scope.SelectedBlend.BG + $scope.SelectedBlend.BB && $scope.isValidPhysicalQty) {
+            if (value > $scope.SelectedBlend.BG && value <= $scope.SelectedBlend.BG + $scope.SelectedBlend.STDBB && $scope.isValidPhysicalQty && $scope.SelectedBlend.BG > 0) {
                 var diff = $scope.SelectedBlend.PhysicalQty - $scope.SelectedBlend.LineQty;
                 $scope.SelectedBlend.SFTBG = diff > 0 ? diff : 0;
                 $scope.SelectedBlend.SFTBB = value - $scope.SelectedBlend.BG;
                 $scope.SelectedBlend.STDBG = 0;
-                $scope.SelectedBlend.STDBB = ($scope.SelectedBlend.STDBB - $scope.SelectedBlend.SFTBB) > 0 ? ($scope.SelectedBlend.STDBB - $scope.SelectedBlend.SFTBB) : 0;
-                $scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
+                $scope.SelectedBlend.STDBB = $scope.SelectedBlend.STDBB - $scope.SelectedBlend.SFTBB;
+                //$scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
 
                 angular.element(document.getElementById('btnSubmit'))[0].disabled = false;
                 setOkIconForSiftedQty();
 
             }
-            if (value > $scope.SelectedBlend.BG + $scope.SelectedBlend.BB) {
+            if (value <= $scope.SelectedBlend.STDBB && $scope.SelectedBlend.BG == 0 && $scope.isValidPhysicalQty) {
+                var diff = $scope.SelectedBlend.PhysicalQty - $scope.SelectedBlend.LineQty;
+                $scope.SelectedBlend.STDBB = $scope.SelectedBlend.STDBB - diff;
+                $scope.SelectedBlend.SFTBB = value;
+                $scope.SelectedBlend.STDBG = 0;
+                angular.element(document.getElementById('btnSubmit'))[0].disabled = false;
+                setOkIconForSiftedQty();
+
+            }
+            if (value > $scope.SelectedBlend.BG + $scope.SelectedBlend.STDBB) {
                 //Unsuccessful Blend
                 angular.element(document.getElementById('btnSubmit'))[0].disabled = true;
                 setErrorIconForSiftedQty();
             }
-            $scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
+            //$scope.SelectedBlend.BB = $scope.SelectedBlend.STDBB;
 
         };
 

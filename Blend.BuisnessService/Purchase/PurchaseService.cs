@@ -51,12 +51,12 @@ namespace Blend.BuisnessService.Purchase
             }
         }
 
-        public IEnumerable<Sale> GetAllSales(string searchString)
+        public IEnumerable<Sale> GetAllSales(string searchString, int companyId)
         {
             try
             {
-                var searchBy = searchString == "all" ? "" : searchString;
-                var mapper = new DataMapper<Sale>("GetSales", new Hashtable() { { "SaleDate", searchBy } });
+                var searchBy = searchString == "all" ? "" : searchString.Replace('~', '/');
+                var mapper = new DataMapper<Sale>("GetSales", new Hashtable() { { "SaleDate", searchBy }, { "CompanyId", companyId } });
 
                 var results = mapper.ObjectList();
                 return results;
@@ -77,6 +77,7 @@ namespace Blend.BuisnessService.Purchase
             dataOperation.CommandText("trn_PurchaseHeaderInsert");
             dataOperation.AddParam("@SaleDates", SaleEntity.SaleDate);
             dataOperation.AddParam("@User", SaleEntity.User);
+            dataOperation.AddParam("@CompanyId", SaleEntity.CompanyId);
             dataOperation.DoExecute();
             return true;
         }
@@ -89,7 +90,7 @@ namespace Blend.BuisnessService.Purchase
             var lastIncerementId = 0;
             try
             {
-                var boxNo = _documentService.GetDocumentNo(1);
+                var boxNo = _documentService.GetDocumentNo(1, StrightLineEntity.CompanyId);
                 connection.Open();
                 trans = connection.BeginTransaction();
 
@@ -222,7 +223,8 @@ namespace Blend.BuisnessService.Purchase
                 cmd.Connection = connection;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "trn_DocumentNoGenerate";
-                cmd.Parameters.AddWithValue("DocTypes", 1);
+                cmd.Parameters.AddWithValue("@DocTypes", 1);
+                cmd.Parameters.AddWithValue("@CompanyId", StrightLineEntity.CompanyId);
                 cmd.ExecuteNonQuery();
 
                 trans.Commit();

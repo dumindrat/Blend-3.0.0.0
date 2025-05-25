@@ -97,7 +97,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
 
         public HttpResponseMessage Post([FromBody]StockRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -105,7 +105,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
                     var data = _stockReportService.GetStraighLineStock(obj);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetSLStockXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -145,7 +145,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
 
         public HttpResponseMessage Put([FromBody]StockRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -153,7 +153,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
                     var data = _stockReportService.GetBlendBalanceStock(obj.IsWithAllocatedLine);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetBLStockXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

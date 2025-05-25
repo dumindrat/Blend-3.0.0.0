@@ -41,7 +41,7 @@ namespace Blend.WebApp.Controllers.BlendCreation
             try
             {
                 id = id.Replace("~", "/");
-                blends = _blendSvc.GetBlendList(id);
+                blends = _blendSvc.GetBlendList(id, GetCompanyId());
             }
             catch (Exception ex)
             {
@@ -52,13 +52,31 @@ namespace Blend.WebApp.Controllers.BlendCreation
         }
 
         [HttpGet]
+        [ActionName("GetBlendsByContractAndStandard")]
+        public IEnumerable<BlendInfo> GetBlendsByContractAndStandard(string id, int standard)
+        {
+            IEnumerable<BlendInfo> stocks = new List<BlendInfo>();
+            try
+            {
+                var contractId = id.Split('|').Count() > 1 ? id.Split('|').ToList()[1] : "0";
+                stocks = _blendSvc.GetBlendListByContractAndStandard(Convert.ToInt16(contractId), standard);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWrite(ex.Message, "Error");
+
+            }
+            return stocks;
+        }
+
+        [HttpGet]
         [ActionName("GetStraghtLineStock")]
-        public IEnumerable<StraightLineStockItem> GetStraghtLineStock(string id)
+        public IEnumerable<StraightLineStockItem> GetStraghtLineStock(string id, string searchby)
         {
             IEnumerable<StraightLineStockItem> stocks = new List<StraightLineStockItem>();
             try
             {
-                stocks = _blendSvc.GetStraightLIneStock(id);
+                stocks = _blendSvc.GetStraightLIneStock(id, GetCompanyId(), searchby);
             }
             catch (Exception ex)
             {
@@ -76,7 +94,7 @@ namespace Blend.WebApp.Controllers.BlendCreation
             try
             {
                 id = id.Replace("~", "/");
-                stocks = _blendSvc.GetBlendStock(id);
+                stocks = _blendSvc.GetBlendStock(id, GetCompanyId());
             }
             catch (Exception ex)
             {

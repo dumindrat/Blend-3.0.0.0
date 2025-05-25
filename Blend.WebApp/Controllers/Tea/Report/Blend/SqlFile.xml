@@ -66,8 +66,11 @@
       <result property="ExportQty" column="ExportQty" dbType="Decimal"/>
       <result property="BB" column="BB" dbType="Decimal"/>
       <result property="BG" column="BG" dbType="Decimal"/>
+      <result property="STDBG" column="STDBG" dbType="Decimal"/>
       <result property="BL" column="BL" dbType="Decimal"/>
       <result property="IsClosed" column="IsClosed" dbType="Int"/>
+      <result property="IsConverted" column="IsConverted" dbType="Int"/>
+      <result property="TrialVersion" column="TrialVersion" dbType="Varchar"/>
 
     </resultMap>
 

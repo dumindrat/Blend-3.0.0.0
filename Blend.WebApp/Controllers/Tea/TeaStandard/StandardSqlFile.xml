@@ -17,6 +17,7 @@
 
     <parameterMap id="get-allstandards-params">
       <parameter property="StandardName" direction  ="Input"/>
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
   </parameterMaps>
   <resultMaps>

@@ -25,13 +25,13 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
         private IPurchaseReportService _purchaseRptService;
         private ICompanyService _companyService;
         private string sysver, syscontact;
-        private CompanyDto companyInfo;
+        //private CompanyDto companyInfo;
 
         public SalesSummaryReportController(IPurchaseReportService purchaseRptService, ICompanyService companyService)
         {
             _purchaseRptService = purchaseRptService;
             _companyService = companyService;
-            companyInfo = _companyService.GetCompanyInfo();
+            //companyInfo = _companyService.GetCompanyInfo();
 
             sysver = ConfigurationManager.AppSettings["sys_ver"];
             syscontact = ConfigurationManager.AppSettings["sys_contact"];
@@ -47,7 +47,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
 
         public HttpResponseMessage Post([FromBody]PurchaseSheetRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -56,7 +56,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     var saleDate = data.Select(c => c.SaleDate).Distinct().First();
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetSalesSummaryXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -71,6 +71,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Purchase
                     rd.SetDataSource(ds_fldDef);
                     rd.SetParameterValue("companyname", companyInfo.CompanyName == null ? "" : companyInfo.CompanyName);
                     rd.SetParameterValue("saledate", saleDate);
+                    rd.SetParameterValue("saleaverage", data.Sum(c => c.Value) / data.Sum(c => c.Weight));
 
                     Stream ms = null;
                     ms = obj.IsExcelFormat ? rd.ExportToStream(ExportFormatType.Excel) : rd.ExportToStream(ExportFormatType.PortableDocFormat);

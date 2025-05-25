@@ -3,6 +3,7 @@
 
   <alias>
     <typeAlias alias="company" type="Blend.BuisnessEntities.CompanyRegistration.CompanyDto"/>
+    <typeAlias alias="usercompany" type="Blend.BuisnessEntities.CompanyRegistration.UserCompanyDto"/>
   </alias>
 
   <statements>
@@ -13,14 +14,20 @@
     <procedure id="GetStoresInfo" parameterMap="get-store-params"  resultMap="get-store-result">
       reg_StoreInfoGet
     </procedure>
+    <procedure id="GetUserCompanyInfo" parameterMap="get-usercompany-params"  resultMap="get-usercompany-result">
+      auth_UserCompanyGet
+    </procedure>
   </statements>
 
   <parameterMaps>
     <parameterMap id="get-company-params">
-      <!--<parameter property="BlendId" direction  ="Input"/>-->
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-store-params">
       <!--<parameter property="BlendId" direction  ="Input"/>-->
+    </parameterMap>
+    <parameterMap id="get-usercompany-params">
+      <parameter property="UserName" direction  ="Input"/>
     </parameterMap>
   </parameterMaps>
 
@@ -45,6 +52,20 @@
       <result property="Address2" column="Address2" dbType="Varchar"/>
       <result property="Email" column="Email" dbType="Varchar" />
       <result property="Telephone" column="Telephone" dbType="Varchar"/>
+    </resultMap>
+    <resultMap id="get-usercompany-result" class="Blend.BuisnessEntities.CompanyRegistration.UserCompanyDto">
+      <result property="CompanyId" column="CompanyId" dbType="Int"/>
+      <result property="UserId" column="UserId" dbType="Int"/>
+      <result property="CompanyName" column="CompanyName" dbType="Varchar"/>
+      <result property="TCEPR" column="TCEPR" dbType="Varchar"/>
+      <result property="Address1" column="Address1" dbType="Varchar"/>
+      <result property="Address2" column="Address2" dbType="Varchar"/>
+      <result property="Email" column="Email" dbType="Varchar" />
+      <result property="Telephone" column="Telephone" dbType="Varchar"/>
+      <result property="StoresAddress1" column="StoresAddress1" dbType="Varchar"/>
+      <result property="StoresAddress2" column="StoresAddress2" dbType="Varchar"/>
+      <result property="SubscriptionEndDate" column="SubscriptionEndDate" dbType="Varchar"/>
+      <result property="IsDefault" column="IsDefault" dbType="Int"/>
     </resultMap>
   </resultMaps>
 </sqlMap>

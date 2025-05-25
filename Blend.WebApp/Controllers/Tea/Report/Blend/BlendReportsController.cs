@@ -59,7 +59,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -124,7 +124,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -154,6 +154,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                 rd.SetParameterValue("totalblendbalancevalue", String.Format("{0:0.00}", blendvalue));
                 rd.SetParameterValue("sys_ver", sysver == null ? "Blend" : sysver);
                 rd.SetParameterValue("sys_contact", syscontact == null ? "Achieves" : syscontact);
+                rd.SetParameterValue("trialversion", param.IsClosed ? "Closed" : param.TrialVersion);
 
 
                 Stream ms = rd.ExportToStream(ExportFormatType.PortableDocFormat);
@@ -183,7 +184,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
                 if (data.Count == 0)
                     return GetNoDataPage();
-                var companyInfo = _companyService.GetCompanyInfo();
+                var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                 var xmlfromLINQ = GetCanisterXmlElement(data);
 
                 var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -264,17 +265,24 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
 
         public HttpResponseMessage Post([FromBody]BlendSheetRptDto obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
                 {
+                    IList<BlendCanister> canisterDetails = new List<BlendCanister>();
+                    decimal closedRate = 0;
                     var sysver = ConfigurationManager.AppSettings["sys_ver"];
                     var syscontact = ConfigurationManager.AppSettings["sys_contact"];
                     var data = _blendRptService.GetBlendSheet(obj.BlendId);
                     var param = _blendRptService.GetBlendSheetParam(obj.BlendId);
+                    if (param.IsClosed)
+                    {
+                        canisterDetails = _blendRptService.GetBlendCanister(obj.BlendId);
+                        closedRate = canisterDetails.Count > 0 ? Convert.ToDecimal(canisterDetails[0].Rate) : 0;
+                    }
                     var exportQty = Convert.ToDecimal(param.ExportQty);
-                    var closedBal = Convert.ToDecimal(param.BB) + Convert.ToDecimal(param.BG);
+                    var closedBal = Convert.ToDecimal(param.BB);// +Convert.ToDecimal(param.BG);
                     var lineSum = data.Where(c => c.ItemType == 1).Sum(c => c.Qty);
                     var linevalue = data.Where(c => c.ItemType == 1).Sum(c => c.Value);
 
@@ -287,11 +295,11 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     //Avg Calculation for full decimal places
                     var totLineQty = lineSum + BlenSum;
                     //var finalQty = Convert.ToDecimal(param.BG) > 0 ? Convert.ToDecimal(param.BG) + totLineQty : totLineQty - Convert.ToDecimal(param.BL);
-                    var avgPrice = (blendvalue + linevalue) / totLineQty;
+                    var avgPrice = param.IsClosed ? closedRate : (blendvalue + linevalue) / totLineQty;
 
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());
@@ -311,11 +319,12 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("standard", param.StandardName == null ? "" : param.StandardName);
                     rd.SetParameterValue("blendno", param.BlendNo == null ? "" : param.BlendNo);
                     rd.SetParameterValue("datecompletion", param.DateOfCompletion == null ? "" : param.DateOfCompletion);
-                    rd.SetParameterValue("avgprice", (param.IsClosed && obj.AfterClosed) ? param.ClosedRate : String.Format("{0:0.0000}", avgPrice));
+                    rd.SetParameterValue("avgprice", String.Format("{0:0.0000}", avgPrice));
                     rd.SetParameterValue("qtytobeexported", param.ExportQty == null ? "" : param.ExportQty);
-                    rd.SetParameterValue("bg", (param.IsClosed && obj.AfterClosed)  ? blendgain : "0");
+                    rd.SetParameterValue("bg", param.IsClosed ? blendgain : "0");
+                    rd.SetParameterValue("stdgain", Convert.ToDecimal(param.STDBG));
                     rd.SetParameterValue("bb", blendBal);
-                    rd.SetParameterValue("bl", (param.IsClosed && obj.AfterClosed) ? blendloss : "0");
+                    rd.SetParameterValue("bl", param.IsClosed ? blendloss : "0");
                     rd.SetParameterValue("totallineqty", String.Format("{0:0.00}", lineSum));
                     rd.SetParameterValue("totalblendbalanceqty", String.Format("{0:0.00}", BlenSum));
                     rd.SetParameterValue("totallinevalue", String.Format("{0:0.00}", linevalue));
@@ -323,6 +332,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Blend
                     rd.SetParameterValue("sys_ver", sysver == null ? "Blend" : sysver);
                     rd.SetParameterValue("sys_contact", syscontact == null ? "Achieves" : syscontact);
                     //rd.SetParameterValue("iswithwatermark", obj.IsWithWaterMark == true ? "YES" : "NO");
+                    rd.SetParameterValue("trialversion", param.IsClosed ? "Closed" : param.TrialVersion);
 
                     var mediaType = "application/pdf";
 

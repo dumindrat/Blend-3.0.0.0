@@ -104,13 +104,13 @@
 
     <div style="display: inline-block">
         <!--<label class="modal-title">Blend Creation. Add/Remove items</label>-->
-        <button class="btn btn-info btn-sm" ng-click="openViewAddLines();" ng-disabled="CheckCloseStatus()" type="submit">Add lines</button>
+        <button class="btn btn-info btn-sm" ng-click="openViewAddLines();" ng-disabled="CheckCloseStatus() || CheckEnabledTeaBoard()" type="submit">Add lines</button>
         <button class="btn btn-info btn-sm" ng-click="PrintOption(SelectedBlend);">View Blend sheet</button>
         <button type="button" class="btn btn-default">BlendNo : <span class="badge">{{SelectedBlend.BlendNo}}</span></button>
         <button type="button" class="btn btn-default">Export Qty : <span class="badge">{{SelectedBlend.ExportQty}}</span></button>
         <button type="button" class="btn btn-default" ng-attr-autofocus="false">Total Line Qty : <span class="badge">{{BlendDisplayQty}}</span></button>
         <button type="button" class="btn btn-default" ng-attr-autofocus="false">Current Blend Rate : <span class="badge">{{BlendDisplayRate}}</span></button>
-        <button type="button" class="{{closestatusbadgeclass}}">Status : <span class="badge">{{SelectedBlend.CloseStatus}}</span></button>
+        <button type="button" class="{{closestatusbadgeclass}}">Status : <span class="badge">{{SelectedBlend.CloseStatus}} {{GetTrialLable()}}</span></button>
         
 
         <span style="margin-left: 8px;" ng-show="showLoader">

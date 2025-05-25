@@ -67,7 +67,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
                     var data = _stockReportService.GetStraighLineAgeAnalysisStock(obj);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetSLStockXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

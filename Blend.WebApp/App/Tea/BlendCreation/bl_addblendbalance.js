@@ -28,7 +28,7 @@
             $scope.BL.BlendItemRate = item.Rate;
             $scope.BL.BlendItemValue = item.Value;
             $scope.BL.BlendItemStockName = item.StockName;
-            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock/' + item.StockItemId, function (results) {
+            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock?id=' + item.StockItemId + '&searchby=BoxNo', function (results) {
                
                 $('#blenditemqty').focus();
             });

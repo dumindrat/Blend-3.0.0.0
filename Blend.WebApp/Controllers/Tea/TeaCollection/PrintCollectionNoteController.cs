@@ -18,7 +18,7 @@ using CrystalDecisions.Shared;
 
 namespace Blend.WebApp.Controllers.Tea.TeaCollection
 {
-    public class PrintCollectionNoteController : ApiController
+    public class PrintCollectionNoteController : BaseApi
     {
         private ITeaCollectionService _collectionNoteSvc;
         private ICompanyService _companyService;
@@ -51,7 +51,7 @@ namespace Blend.WebApp.Controllers.Tea.TeaCollection
 
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(GetCompanyId());
                     var xmlfromLINQ = GetXmlElement(data);
 
                     var textReader = new StringReader(xmlfromLINQ.ToString());

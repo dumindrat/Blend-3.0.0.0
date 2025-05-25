@@ -10,14 +10,19 @@
     <procedure id="GetBrokers" parameterMap="get-allbrokers-params"  resultMap="get-allbrokers-result">
       trn_BrokerGet
     </procedure>
-    
+    <procedure id="GetBrokerById" parameterMap="get-allbrokerbyid-params"  resultMap="get-allbrokers-result">
+      trn_BrokerGetById
+    </procedure>
   </statements>
 
   <parameterMaps>
     <parameterMap id="get-allbrokers-params">
-      <!--<parameter property="Id" column="Id" />-->
+      <parameter property="BrokerName" direction  ="Input"/>
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
-    
+    <parameterMap id="get-allbrokerbyid-params">
+      <parameter property="BrokerId" column="BrokerId" />
+    </parameterMap>
   </parameterMaps>
 
   <resultMaps>

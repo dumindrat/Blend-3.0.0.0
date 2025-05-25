@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blend.BuisnessEntities.Report
 {
-    public class StockRptDto
+    public class StockRptDto : BaseEntity
     {
         public string Grade { get; set; }
         public string Standard { get; set; }
@@ -18,7 +18,7 @@ namespace Blend.BuisnessEntities.Report
         public bool IsExcelFormat { get; set; }
     }
 
-    public class AgeAnalysisStockRptDto
+    public class AgeAnalysisStockRptDto : BaseEntity
     {
         public string AsAtDate { get; set; }
         public string Grade { get; set; }
@@ -27,7 +27,7 @@ namespace Blend.BuisnessEntities.Report
         public bool IsExcelFormat { get; set; }
     }
 
-    public class StoresAnalysis
+    public class StoresAnalysis : BaseEntity
     {
         public string FromDate { get; set; }
         public string ToDate { get; set; }

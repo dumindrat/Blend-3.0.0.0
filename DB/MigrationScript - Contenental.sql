@@ -1,3 +1,10 @@
+delete from [dbo].[purchasereturn_detail]
+delete from [dbo].[purchasereturn_header]
+delete from [dbo].[purchasereceived_detail]
+delete from [dbo].[purchasereceived_header]
+delete from purchaseorder_detail
+delete from purchaseorder_header
+delete from purchase_void
 delete from purchase_detail
 delete from purchase_header
 delete from blend_detail
@@ -45,8 +52,8 @@ select [perAutoKey],[nvrPurchKeyAuto],[nchPurchBoxNum],[datPurchSalDate],[chrPur
            from [continentalnew].[dbo].tblPurchaseGenDetail  order by perAutoKey
 
 go
-insert into purchase_header (SaleDate,IsClosed,CreateUser,ClosedUser,ModifiedDate)
-select distinct datPurchsalDate,bitSaleClose,'Dumindra','Duminra',getdate() from  continentalnew.dbo.tblPurchaseGenHeader
+insert into purchase_header (CompanyId, SaleDate,IsClosed,CreateUser,ClosedUser,ModifiedDate)
+select distinct 1,datPurchsalDate,bitSaleClose,'migrate','migrate',getdate() from  continentalnew.dbo.tblPurchaseGenHeader
 go
 --This is for sale dates where dates in detail and not in header
 insert into dbo.x_saledates(F1)
@@ -60,8 +67,8 @@ go
 ------------------------------------------------------------------
 delete from broker
 DBCC CHECKIDENT('broker', RESEED, 0)
-insert into broker(brokercode,brokername,address,modifieddate,createuser,createdate,ModifiedUser)
-select strbkcode,strbkname,strbkaddress,getdate(),'dumindra',getdate(),'dumindra' from tealinknew.dbo.tblbrockerdef
+insert into broker(CompanyId, brokercode,brokername,address,modifieddate,createuser,createdate,ModifiedUser)
+select 1,strbkcode,strbkname,strbkaddress,getdate(),'migrate',getdate(),'migrate' from ContinentalNew.dbo.tblbrockerdef
 
 update [dbo].[x_saledetails] set Saled= h.Id from [dbo].[x_saledetails] x 
 inner join purchase_header h on x.[datPurchSalDate] = h.SaleDate
@@ -93,25 +100,25 @@ go
 
 
 INSERT INTO [DB_tmxcontenental].[dbo].[contract]
-([BuyerId]           ,[ContractName]           ,[CompletionDate]           ,[CreateUser]           ,[ModifiedUser]
+(CompanyId, [BuyerId]           ,[ContractName]           ,[CompletionDate]           ,[CreateUser]           ,[ModifiedUser]
 ,[CreateDate]           ,[ModifiedDate]           ,[IsClosed])
-select 1,
+select 1,1,
 [strOrdContractNum]      ,isnull([ComplitedDate],getdate())      ,'dumindra'      ,'dumindra'      ,getdate()
 ,getdate()      ,[bitOrdComplitConNum]  FROM [continentalnew].[dbo].[tblOrdGenHeader]
 go
 
 INSERT INTO [DB_tmxcontenental].[dbo].[standard]
-           ([StandardName]
+           (CompanyId, [StandardName]
            ,[CreateUser]
            ,[CreateDate]
            ,[ModifiedUser]
            ,[ModifiedDate])
-select  strOrdStandard,'dumindra',getdate(),'dumindra',getdate()
+select  1,strOrdStandard,'migrate',getdate(),'migrate',getdate()
  from [continentalnew].dbo.tblOrdGenDetail group by strOrdStandard
 go
 
 insert into [DB_tmxcontenental].dbo.contractdetail (contractId,StandardId,OrderQty,CreateDate,LastUpdateDate,CreateUser)
-select c.ContractId,s.StandardId,fltOrdExpQty,getdate(),getdate(),'dumindra' from continentalnew.dbo.tblOrdGenDetail d inner join 
+select c.ContractId,s.StandardId,fltOrdExpQty,getdate(),getdate(),'migrate' from continentalnew.dbo.tblOrdGenDetail d inner join 
 [DB_tmxcontenental].dbo.contract c on d.strOrdContractNum = c.ContractName inner join 
 [DB_tmxcontenental].dbo.standard s on d.strOrdStandard = s.StandardName
 
@@ -131,7 +138,7 @@ DBCC CHECKIDENT('teastock', RESEED, 0)
 go
 
 
-insert into teastock (StockItemId,ItemName,StockName,ItemType,Packs,Qty,ReceivedVia)
+insert into teastock ( StockItemId,ItemName,StockName,ItemType,Packs,Qty,ReceivedVia)
 select p.Id,strStkBoxNo,strStkBoxNo,'L',intStkNoOfCs,nvrStkNW,'sys' from continentalnew.dbo.tblStockMain s inner join purchase_detail p on
 s.perAutoKey = p.mapkey and s.chrStkStockType = 'L' order by s.perAutoKey 
 go
@@ -141,12 +148,12 @@ update teastock set Packs = 0,Qty=0 where StockItemId in
 go
 
 INSERT INTO [DB_tmxcontenental].[dbo].[blend_header]
-([BlendNo]           ,[Contract]           ,[Standard]           ,[ExportQty]           ,[IsClosed]
+(CompanyId, [BlendNo]           ,[Contract]           ,[Standard]           ,[ExportQty]           ,[IsClosed]
 ,[DateOfCompletion]           ,[ClosedDate]           ,[CreateUser]           ,[CreateDate]
 ,[ModifiedUser]           ,[ModifiedDate])
 SELECT 
-[strBlNumber]		,c.ContractId		,s.StandardId      ,[fltBlOrdQty]      ,[booBlCreated]
-,isnull([CreatedDate],getdate())      ,[CreatedDate]      ,'dumindra'      ,isnull([CreatedDate],getdate())      ,'dumindra'
+1,[strBlNumber]		,c.ContractId		,s.StandardId      ,[fltBlOrdQty]      ,[booBlCreated]
+,isnull([CreatedDate],getdate())      ,[CreatedDate]      ,'migrate'      ,isnull([CreatedDate],getdate())      ,'migrate'
 ,[CreatedDate]
 
 FROM continentalnew.[dbo].[tblBlendCreationGenHeader] h 
@@ -156,7 +163,7 @@ order by h.createdDate,strblnumber
 GO
 
 INSERT INTO [DB_tmxcontenental].[dbo].[teastock]
-           ([StockItemId],[ItemName],[StockName],[ItemType],[Packs]     ,[Qty]           ,[ReceivedVia])
+           ( [StockItemId],[ItemName],[StockName],[ItemType],[Packs]     ,[Qty]           ,[ReceivedVia])
 
 SELECT b.Id      ,[strStkBoxNo]      ,[strStkBoxNo]      ,[strBlendCategory]      ,[intStkNoOfCS]      ,[nvrStkNW]      ,'sys'
   FROM continentalnew.[dbo].[tblStockMain] s 
@@ -168,12 +175,12 @@ go
 
 INSERT INTO [DB_tmxcontenental].[dbo].[blend_detail]
            ([BlendId] ,[StockId] ,[ItemName]  ,[Packs]    ,[Qty]       ,[CreateUser]         ,[CreateDate])
-     select h.id,s.id,bd.nchblcboxnum,intblcusedbags,fltblcrequiredqty,'dumindra',updatedate from continentalnew.dbo.tblBlendCreationGenDetail bd inner join
+     select h.id,s.id,bd.nchblcboxnum,intblcusedbags,fltblcrequiredqty,'migrate',updatedate from continentalnew.dbo.tblBlendCreationGenDetail bd inner join
 [DB_tmxcontenental].dbo.purchase_detail d on d.MapKey = bd.perautokey and bd.perautokey>0 inner join
 [DB_tmxcontenental].dbo.teastock s on d.ID = s.stockItemId and s.ItemType = 'L' inner join
 [DB_tmxcontenental].dbo.blend_header h on bd.strBlcnumber = h.BlendNo
  union all
-select h.id,s.id,bd.nchblcboxnum,intblcusedbags,fltblcrequiredqty,'dumindra',updatedate from continentalnew.dbo.tblBlendCreationGenDetail bd inner join
+select h.id,s.id,bd.nchblcboxnum,intblcusedbags,fltblcrequiredqty,'migrate',updatedate from continentalnew.dbo.tblBlendCreationGenDetail bd inner join
 [DB_tmxcontenental].dbo.teastock s on bd.nchblcboxnum = s.ItemName and s.ItemType <> 'L' inner join
 [DB_tmxcontenental].dbo.blend_header h on bd.strBlcnumber = h.BlendNo 
 
@@ -181,14 +188,14 @@ go
 
 
 INSERT INTO [DB_tmxcontenental].[dbo].[blendcategorize]
-           ([BlendId]         ,[LineQty]          ,[CreateQty]          ,[Rate]        ,[ClosedRate]         ,[BB]
+           ( [BlendId]         ,[LineQty]          ,[CreateQty]          ,[Rate]        ,[ClosedRate]         ,[BB]
            ,[BG]           ,[BL]           ,[STDBB]           ,[STDBG]           ,[SIFTED]           ,[SFTBB]
            ,[SFTBG]           ,[ClosedDate]           ,[IsConverted]           ,[IsCancelRequest]           ,[CreateUser]
            ,[CreateDate]           ,[ModifiedUser]           ,[ModifiedDate])
      SELECT 
       h.[Id]      ,[fltLineQty]      ,[fltCreatedQty]      ,[fltRate]      ,[afterconRate]      ,[fltBlBB]      ,[fltBG]
       ,0      ,[fltSTDBB]      ,[fltSTDBG]      ,[fltSFTtot]      ,[fltSFTBB]      ,[fltSFTBG]      ,[datCreatedDate]
-      ,[booBConvert]      ,0      ,'dumindra'      ,getdate()      ,'dumindra'      ,getdate()
+      ,[booBConvert]      ,0      ,'migrate'      ,getdate()      ,'migrate'      ,getdate()
   FROM [continentalnew].[dbo].[tblBlendCategorizing] c inner join 
 [DB_tmxcontenental].dbo.blend_header h on c.[strBlNumber] = h.BlendNo
 
@@ -196,8 +203,8 @@ go
 delete from shipments
 DBCC CHECKIDENT('shipments', RESEED, 0)
 go
-insert into shipments (ShipmentItemId,Qty,Bags,CreateDate,CreateUser,TransType,ExportType)
-select h.Id,floShipQty,floExportBage,datShipShipmentDate ,'Dumindra','SHIP','BULK' from  continentalnew.dbo.tblShipments s 
+insert into shipments ( ShipmentItemId,Qty,Bags,CreateDate,CreateUser,TransType,ExportType)
+select h.Id,floShipQty,floExportBage,datShipShipmentDate ,'migrate','SHIP','BULK' from  continentalnew.dbo.tblShipments s 
 inner join blend_header h on h.BlendNo = s.strBlendNum order by AutoKey
 go
 
@@ -215,16 +222,16 @@ go
 DBCC CHECKIDENT('lineadjustment', RESEED, 0)
 go
 INSERT INTO [DB_tmxcontenental].[dbo].[lineadjustment]
-           ([PurchaseId]           ,[Stockid]           ,[Packs]           ,[Qty]           ,[AdjustmentType]
+           ( [PurchaseId]           ,[Stockid]           ,[Packs]           ,[Qty]           ,[AdjustmentType]
            ,[Reason]           ,[CreateUser]           ,[CreateDate]           ,[Status]           ,[VoidReason]
            ,[VoidApproved]           ,[ModifiedUser]           ,[ModifiedDate])
 
 
-select p.id,s.id,0,r.Qty,1,r.chrRemark,'dumindra',r.redate,0,null,0,null,null from [continentalnew].[dbo].tblRejectedLineRemark r 
+select p.id,s.id,0,r.Qty,1,r.chrRemark,'migrate',r.redate,0,null,0,null,null from [continentalnew].[dbo].tblRejectedLineRemark r 
 inner join dbo.purchase_detail p on r.perautokey = p.mapkey
 inner join (select id,stockItemId from teastock where itemtype = 'L') s on p.id=s.stockItemId
 union all
-select p.id,s.id,0,r.ReducedQty,2,r.Remark,'dumindra',r.reduceddate,case PaymentCondition when 0 then 0 when 1 then 1 when 2 then 1 end  PaymentCondition,null,0,null,null from [continentalnew].[dbo].tblReducedLine r 
+select p.id,s.id,0,r.ReducedQty,2,r.Remark,'migrate',r.reduceddate,case PaymentCondition when 0 then 0 when 1 then 1 when 2 then 1 end  PaymentCondition,null,0,null,null from [continentalnew].[dbo].tblReducedLine r 
 inner join dbo.purchase_detail p on r.autokey = p.mapkey
 inner join (select id,stockItemId from teastock where itemtype = 'L') s on p.id=s.stockItemId
 
@@ -233,7 +240,7 @@ go
 delete from  [collectionnote] 
 go
 insert into [collectionnote] (id,CreateDate,CreateUser,Prefix)
-select CollectionNoteNo,getdate(),'dumindra','CN' from [x_saledetails]  group by CollectionNoteNo order by CollectionNoteNo
+select CollectionNoteNo,getdate(),'migrate','CN' from [x_saledetails]  group by CollectionNoteNo order by CollectionNoteNo
 go
 update  p set p.CollectionDate = s.CollectionDate,
 p.StockReceived = s.StockReceived,
@@ -245,5 +252,9 @@ on p.Id = s.perAutoKey
 
 go
 update blendcategorize set ClosedRate = Rate where closedrate is null
+go
+update blend_header set IsTeaBoardEnabled = 1,TeaBoardEnabledBy ='migrate' where IsClosed =1
+go
+update blend_header set IsClosed = 0 from blend_header h  inner join blendcategorize c on h.Id = c.BlendId where c.CreateQty = 0
 go
 

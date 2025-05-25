@@ -11,10 +11,10 @@ namespace Blend.BuisnessService.Item
 {
     public class SupplierService : BaseManagement<Supplier>, ISupplierService
     {
-        public IEnumerable<Supplier> GetAllSuppliers(string searchStr)
+        public IEnumerable<Supplier> GetAllSuppliers(string searchStr,int companyId)
         {
             var searchBy = searchStr == "all" ? "" : searchStr;
-            var mapper = new DataMapper<Supplier>("GetSuppliers", new Hashtable() { { "SupplierName", searchBy } });
+            var mapper = new DataMapper<Supplier>("GetSuppliers", new Hashtable() { { "SupplierName", searchBy }, { "CompanyId", companyId } });
 
             var result = mapper.ObjectList();
             return result;
@@ -29,6 +29,7 @@ namespace Blend.BuisnessService.Item
             dataOperation.AddParam("@Tel", supplier.Tel);
             dataOperation.AddParam("@Email", supplier.Email);
             dataOperation.AddParam("@User", supplier.User);
+            dataOperation.AddParam("@CompanyId", supplier.CompanyId);
             dataOperation.DoExecute();
             return true;
         }

@@ -7,7 +7,7 @@ using Blend.BuisnessEntities.Adjustment;
 
 namespace Blend.BuisnessEntities.Report
 {
-    public class NotePrint
+    public class NotePrint: BaseEntity
     {
         public int BrokerId { get; set; }
         public List<PrintNoteDto> BoxNoList { get; set; }

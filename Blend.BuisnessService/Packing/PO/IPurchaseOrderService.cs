@@ -11,7 +11,7 @@ namespace Blend.BuisnessService.Packing.PO
 {
     public interface IPurchaseOrderService
     {
-        IEnumerable<PurchaseOrderDto> GetPOList(string id);
+        IEnumerable<PurchaseOrderDto> GetPOList(string id, int companyId);
         PurchaseOrderDto GetPOById(int id);
         bool CreatePO(PurchaseOrderInfo po);
         bool UpdatePO(PurchaseOrderInfo po);

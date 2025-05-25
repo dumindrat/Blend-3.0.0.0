@@ -12,15 +12,19 @@ namespace Blend.BuisnessService.Broker
     {
         public TeaBroker GetBrokerById(int BrokerId)
         {
-            throw new NotImplementedException();
+            var mapper = new DataMapper<TeaBroker>("GetBrokerById", new Hashtable() { { "BrokerId", BrokerId } });
+            var result = mapper.Object();
+            return result;
         }
 
-        public IEnumerable<TeaBroker> GetAllBrokers()
+        public IEnumerable<TeaBroker> GetAllBrokers(string searchstr, int companyId)
         {
-            var mapper = new DataMapper<TeaBroker>("GetBrokers", new Hashtable() { });
+            var searchBy = searchstr == "all" ? "" : searchstr;
+            var mapper = new DataMapper<TeaBroker>("GetBrokers", new Hashtable() { { "BrokerName", searchBy }, { "CompanyId", companyId } });
             var result = mapper.ObjectList();
             return result;
         }
+
 
         public bool CreateBroker(TeaBroker BrokerEntity)
         {
@@ -32,6 +36,7 @@ namespace Blend.BuisnessService.Broker
             dataOperation.AddParam("@BTel", BrokerEntity.Tel);
             dataOperation.AddParam("@BContactPerson", BrokerEntity.ContactPerson);
             dataOperation.AddParam("@User", BrokerEntity.User);
+            dataOperation.AddParam("@CompanyId", BrokerEntity.CompanyId);
 
             dataOperation.DoExecute();
             return true;

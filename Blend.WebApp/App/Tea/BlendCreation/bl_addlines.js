@@ -114,9 +114,10 @@
 
         function getStraghtLineStock(searchstring) {
             var boxNo = globalService.replaceSlash(searchstring);//.replacegetStraightlinestockItem("/", "~");
+            var selectedType = $("#seachtype option:selected").text()
             $scope.StraightLIneStockData = [];
             $scope.loadingdata = true;
-            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock/' + boxNo, function (results) {
+            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock?id=' + boxNo + '&searchby=' + selectedType, function (results) {
                 $scope.StraightLIneStockData = results.data;
                 $scope.viewstkgrid = "/straightlinestock.html";
             $scope.loadingdata = false;
@@ -223,6 +224,12 @@
 
         };
         
+        $scope.blendselectdisable = function (stockItemId) {
+            if ($scope.SelectedBlend.BlendId === stockItemId) {
+                return true;
+            }
+            return false;
+        };
 
     });
 })();

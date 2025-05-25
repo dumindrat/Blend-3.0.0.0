@@ -32,7 +32,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
             {
                 try
                 {
-                    pos = _poSvc.GetPOList(id);
+                    pos = _poSvc.GetPOList(id, GetCompanyId());
                 }
                 catch (Exception ex)
                 {
@@ -77,7 +77,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
             {
                 try
                 {
-                    items = _itemSvc.GetAllItems(id);
+                    items = _itemSvc.GetAllItems(id, GetCompanyId());
                     var addedItems = _poSvc.GetPOItemList(Convert.ToInt16(poid));
                     foreach (var item in items)
                     {
@@ -169,6 +169,6 @@ namespace Blend.WebApp.Controllers.Packing.PO
             }
         }
 
-        
+
     }
 }

@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.Packing.ItemReturn
 {
     public interface IItemRetunService
     {
-        IEnumerable<ItemReturnNoteDto> GetItemReturNoteList(string id);
+        IEnumerable<ItemReturnNoteDto> GetItemReturNoteList(string id,int companyId);
         ItemReturnNoteDto GetReturNoteById(int id);
         IEnumerable<ItemReceiveNoteDto> GetReceiveNoteList();
         IEnumerable<ReturnNoteItems> GetReturnNoteItemById(int id);

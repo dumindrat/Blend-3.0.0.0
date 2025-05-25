@@ -90,8 +90,7 @@
                 $scope.$emit('ADDSL_POPUP_WINDOW_EVENT', true);
                 $scope.$emit('LOAD_DATA_EVENT', true);
             });
-            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock/' + $scope.New.Id, function (results) {
-
+            httpService.getdata(urlBlenCreation + '/GetStraghtLineStock?id=' + $scope.New.Id+ '&searchby=BoxNo', function (results) {
                 $('#packs1').focus();
 
             });

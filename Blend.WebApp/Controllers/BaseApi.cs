@@ -22,6 +22,8 @@ namespace Blend.WebApp.Controllers
         protected string sys_ver;
         protected string reqheader_sysuser;
         protected LogWriter logger = new LogWriter();
+        protected string reqheader_usercompany;
+        protected string user_companyId;
 
         public BaseApi()
         {
@@ -29,6 +31,8 @@ namespace Blend.WebApp.Controllers
             var basicAuthenticationIdentity = System.Threading.Thread.CurrentPrincipal.Identity as BasicAuthenticationIdentity;
             sys_ver = ConfigurationManager.AppSettings["sys_ver"];
             reqheader_sysuser = ConfigurationManager.AppSettings["ReqHeader_SysUser"];
+            reqheader_usercompany = ConfigurationManager.AppSettings["ReqHeader_SysCompanyId"];
+
         }
 
         protected string GetUser()
@@ -41,15 +45,17 @@ namespace Blend.WebApp.Controllers
             try
             {
                 IEnumerable<string> headerValues = Request.Headers.GetValues(reqheader_sysuser);
+                var companyId = GetCompanyId();
                 var user = headerValues.FirstOrDefault();
                 if (string.IsNullOrEmpty(user))
                 {
-                    logger.LogWrite("User couldnt find in request", "Error");
+                    logger.LogWrite("User/Company couldnt find in request", "Error");
                     return false;
                 }
                 else
                 {
                     obj.User = user;
+                    obj.CompanyId = companyId;
                 }
             }
             catch (Exception ex)
@@ -58,6 +64,12 @@ namespace Blend.WebApp.Controllers
                 return false;
             }
             return true;
+        }
+
+        protected int GetCompanyId()
+        {
+            var user_companyId = Request.Headers.GetValues(reqheader_usercompany).FirstOrDefault();
+            if (string.IsNullOrEmpty(user_companyId)) { return 0; } else { return Convert.ToInt16(user_companyId); };
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿app.controller('mainController', function ($scope, $rootScope, $location, $modal, $filter, globalService, httpService) {
+﻿app.controller('mainController', function ($scope, $rootScope, $location, $modal, $filter, globalService, httpService, AuthenticationService) {
     $rootScope.loadingdata = true;
     $rootScope.loadings = false;
     $rootScope.hideMenu = true;
@@ -35,13 +35,41 @@
     }
 
     function GetCompany() {
-        httpService.getdata('api/Company', function (results) {
-            $rootScope.companyName = results.data.CompanyName;
-            $rootScope.address1 = results.data.Address1;
-            $rootScope.address2 = results.data.Address2;
-            $rootScope.SubscriptionEndDate = results.data.SubscriptionEndDate;
+        var currentUser = globalService.getcurrentuser();
+        $rootScope.menuAccess.AccessLink = '#UserCompany'
+
+        httpService.getdata('api/Company/GetDefaultUserCompany?id=' + currentUser.username + '&' + 'status=IsDefault', function (results) {
+            if (results.data.CompanyId > 0) {                
+                $rootScope.userCompany = results.data;
+            }
+            else {
+                alert('No company assigned to the user. Please contact system Administrator to get assigned a working company. !');
+                var user = { 'UserName': '', 'Token': '' };
+                user.UserName = globalService.getcurrentuser().username;
+                user.Token = globalService.getcurrentuser().token;
+                globalService.openLoadingWindow('Signing Out..');
+
+                AuthenticationService.Logoff(user, function (response) {
+                    if (response.status === 200) {
+
+                        AuthenticationService.ClearCredentials();
+                        $scope.$emit('USER_LOGOFF', true);
+                        $location.path('/Login');
+                    } else {
+                        $scope.error = response.message;
+                    }
+                    $scope.$emit('LOAD_DATA_EVENT', true);
+
+                });
+            }
         });
     }
+
+    function showCompanyWindow() {
+        alert('I am foo!');
+        return false;
+    }
+
     //This is for event listner
     $rootScope.currentuser = {};
 
@@ -131,6 +159,10 @@
         $scope.logonstatus.link = 'Login';
     });
 
+    $scope.$on('USER_COMPANY_CHANGE', function (event, data) {
+        GetCompany();
+    });
+
     $rootScope.CloseBanner = function () {
         $rootScope.showbanner = false;
 
@@ -154,5 +186,5 @@
         $location.path('/Login');
     }
 
-    
+
 });

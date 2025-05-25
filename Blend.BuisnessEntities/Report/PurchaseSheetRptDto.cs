@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blend.BuisnessEntities.Report
 {
-    public class PurchaseSheetRptDto
+    public class PurchaseSheetRptDto: BaseEntity
     {
         public int SaleId { get; set; }
         public bool IsWithValues { get; set; }
@@ -21,7 +21,7 @@ namespace Blend.BuisnessEntities.Report
 
     }
 
-    public class PurchaseSheetAdvanceRptDto
+    public class PurchaseSheetAdvanceRptDto : BaseEntity
     {
         public string FromSaleDate { get; set; }
         public string ToSaleDate { get; set; }
@@ -54,7 +54,7 @@ namespace Blend.BuisnessEntities.Report
         public string Rate { get; set; }
     }
 
-    public class BrokerPurchaeRptDto
+    public class BrokerPurchaeRptDto : BaseEntity
     {
         public string FromSaleDate { get; set; }
         public string ToSaleDate { get; set; }

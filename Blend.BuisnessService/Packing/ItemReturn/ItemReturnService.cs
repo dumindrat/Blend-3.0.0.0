@@ -20,10 +20,10 @@ namespace Blend.BuisnessService.Packing.ItemReturn
         {
             _documentService = documentService;
         }
-        public IEnumerable<BuisnessEntities.Packing.ItemReturn.ItemReturnNoteDto> GetItemReturNoteList(string id)
+        public IEnumerable<BuisnessEntities.Packing.ItemReturn.ItemReturnNoteDto> GetItemReturNoteList(string id, int companyId)
         {
             var searchBy = id == "all" ? "" : id;
-            var mapper = new DataMapper<ItemReturnNoteDto>("GetReturnNotes", new Hashtable() { { "ReturnNoteNo", searchBy } });
+            var mapper = new DataMapper<ItemReturnNoteDto>("GetReturnNotes", new Hashtable() { { "ReturnNoteNo", searchBy }, { "CompanyId", companyId } });
             var result = mapper.ObjectList();
             return result;
         }
@@ -45,7 +45,7 @@ namespace Blend.BuisnessService.Packing.ItemReturn
             {
                 var blendNo = new DocumentNo();
                 if (obj.IsAutoDocNo)
-                    obj.ReturnNoteNo = _documentService.GetDocumentNo(poDocType).FormattedDocNo;
+                    obj.ReturnNoteNo = _documentService.GetDocumentNo(poDocType, obj.CompanyId).FormattedDocNo;
                 connection.Open();
                 trans = connection.BeginTransaction();
 
@@ -56,6 +56,7 @@ namespace Blend.BuisnessService.Packing.ItemReturn
                 cmd.Parameters.AddWithValue("@ReturnNoteNo", obj.ReturnNoteNo);
                 cmd.Parameters.AddWithValue("@ReceiveNoteId", obj.ReceiveNoteId);
                 cmd.Parameters.AddWithValue("@User", obj.User);
+                cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
                 cmd.Parameters.AddWithValue("@Note", obj.Comment == null ? "" : obj.Comment);
 
                 cmd.ExecuteNonQuery();
@@ -69,6 +70,7 @@ namespace Blend.BuisnessService.Packing.ItemReturn
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
                     cmd.CommandText = "trn_DocumentNoGenerate";
                     cmd.Parameters.AddWithValue("@DocTypes", poDocType);
+                    cmd.Parameters.AddWithValue("@CompanyId", obj.CompanyId);
                     cmd.ExecuteNonQuery();
 
                 }

@@ -30,6 +30,7 @@
       <result property="DocNo" column="DocNo" dbType="Varchar"/>
       <result property="Prefix" column="Prefix" dbType="Varchar"/>
       <result property="DocFormat" column="DocFormat" dbType="Varchar"/>
+      <result property="CompanyId" column="CompanyId" dbType="Int"/>
     </resultMap>
     <resultMap id="get-docnos-result" class="Blend.BuisnessEntities.TransDocument.DocumentNo">
       <result property="DocType" column="DocType" dbType="Int"/>
@@ -38,6 +39,7 @@
       <result property="DocFormat" column="DocFormat" dbType="Varchar"/>
       <result property="Description" column="Description" dbType="Varchar"/>
       <result property="ModuleId" column="ModuleId" dbType="Int"/>
+      <result property="CompanyId" column="CompanyId" dbType="Int"/>
     </resultMap>
   </resultMaps>
 </sqlMap>

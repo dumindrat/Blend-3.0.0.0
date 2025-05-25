@@ -42,7 +42,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
 
             try
             {
-               
+                SetUser(po);
                 var stream = new POPrint(_poSvc,_companyService,_supplierService).CreateStream(po);
                 result.Content = new StreamContent(stream);
                 result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline");

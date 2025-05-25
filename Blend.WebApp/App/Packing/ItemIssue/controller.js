@@ -179,7 +179,7 @@
         getBlendList('all');
 
         function getBlendList(searchstr) {
-            httpService.getdata('api/Blend/GetBlends/' + searchstr, function (results) {
+            httpService.getdata('api/ItemIssue/GetBlendList/' + searchstr, function (results) {
                 $scope.blenddata = results.data;
                 $scope.$emit('LOAD_DATA_EVENT', true);
 

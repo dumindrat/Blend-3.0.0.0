@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
+
+  <alias>
+    <typeAlias alias="packstock" type="Blend.BuisnessEntities.Packing.Reports.PackingStockDto"/>
+  </alias>
+
+  <statements>
+
+    <procedure id="GetPackingStock" parameterMap="get-packingstock-params"  resultMap="get-packingstock-result">
+      pack_rpt_ItemStock
+    </procedure>
+   
+  </statements>
+
+  <parameterMaps>
+    <parameterMap id="get-packingstock-params">
+      <parameter property="CompanyId" direction  ="Input"/>
+    </parameterMap>
+  </parameterMaps>
+
+  <resultMaps>
+    <resultMap id="get-packingstock-result" class="Blend.BuisnessEntities.Packing.Reports.PackingStockDto">
+      <result property="ItemCode" column="ItemCode" dbType="Varchar"/>
+      <result property="ItemName" column="ItemName" dbType="Varchar"/>
+      <result property="UOM" column="UOM" dbType="Varchar"/>
+      <result property="Qty" column="Qty" dbType="Varchar"/>
+      <result property="ReceivedPrice" column="ReceivedPrice" dbType="Varchar"/>
+      <result property="StoreLocation" column="StoreLocation" dbType="Varchar"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="Value" column="Value" dbType="Varchar"/>
+    </resultMap>
+
+  </resultMaps>
+</sqlMap>

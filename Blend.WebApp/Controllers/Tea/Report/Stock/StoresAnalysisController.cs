@@ -52,7 +52,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
 
         public HttpResponseMessage Post([FromBody]StoresAnalysis obj)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && SetUser(obj))
             {
                 var result = Request.CreateResponse(HttpStatusCode.OK);
                 try
@@ -60,7 +60,7 @@ namespace Blend.WebApp.Controllers.Tea.Report.Stock
                     var data = _stockReportService.GetStoresAnalysis(obj);
                     if (data.Count == 0)
                         return GetNoDataPage();
-                    var companyInfo = _companyService.GetCompanyInfo();
+                    var companyInfo = _companyService.GetCompanyInfo(obj.CompanyId);
                     var xmlfromLINQ = GetStockXmlElement(data);
                     var textReader = new StringReader(xmlfromLINQ.ToString());
                     var strReportName = "storeanalysis.rpt";

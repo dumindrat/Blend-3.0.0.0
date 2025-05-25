@@ -20,7 +20,8 @@ app.controller('contractController', function ($scope, $rootScope, $modal, $rout
 
     function getContracts(searchstr) {
         $scope.recordCount = globalService.getDataLoadingMessage();
-        httpService.getdata(conurl + '/GetAllContracts/' + searchstr, function (results) {
+        var contractno = globalService.replaceSlash(searchstr);
+        httpService.getdata(conurl + '/GetAllContracts/' + contractno, function (results) {
             $scope.contractData = results.data;
             $scope.recordCount = globalService.getDataCountMessage(results.data.length);
             $('#datasearch').focus();

@@ -107,7 +107,7 @@
 
                 <div class="row" style="height: 50px; background-color: #dfddddd1; margin-top: 0px; min-height: 20px; padding-top: 0px">
                     <ul class="nav navbar-nav navbar-left">
-                        <li><a>{{companyName}} - Welcome {{currentuser}}..!</a></li>
+                        <li><a id="usercompany" href="#UserCompany" class="usercompanywindow">{{userCompany.CompanyName}} - Welcome {{currentuser}}..!</a></li>
 
                     </ul>
                     <ul class="nav navbar-nav navbar-left">
@@ -222,6 +222,7 @@
     <script src="App/Authentication/Roles/role_accesslevelcontroller.js"></script>
     <script src="App/Authentication/Register/controller.js"></script>
     <script src="App/Authentication/Register/service.js"></script>
+    <script src="App/Authentication/UserCompany/controller.js"></script>
     <script src="App/Tea/Shipments/controller.js"></script>
     <script src="App/Tea/Reports/Purchase/controller.js"></script>
     <script src="App/Tea/Reports/Blend/controller.js"></script>
@@ -245,6 +246,7 @@
     <script src="App/Packing/ItemIssue/in_itemscontroller.js"></script>
     <script src="App/Packing/ItemIssue/controller.js"></script>
     <script src="App/Packing/ItemReturn/controller.js"></script>
+    <script src="App/Packing/Reports/Stock/controller.js"></script>
 
 </body>
 </html>

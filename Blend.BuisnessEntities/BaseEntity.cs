@@ -8,6 +8,7 @@ namespace Blend.BuisnessEntities
 {
     public abstract class BaseEntity
     {
+        public int CompanyId { get; set; }
         public string AddedDate { get; set; }
         public string ModifiedDate { get; set; }
         public byte[] RowVersion { get; set; }

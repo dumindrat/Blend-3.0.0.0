@@ -110,6 +110,8 @@
     <Compile Include="Packing\ItemReturn\ItemReturnService.cs" />
     <Compile Include="Packing\PO\IPurchaseOrderService.cs" />
     <Compile Include="Packing\PO\PurchaseOrderService.cs" />
+    <Compile Include="Packing\Reports\PackingStockReportService.cs" />
+    <Compile Include="Packing\Reports\IPackingStockReportService.cs" />
     <Compile Include="Packing\UOM\IUomService.cs" />
     <Compile Include="Packing\UOM\UomService.cs" />
     <Compile Include="Shipments\ITeaShipmentService.cs" />

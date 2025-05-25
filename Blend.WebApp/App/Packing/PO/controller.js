@@ -280,7 +280,7 @@
                 'ReferenceId': item.Id,
                 'To': item.SupplierEmail,
                 'From': 'continentaltea@blendandexport.com',
-                'Subject': 'Purchase Order: ' + item.PONumber, 'Message': 'Plese refer the attached PO for delieries.', 'CC': '',
+                'Subject': 'Purchase Order: ' + item.PONumber, 'Message': 'Please refer the attached PO for deliveries.', 'CC': '',
                 'IsAttachment': true
             };
             $scope.boxnodisabled = false;

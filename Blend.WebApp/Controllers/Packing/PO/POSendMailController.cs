@@ -44,6 +44,8 @@ namespace Blend.WebApp.Controllers.Packing.PO
                     value.CC.Add(ConfigurationManager.AppSettings["PoCC"]);
 
                     var po = _poSvc.GetPOById(value.ReferenceId);
+                    SetUser(po);
+
                     var reportStream = new POPrint(_poSvc, _companyService, _supplierService).CreateStream(po);
                     var fileName = po.PONumber + "-" + DateTime.Now.ToString() + ".pdf";
                     fileName = fileName.Replace('/', '-').Replace(':', '-');

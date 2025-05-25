@@ -59,7 +59,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
         public Stream CreateStream(ItemReturnNoteDto rn)
         {
             var store = _companyService.GetStoteInfo(1);
-            var company = _companyService.GetCompanyInfo();
+            var company = _companyService.GetCompanyInfo(rn.CompanyId);
             var data = _itemReturnSvc.GetReturnNoteItemById(rn.Id);
             var receivenote = _itemReceiveSvc.GetReceiveNoteById(rn.ReceiveNoteId);
             var po = _poSvc.GetPOById(receivenote.PoId);
@@ -97,6 +97,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
             rd.SetParameterValue("Instructions", rn.Comment == null ? "" : rn.Comment);
             rd.SetParameterValue("Deliverydate", po.DeliveryDate == null ? "" : po.DeliveryDate);
             rd.SetParameterValue("GRNNo", receivenote.ReceiveNoteNo);
+            rd.SetParameterValue("RTNNumber", rn.ReturnNoteNo);
 
             Stream ms = rd.ExportToStream(ExportFormatType.PortableDocFormat);
             return ms;

@@ -50,6 +50,7 @@ namespace Blend.WebApp.Controllers.Packing.PO
                     value.CC.Add(ConfigurationManager.AppSettings["PoCC"]);
 
                     var rtn = _itemReturnSvc.GetReturNoteById(value.ReferenceId);
+                    SetUser(rtn);
                     var reportStream = new ItemReturnPrint(_poSvc, _companyService, _supplierService, _itemReturnSvc, _itemReceiveSvc).CreateStream(rtn);
                     var fileName = rtn.ReturnNoteNo + "-" + DateTime.Now.ToString() + ".pdf";
                     fileName = fileName.Replace('/', '-').Replace(':', '-');

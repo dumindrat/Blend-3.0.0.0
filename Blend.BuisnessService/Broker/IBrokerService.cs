@@ -10,7 +10,7 @@ namespace Blend.BuisnessService.Broker
     public interface IBrokerService
     {
         TeaBroker GetBrokerById(int BrokerId);
-        IEnumerable<TeaBroker> GetAllBrokers();
+        IEnumerable<TeaBroker> GetAllBrokers(string searchstr, int companyId);
         bool CreateBroker(TeaBroker BrokerEntity);
         bool UpdateBroker(TeaBroker BrokerEntity);
         bool DeleteBroker(int BrokerId);

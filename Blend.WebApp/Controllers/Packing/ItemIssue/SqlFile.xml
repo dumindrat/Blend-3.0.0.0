@@ -16,17 +16,24 @@
     <procedure id="GetInItems" parameterMap="get-initems-params"  resultMap="get-initems-result">
       pack_ItemIssueNoteItemGet
     </procedure>
+    <procedure id="GetBlendsForIssue" parameterMap="get-blendnosforissue-params"  resultMap="get-blendnosforissue-result">
+      trn_BlendList
+    </procedure>
   </statements>
 
   <parameterMaps>
     <parameterMap id="get-allissuenote-params">
       <parameter property="IssueNoteNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input"/>
     </parameterMap>
     <parameterMap id="get-stockitems-params">
       <parameter property="ItemName" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-initems-params">
       <parameter property="Id" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blendnosforissue-params">
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
   </parameterMaps>
 
@@ -67,6 +74,13 @@
       <result property="AddedDate" column="CreateDate" dbType="Varchar"/>
       <result property="User" column="CreateUser" dbType="Varchar"/>
       <result property="StoreLocation" column="StoreLocation" dbType="Varchar"/>
+
+    </resultMap>
+    <resultMap id="get-blendnosforissue-result" class="Blend.BuisnessEntities.BlendCreation.BlendInfo">
+      <result property="BlendId" column="Id" dbType="Int"/>
+      <result property="BlendNo" column="BlendNo" dbType="Varchar"/>
+      <result property="ContractNo" column="ContractName" dbType="Varchar"/>
+      <result property="StandardName" column="StandardName" dbType="Varchar"/>    
 
     </resultMap>
   </resultMaps>

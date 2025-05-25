@@ -18,8 +18,17 @@
     <procedure id="GetBlends" parameterMap="get-blendno-params"  resultMap="get-blendno-result">
       trn_BlendGet
     </procedure>
+    <procedure id="GetBlendsByContractAndStandard" parameterMap="get-blendnobycon-params"  resultMap="get-blendno-result">
+      trn_BlendGetByContractAndStandard
+    </procedure>
     <procedure id="GetStraightLineStock" parameterMap="get-stlstk-params"  resultMap="get-stlstk-result">
       trn_TeaStockStraightLineSearch
+    </procedure>
+    <procedure id="GetStraightLineStockByLotNo" parameterMap="get-stlstklot-params"  resultMap="get-stlstk-result">
+      trn_TeaStockStraightLineSearchByLotNo
+    </procedure>
+    <procedure id="GetStraightLineStockByInvNo" parameterMap="get-stlstkinv-params"  resultMap="get-stlstk-result">
+      trn_TeaStockStraightLineSearchByInvNo
     </procedure>
     <procedure id="GetStraightLineStockByBoxNo" parameterMap="get-stkbybox-params"  resultMap="get-stkbybox-result">
       trn_TeaStockStraightGetByBoxNo
@@ -56,10 +65,24 @@
   <parameterMaps>
     <parameterMap id="get-blendno-params">
       <parameter property="BlendNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-blendnobycon-params">
+      <parameter property="Contract" direction  ="Input" />
+      <parameter property="Standard" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-stlstk-params">
       <parameter property="BoxNo" direction  ="Input" />
       <parameter property="SearchType" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stlstklot-params">
+      <parameter property="LotNo" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
+    </parameterMap>
+    <parameterMap id="get-stlstkinv-params">
+      <parameter property="Invoice" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-stkbybox-params">
       <parameter property="BoxNo" direction  ="Input" />
@@ -69,6 +92,7 @@
     </parameterMap>
     <parameterMap id="get-blendstk-params">
       <parameter property="StockName" direction  ="Input" />
+      <parameter property="CompanyId" direction  ="Input" />
     </parameterMap>
     <parameterMap id="get-asycudas-params">
       <parameter property="BlendId" direction  ="Input" />
