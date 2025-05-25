@@ -32,17 +32,21 @@
                         Select Contractor {{contractorloading}}
                         <div class="form-group">
                             <input style="width: 400px" type="text" name="contractno" id="contractno" class="form-control" ng-model="contractData" list="contractnos"
-                                   my-enter="searchStandards()" ng-change="searchStandards()" ng-maxlength="10" />
+                                   my-enter="searchStandards()" ng-change="clearStandards()" ng-maxlength="10" />
                             <datalist id="contractnos">
                                 <option data-ng-repeat="ContractName in ContractNumbers" value="{{ContractName}}">
                             </datalist>
                         </div>
                     </td>
-                    <td width="5%"></td>
+                    <td width="5%">
+                        <input type="button" name="sl" id="btn" class="btn btn-info btn-sm" value=">>" ng-click="searchStandards()" style="width: 100%" />
+                    </td>
+                    <td width="2%">
+                    </td>
                     <td width="35%">
-                        Select Standard
+                        {{loadingstandards}} ({{standardcount}}) for the contract : {{selctedcontract}}
                         <div class="form-group">
-                            <select style="width: 400px" ng-options="standard.StandardId as standard.StandardName for standard  in standardData" class="form-control" ng-model="StandardId" ng-change="getBlendListbyConAndStan()" required>
+                            <select style="width: 300px" ng-options="standard.StandardId as standard.StandardName for standard  in standardData" class="form-control" ng-model="StandardId" ng-change="getBlendListbyConAndStan()" required>
                                 <option style="display: none" value="">---Select---</option>
                             </select>
                         </div>

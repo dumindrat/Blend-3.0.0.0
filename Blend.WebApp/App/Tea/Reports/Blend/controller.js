@@ -15,6 +15,9 @@
         $scope.standardData = [];
         $scope.contractorloading = '';
         $scope.StandardId = 0;
+        $scope.standardcount = 0;
+        $scope.selctedcontract = '';
+        $scope.loadingstandards = 'Select standards'
         var _timeout;
 
         $scope.searchdata = function searchdata() {
@@ -46,12 +49,15 @@
         $scope.getBlendListbyConAndStan = function getBlendListByContractAbdStandard() {
             $scope.recordCount = globalService.getDataLoadingMessage();
             var contractName = globalService.replaceSlash($('#contractno').val());
-            httpService.getdata(urlBlenCreation + '/GetBlendsByContractAndStandard?id=' + contractName + '&standard=' + $scope.StandardId, function (results) {
-                $scope.BlendData = results.data;
-                $scope.recordCount = globalService.getDataCountMessage(results.data.length);
-                $('#datasearch').focus();
+            var itemarray = contractName.split('|');
+            if (itemarray.length > 1 && itemarray[1] != '') {
+                httpService.getdata(urlBlenCreation + '/GetBlendsByContractAndStandard?id=' + contractName + '&standard=' + $scope.StandardId, function (results) {
+                    $scope.BlendData = results.data;
+                    $scope.recordCount = globalService.getDataCountMessage(results.data.length);
+                    $('#datasearch').focus();
 
-            });
+                });
+            }
         };
 
         getContracts();
@@ -90,13 +96,25 @@
             $scope.BlendData = [];
             var contractName = globalService.replaceSlash($('#contractno').val());
             if (contractName != '') {
-                globalService.openLoadingWindow("Loading Standards");
-                httpService.getdata('api/ContractDetail/GetStandardByContractName/' + contractName, function (results) {
-                    $scope.standardData = results.data;
-                    $scope.$emit('LOAD_DATA_EVENT', true);
-                });
+                var itemarray = contractName.split('|');
+                if (itemarray.length > 1 && itemarray[1] != '') {
+                    globalService.openLoadingWindow("Loading Standards");
+                    $scope.loadingstandards = 'Loading standards';
+                    httpService.getdata('api/ContractDetail/GetStandardByContractName/' + contractName, function (results) {
+                        $scope.standardData = results.data;
+                        $scope.$emit('LOAD_DATA_EVENT', true);
+                        $scope.standardcount = results.data.length;
+                        $scope.selctedcontract = contractName;
+                        $scope.loadingstandards = 'Select standards';
+                    });
+                }
             }
         };
+
+        $scope.clearStandards = function () {
+            $scope.standardData = [];
+            $scope.standardcount = 0
+        }
 
         $scope.gridOptions = {
             data: 'BlendData',
