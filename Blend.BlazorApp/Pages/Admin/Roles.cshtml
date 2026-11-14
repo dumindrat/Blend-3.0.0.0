@@ -50,12 +50,17 @@
                                 }
                                 else
                                 {
-                                    <td colspan="3">
-                                        <form method="post" asp-page-handler="Update">
+                                    var formId = $"update-role-{role.Id}";
+                                    <td>
+                                        <input form="@formId" class="form-control" name="Input.Name" value="@role.Name" required maxlength="256" style="width: 12rem; max-width: 100%;" aria-label="Role name" />
+                                    </td>
+                                    <td>
+                                        <label><input form="@formId" type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
+                                        <input form="@formId" type="hidden" name="Input.CanManageUsers" value="false" />
+                                    </td>
+                                    <td>
+                                        <form id="@formId" method="post" asp-page-handler="Update">
                                             <input type="hidden" name="Input.Id" value="@role.Id" />
-                                            <label>Role name <input class="form-control" name="Input.Name" value="@role.Name" required maxlength="256" /></label>
-                                            <label><input type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
-                                            <input type="hidden" name="Input.CanManageUsers" value="false" />
                                             <button class="button button-primary" type="submit">Save</button>
                                         </form>
                                     </td>

@@ -109,9 +109,47 @@ a { color: inherit; text-decoration: none; }
 .welcome-points { display: grid; gap: 12px; margin-top: 28px; color: #626d81; font-size: 11px; }
 .welcome-points span::before { margin-right: 10px; color: #18896e; content: "✓"; font-weight: 700; }
 .panel.login-card, .panel.company-card { padding: 27px; }
-.login-card h2 { margin: 8px 0 5px; font-size: 20px; font-weight: 700; }
+.signin-page { display: grid; width: min(100% - 64px, 1240px); min-height: 100vh; grid-template-columns: minmax(0, 1fr) minmax(330px, 400px); align-items: center; gap: clamp(48px, 8vw, 112px); margin: 0 auto; padding: 40px 0; }
+.signin-story { position: relative; display: flex; min-height: min(720px, calc(100vh - 80px)); flex-direction: column; overflow: hidden; padding: clamp(28px, 4vw, 52px); border-radius: 24px; background: radial-gradient(ellipse at 74% 44%, #373963 0, #242844 38%, #171b2e 78%); color: white; box-shadow: 0 26px 70px #171b2e26; }
+.signin-brand { z-index: 1; display: flex; align-items: center; gap: 12px; }
+.signin-brand > span:last-child { display: grid; gap: 2px; }
+.signin-brand strong { font-size: 19px; letter-spacing: -.7px; }
+.signin-brand small { color: #a7acc1; font-size: 8px; font-weight: 700; letter-spacing: 1.4px; }
+.signin-art { position: relative; display: grid; flex: 1; min-height: 280px; place-items: center; margin: 24px -24px 12px; }
+.signin-art svg { position: relative; z-index: 1; width: min(100%, 590px); height: auto; overflow: visible; }
+.signin-art .art-glow { position: absolute; top: 50%; left: 50%; width: 64%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #5e59d8; filter: blur(85px); opacity: .25; }
+.signin-story-copy { max-width: 470px; padding-top: 8px; }
+.signin-story-copy .eyebrow { color: #a8a4ff; font-size: 9px; letter-spacing: 1.7px; }
+.signin-story-copy h2 { margin: 12px 0 10px; color: white; font-size: clamp(25px, 3vw, 36px); font-weight: 700; letter-spacing: -1.2px; line-height: 1.16; }
+.signin-story-copy p { max-width: 410px; margin: 0; color: #b7bbcd; font-size: 12px; line-height: 1.8; }
+.signin-story-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ffffff20; color: #898fa8; font-size: 8px; letter-spacing: .9px; }
+.panel.login-card.signin-panel { width: 100%; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.signin-panel h1 { margin: 10px 0 5px; color: #20283a; font-size: 32px; font-weight: 750; letter-spacing: -1.2px; }
+.signin-intro { margin: 0 0 18px; color: #798196; font-size: 12px; line-height: 1.6; }
+.signin-panel .alert { margin-bottom: 12px; }
 .login-card form, .company-card { display: flex; flex-direction: column; }
-.login-card label, .company-card label, .modal-card label { margin: 18px 0 7px; color: #505a6f; font-size: 10px; font-weight: 600; }
+.login-card label, .company-card label, .modal-card label { margin: 16px 0 7px; color: #505a6f; font-size: 10px; font-weight: 600; }
+.signin-panel .form-control { min-height: 43px; }
+.signin-panel .button-wide { min-height: 43px; margin-top: 22px; }
+.signin-security { margin: 26px 0 0; padding-top: 17px; border-top: 1px solid #e9ebf2; color: #8c94a5; font-size: 9px; text-align: center; }
+.signin-security span { margin-right: 5px; color: #3b967c; }
+.signout-page { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; background: radial-gradient(ellipse at 50% 35%, #f0efff 0, #f6f7fb 58%); }
+.panel.signout-card { width: min(100%, 430px); padding: 32px 38px; text-align: center; }
+.signout-brand { justify-content: center; padding-bottom: 22px; color: #20283a; }
+.signout-brand small { color: #8e94a8; }
+.signout-icon { display: grid; width: 68px; height: 68px; place-items: center; margin: 8px auto 23px; border: 1px solid #e4e2ff; border-radius: 20px; background: linear-gradient(145deg, #f5f4ff, #ebeaff); color: #5a53d9; }
+.signout-icon svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+.signout-card h1 { margin: 9px 0 8px; color: #20283a; font-size: 25px; font-weight: 750; letter-spacing: -.8px; }
+.signout-copy { max-width: 300px; margin: 0 auto; color: #798196; font-size: 12px; line-height: 1.7; }
+.signout-card form { margin-top: 20px; }
+.signout-card .button-wide { min-height: 43px; margin-top: 0; }
+.signout-cancel { display: inline-block; margin-top: 17px; color: #5550c7; font-size: 11px; font-weight: 600; }
+.signout-cancel:hover { text-decoration: underline; }
+.signout-cancel span { margin-left: 4px; }
+.signout-security { margin: 25px 0 0; padding-top: 15px; border-top: 1px solid #eff0f4; color: #969dae; font-size: 9px; }
+.signout-security span { margin-right: 5px; color: #3b967c; }
+.login-card h2 { margin: 8px 0 5px; font-size: 20px; font-weight: 700; }
+.company-card { display: flex; flex-direction: column; }
 .form-control { width: 100%; min-height: 39px; padding: 0 11px; border: 1px solid #e1e4ec; border-radius: 6px; outline: 0; background: white; color: #353e52; font-size: 11px; }
 .form-control:focus { border-color: #928df0; box-shadow: 0 0 0 3px #635be51a; }
 .secure-note { margin-top: 17px; padding-top: 14px; border-top: 1px solid #eff0f4; color: #8e96a7; font-size: 9px; line-height: 1.6; }
@@ -135,4 +173,27 @@ a { color: inherit; text-decoration: none; }
 #blazor-error-ui { display: none; position: fixed; right: 16px; bottom: 16px; z-index: 30; padding: 12px 16px; border-radius: 8px; background: #aa3042; color: white; font-size: 12px; }
 #blazor-error-ui .dismiss { margin-left: 12px; border: 0; background: transparent; color: white; font-size: 17px; }
 @media (max-width: 1000px) { .sidebar { width: 205px; } .main-shell { margin-left: 205px; } .content-area { padding: 30px 25px; } .topbar { padding: 0 25px; } .welcome-layout { grid-template-columns: 1fr 340px; gap: 30px; } }
+@media (max-width: 900px) {
+    .signin-page { width: min(100% - 40px, 600px); grid-template-columns: 1fr; gap: 32px; padding: 24px 0 40px; }
+    .signin-story { min-height: auto; padding: 28px; }
+    .signin-art { min-height: 250px; margin: 10px -18px 0; }
+    .signin-story-copy h2 { font-size: 29px; }
+    .signin-story-footer { margin-top: 20px; }
+    .signin-panel { max-width: 460px; justify-self: center; padding: 8px 4px !important; }
+}
+@media (min-width: 901px) and (max-height: 700px) {
+    .signin-page { min-height: 100vh; padding: 20px 0; }
+    .signin-story { min-height: 0; padding: 26px; }
+    .signin-art { min-height: 210px; margin: 12px -18px 4px; }
+    .signin-story-footer { margin-top: 18px; }
+}
 @media (max-width: 760px) { .sidebar { position: static; width: auto; height: auto; padding: 13px 15px; } .brand { padding: 0; } .sidebar .nav-caption, .sidebar .side-nav, .sidebar-bottom { display: none; } .main-shell { margin: 0; } .topbar { height: 52px; padding: 0 18px; } .content-area { padding: 25px 16px; } .page-heading { align-items: flex-start; flex-direction: column; } .heading-actions { width: 100%; } .stat-grid { grid-template-columns: 1fr; } .stat-card { padding: 14px 17px; } .panel-header { align-items: flex-start; flex-direction: column; } .search-box { width: 100%; min-width: 0; } .welcome-layout { min-height: 0; grid-template-columns: 1fr; gap: 25px; padding: 40px 0; } .welcome-copy h1 { font-size: 34px; } .welcome-copy > p { font-size: 12px; } .login-card { width: 100%; } .company-page { margin: 30px auto; } .table-footer span { display: none; } }
+@media (max-width: 520px) {
+    .signin-page { width: min(100% - 28px, 440px); gap: 26px; padding: 14px 0 28px; }
+    .signin-story { padding: 22px; border-radius: 18px; }
+    .signin-art { min-height: 180px; margin: 0 -12px; }
+    .signin-story-copy h2 { margin-top: 8px; font-size: 25px; }
+    .signin-story-copy p { font-size: 11px; }
+    .signin-story-footer { font-size: 7px; }
+    .signin-panel h1 { font-size: 28px; }
+}

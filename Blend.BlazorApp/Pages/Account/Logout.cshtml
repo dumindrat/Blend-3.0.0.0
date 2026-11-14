@@ -9,13 +9,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sign out · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
 </head>
 <body>
-    <main>
-        <h1>Sign out</h1>
-        <form method="post">
-            <button type="submit">Sign out</button>
-        </form>
+    <main class="signout-page">
+        <section class="panel signout-card" aria-labelledby="signout-heading">
+            <a class="signin-brand signout-brand" href="/" aria-label="Blend Operations home">
+                <span class="brand-mark">B</span>
+                <span><strong>blend</strong><small>OPERATIONS SUITE</small></span>
+            </a>
+            <div class="signout-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" focusable="false">
+                    <path d="M25 8H12a3 3 0 0 0-3 3v26a3 3 0 0 0 3 3h13" />
+                    <path d="M22 24h18m-7-7 7 7-7 7" />
+                </svg>
+            </div>
+            <span class="panel-kicker">ACCOUNT</span>
+            <h1 id="signout-heading">Ready to sign out?</h1>
+            <p class="signout-copy">You’ll need to sign in again to access your Blend workspace.</p>
+            <form method="post">
+                <button class="button button-primary button-wide" type="submit">Sign out</button>
+            </form>
+            <a class="signout-cancel" href="/">Stay signed in <span aria-hidden="true">&rarr;</span></a>
+            <p class="signout-security"><span aria-hidden="true">&#128274;</span> Your session stays secure with Blend.</p>
+        </section>
     </main>
 </body>
 </html>

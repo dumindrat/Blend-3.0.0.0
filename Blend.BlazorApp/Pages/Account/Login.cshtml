@@ -14,10 +14,55 @@
     <link rel="stylesheet" href="~/workspace.css" />
 </head>
 <body>
-    <main class="content-area">
-        <section class="panel login-card">
-            <div class="panel-kicker">BLEND OPERATIONS</div>
-            <h1>Sign in</h1>
+    <main class="signin-page">
+        <section class="signin-story" aria-labelledby="blend-story-heading">
+            <div class="signin-brand"><span class="brand-mark">B</span><span><strong>blend</strong><small>OPERATIONS SUITE</small></span></div>
+            <div class="signin-art" role="img" aria-label="Illustration of Blend production batches, quality tracking, and operations data">
+                <div class="art-glow"></div>
+                <svg viewBox="0 0 640 390" aria-hidden="true" focusable="false">
+                    <defs>
+                        <linearGradient id="art-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".98"/><stop offset="1" stop-color="#e8eaff" stop-opacity=".94"/></linearGradient>
+                        <linearGradient id="art-line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8179ff"/><stop offset="1" stop-color="#42d8b0"/></linearGradient>
+                    </defs>
+                    <circle cx="320" cy="195" r="158" fill="#8a83ff" opacity=".1"/>
+                    <circle cx="320" cy="195" r="124" fill="none" stroke="#c2c3ff" stroke-opacity=".25" stroke-dasharray="3 9"/>
+                    <rect x="107" y="72" width="426" height="246" rx="20" fill="#11162c" opacity=".18" transform="rotate(-4 320 195)"/>
+                    <g transform="rotate(-4 320 195)">
+                        <rect x="118" y="62" width="426" height="246" rx="19" fill="url(#art-card)"/>
+                        <circle cx="145" cy="87" r="5" fill="#8d89e8"/><circle cx="161" cy="87" r="5" fill="#d5d7e8"/><circle cx="177" cy="87" r="5" fill="#d5d7e8"/>
+                        <rect x="142" y="112" width="154" height="12" rx="6" fill="#343b55" opacity=".85"/>
+                        <rect x="142" y="132" width="93" height="7" rx="3.5" fill="#aeb4c6"/>
+                        <rect x="142" y="168" width="118" height="104" rx="12" fill="#f1f2ff"/>
+                        <path d="M160 246h82M160 225h82M160 204h82M160 183h82" stroke="#dfe1f2" stroke-width="1"/>
+                        <path d="m164 233 20-16 17 7 20-25 16 8" fill="none" stroke="url(#art-line)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+                        <circle cx="221" cy="199" r="4" fill="#756eff"/>
+                        <rect x="278" y="168" width="104" height="104" rx="12" fill="#f8f8fc"/>
+                        <circle cx="330" cy="218" r="30" fill="none" stroke="#e1e3ef" stroke-width="10"/>
+                        <path d="M330 188a30 30 0 0 1 28 40" fill="none" stroke="#5d56df" stroke-linecap="round" stroke-width="10"/>
+                        <path d="M330 218v-30" stroke="#5d56df" stroke-linecap="round" stroke-width="2"/>
+                        <rect x="399" y="168" width="119" height="45" rx="10" fill="#eff9f5"/>
+                        <circle cx="419" cy="190" r="9" fill="#d4f1e5"/><path d="m415 190 3 3 6-7" fill="none" stroke="#16896e" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        <rect x="434" y="184" width="67" height="6" rx="3" fill="#5b657a"/><rect x="434" y="196" width="45" height="5" rx="2.5" fill="#b4becc"/>
+                        <rect x="399" y="227" width="119" height="45" rx="10" fill="#f4f2ff"/>
+                        <circle cx="419" cy="249" r="9" fill="#e3e1ff"/><path d="M419 244v6l4 2" fill="none" stroke="#665ee3" stroke-linecap="round" stroke-width="1.7"/>
+                        <rect x="434" y="243" width="67" height="6" rx="3" fill="#5b657a"/><rect x="434" y="255" width="45" height="5" rx="2.5" fill="#b4becc"/>
+                    </g>
+                    <g transform="translate(438 42)"><rect width="83" height="34" rx="17" fill="#fff"/><circle cx="18" cy="17" r="5" fill="#31bb91"/><text x="31" y="21" fill="#4d5870" font-size="10" font-family="Segoe UI,Arial,sans-serif">LIVE DATA</text></g>
+                    <g transform="translate(74 279)"><rect width="122" height="44" rx="12" fill="#fff"/><circle cx="22" cy="22" r="10" fill="#eeeaff"/><path d="M18 22h8m-4-4v8" stroke="#665ee3" stroke-linecap="round" stroke-width="1.5"/><rect x="40" y="16" width="66" height="6" rx="3" fill="#7a8397"/><rect x="40" y="26" width="46" height="5" rx="2.5" fill="#c0c5d1"/></g>
+                </svg>
+            </div>
+            <div class="signin-story-copy">
+                <span class="eyebrow">ONE CONNECTED WORKSPACE</span>
+                <h2 id="blend-story-heading">Bring every blend into focus.</h2>
+                <p>Coordinate production, track quality, and keep your operations moving with one clear view of your business.</p>
+            </div>
+            <div class="signin-story-footer"><span>BLEND OPERATIONS</span><span>Production · Quality · Insight</span></div>
+        </section>
+
+        <section class="panel login-card signin-panel" aria-labelledby="signin-heading">
+            <div class="panel-kicker">WELCOME BACK</div>
+            <h1 id="signin-heading">Sign in</h1>
+            <p class="signin-intro">Enter your account details to continue.</p>
             <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
             <form method="post">
                 <input type="hidden" asp-for="ReturnUrl" />
@@ -27,6 +72,7 @@
                 <input asp-for="Input.Password" class="form-control" autocomplete="current-password" required />
                 <button class="button button-primary button-wide" type="submit">Sign in</button>
             </form>
+            <p class="signin-security"><span aria-hidden="true">&#128274;</span> Your account is protected with secure sign-in.</p>
         </section>
     </main>
 </body>
