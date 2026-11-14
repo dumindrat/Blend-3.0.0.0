@@ -7,12 +7,6 @@ namespace Blend.BlazorApp.Services;
 
 public sealed class UserAdministrationService : IUserAdministrationService
 {
-    private static readonly HashSet<string> AllowedRoles = new(StringComparer.Ordinal)
-    {
-        BlendRoles.Admin,
-        BlendRoles.User
-    };
-
     private readonly UserManager<BlendIdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -36,7 +30,7 @@ public sealed class UserAdministrationService : IUserAdministrationService
         displayName = displayName.Trim();
         email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
 
-        if (!AllowedRoles.Contains(role))
+        if (!await _roleManager.RoleExistsAsync(role))
         {
             return Failure("Choose a valid role.");
         }
@@ -61,19 +55,6 @@ public sealed class UserAdministrationService : IUserAdministrationService
             {
                 Errors = createResult.Errors.Select(error => error.Description).ToArray()
             };
-        }
-
-        if (!await _roleManager.RoleExistsAsync(role))
-        {
-            var roleResult = await _roleManager.CreateAsync(new IdentityRole(role));
-            if (!roleResult.Succeeded)
-            {
-                await DeleteCreatedUserAsync(user);
-                return new UserAdministrationResult
-                {
-                    Errors = roleResult.Errors.Select(error => error.Description).ToArray()
-                };
-            }
         }
 
         var addRoleResult = await _userManager.AddToRoleAsync(user, role);

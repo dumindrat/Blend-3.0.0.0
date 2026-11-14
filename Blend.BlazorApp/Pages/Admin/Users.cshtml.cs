@@ -9,22 +9,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Pages.Admin;
 
-[Authorize(Roles = BlendRoles.Admin, Policy = "PasswordChangeComplete")]
+[Authorize(Policy = "PasswordChangeComplete")]
+[Authorize(Policy = BlendPermissions.ManageUsersPolicy)]
 public sealed class UsersModel : PageModel
 {
     private readonly IUserAdministrationService _userAdministration;
     private readonly UserManager<BlendIdentityUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public UsersModel(IUserAdministrationService userAdministration, UserManager<BlendIdentityUser> userManager)
+    public UsersModel(
+        IUserAdministrationService userAdministration,
+        UserManager<BlendIdentityUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         _userAdministration = userAdministration;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     [BindProperty]
     public CreateUserInput Input { get; set; } = new();
 
     public IReadOnlyList<UserRow> Users { get; private set; } = [];
+    public IReadOnlyList<string> AvailableRoles { get; private set; } = [];
     public string? TemporaryPassword { get; private set; }
     public string? SuccessMessage { get; private set; }
 
@@ -63,6 +70,12 @@ public sealed class UsersModel : PageModel
 
     private async Task LoadUsersAsync()
     {
+        AvailableRoles = await _roleManager.Roles
+            .Where(role => role.Name != null)
+            .OrderBy(role => role.Name)
+            .Select(role => role.Name!)
+            .ToListAsync(HttpContext.RequestAborted);
+
         var users = await _userManager.Users
             .OrderBy(user => user.UserName)
             .ToListAsync(HttpContext.RequestAborted);

@@ -38,8 +38,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 builder.Services.AddAuthorization(options =>
+{
     options.AddPolicy("PasswordChangeComplete", policy =>
-        policy.RequireClaim("blend:must-change-password", "false")));
+        policy.RequireClaim("blend:must-change-password", "false"));
+    options.AddPolicy(BlendPermissions.ManageUsersPolicy, policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole(BlendRoles.Admin)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers)));
+});
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorPages();
 builder.Services.AddRazorComponents()

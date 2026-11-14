@@ -1,0 +1,71 @@
+@page
+@model RolesModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Role management · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <main class="content-area">
+        <section class="panel">
+            <div class="panel-kicker">ADMINISTRATION</div>
+            <h1>Roles</h1>
+            <p>Create roles and grant access to the operations currently available in the app. Built-in roles cannot be renamed.</p>
+            <p><a class="button button-quiet" href="/" onclick="if (document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }">&larr; Back</a> · <a href="/Admin/Users">Manage users</a></p>
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
+            }
+            <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+            <h2>Create role</h2>
+            <form method="post" asp-page-handler="Create">
+                <label asp-for="Input.Name">Role name</label>
+                <input asp-for="Input.Name" class="form-control" required maxlength="256" />
+                <label><input asp-for="Input.CanManageUsers" /> Manage users</label>
+                <button class="button button-primary" type="submit">Create role</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Existing roles</h2>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead><tr><th>ROLE</th><th>PERMISSIONS</th><th>UPDATE</th></tr></thead>
+                    <tbody>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <tr>
+                                @if (role.IsSystemRole)
+                                {
+                                    <td><strong>@role.Name</strong> <span>(built-in)</span></td>
+                                    <td>@(role.Name == "Admin" ? "All administrative access" : "No administrative permissions")</td>
+                                    <td>Protected</td>
+                                }
+                                else
+                                {
+                                    <td colspan="3">
+                                        <form method="post" asp-page-handler="Update">
+                                            <input type="hidden" name="Input.Id" value="@role.Id" />
+                                            <label>Role name <input class="form-control" name="Input.Name" value="@role.Name" required maxlength="256" /></label>
+                                            <label><input type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
+                                            <input type="hidden" name="Input.CanManageUsers" value="false" />
+                                            <button class="button button-primary" type="submit">Save</button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

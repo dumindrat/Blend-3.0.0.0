@@ -20,7 +20,7 @@
             <p><strong>Your roles:</strong> @string.Join(", ", authState.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(claim => claim.Value))</p>
             <div class="heading-actions">
                 <a class="button button-quiet" href="/Account/ChangePassword">Change password</a>
-                <AuthorizeView Roles="Admin">
+                <AuthorizeView Policy="ManageUsers">
                     <Authorized><a class="button button-primary" href="/Admin/Users">Manage users</a></Authorized>
                 </AuthorizeView>
                 <a class="button button-quiet" href="/Account/Logout">Sign out</a>

@@ -9,8 +9,11 @@
         <div class="nav-caption">WORKSPACE</div>
         <nav class="side-nav" aria-label="Main navigation">
             <a class="nav-link active" href="/"><span class="nav-icon">◫</span>Overview</a>
-            <AuthorizeView Roles="Admin">
+            <AuthorizeView Policy="ManageUsers">
                 <Authorized><a class="nav-link" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
+            </AuthorizeView>
+            <AuthorizeView Roles="Admin">
+                <Authorized><a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a></Authorized>
             </AuthorizeView>
         </nav>
         <div class="sidebar-bottom">
