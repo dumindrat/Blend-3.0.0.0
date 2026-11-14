@@ -22,8 +22,10 @@ a { color: inherit; text-decoration: none; }
 .brand strong { font-size: 18px; letter-spacing: -.7px; }
 .brand small { margin-top: 1px; color: #8e94a8; font-size: 10px; letter-spacing: .5px; }
 .nav-caption { padding: 9px 13px; color: #747b91; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; }
-.side-nav { display: grid; gap: 5px; }
+.menu-group-caption { padding-top: 16px; }
+.side-nav { display: grid; min-height: 0; gap: 5px; align-content: start; overflow-y: auto; }
 .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 8px; color: #a6acbf; font-size: 13px; font-weight: 500; }
+.nav-link .nav-icon { flex: 0 0 18px; }
 .nav-link.active { background: #282b40; color: white; }
 .nav-link.disabled { cursor: default; opacity: .64; }
 .nav-icon { width: 18px; color: #989fff; font-size: 17px; text-align: center; }
@@ -133,6 +135,14 @@ a { color: inherit; text-decoration: none; }
 .signin-panel .button-wide { min-height: 43px; margin-top: 22px; }
 .signin-security { margin: 26px 0 0; padding-top: 17px; border-top: 1px solid #e9ebf2; color: #8c94a5; font-size: 9px; text-align: center; }
 .signin-security span { margin-right: 5px; color: #3b967c; }
+.menu-item-create-form { display: grid; max-width: 720px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.menu-item-create-form label { align-self: end; color: #505a6f; font-size: 10px; font-weight: 600; }
+.menu-item-create-form .button { justify-self: start; }
+.menu-items-table .form-control { min-width: 140px; }
+.menu-items-table .menu-group-input { width: 130px; min-width: 130px; }
+.menu-items-table .menu-sort-order { width: 90px; min-width: 90px; }
+.menu-item-actions { display: flex; align-items: center; gap: 6px; }
+.menu-item-actions form { display: inline-flex; }
 .signout-page { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; background: radial-gradient(ellipse at 50% 35%, #f0efff 0, #f6f7fb 58%); }
 .panel.signout-card { width: min(100%, 430px); padding: 32px 38px; text-align: center; }
 .signout-brand { justify-content: center; padding-bottom: 22px; color: #20283a; }

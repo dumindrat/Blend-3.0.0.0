@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using Blend.BlazorApp.Authentication
+@using Microsoft.EntityFrameworkCore
+@inject BlendIdentityDbContext Database
 
 <div class="app-frame">
     <aside class="sidebar">
@@ -9,11 +12,26 @@
         <div class="nav-caption">WORKSPACE</div>
         <nav class="side-nav" aria-label="Main navigation">
             <a class="nav-link active" href="/"><span class="nav-icon">◫</span>Overview</a>
+            <AuthorizeView>
+                <Authorized>
+                    @foreach (var group in MenuGroups)
+                    {
+                        <div class="nav-caption menu-group-caption">@group.Name</div>
+                        @foreach (var item in group.Items)
+                        {
+                            <a class="nav-link" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                        }
+                    }
+                </Authorized>
+            </AuthorizeView>
             <AuthorizeView Policy="ManageUsers">
                 <Authorized><a class="nav-link" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
             </AuthorizeView>
             <AuthorizeView Roles="Admin">
-                <Authorized><a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a></Authorized>
+                <Authorized>
+                    <a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a>
+                    <a class="nav-link" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a>
+                </Authorized>
             </AuthorizeView>
         </nav>
         <div class="sidebar-bottom">
@@ -45,5 +63,23 @@
 </div>
 
 @code {
+    private IReadOnlyList<MenuGroup> MenuGroups { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var menuItems = await Database.MenuItems
+            .AsNoTracking()
+            .OrderBy(item => item.SortOrder)
+            .ThenBy(item => item.Name)
+            .ToListAsync();
+
+        MenuGroups = menuItems
+            .GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new MenuGroup(group.Key, group.ToArray()))
+            .ToArray();
+    }
+
     private static string Initials(string? name) => string.IsNullOrWhiteSpace(name) ? "B" : name[..1].ToUpperInvariant();
+
+    private sealed record MenuGroup(string Name, IReadOnlyList<BlendMenuItem> Items);
 }

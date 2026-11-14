@@ -9,4 +9,6 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
         : base(options)
     {
     }
+
+    public DbSet<BlendMenuItem> MenuItems => Set<BlendMenuItem>();
 }

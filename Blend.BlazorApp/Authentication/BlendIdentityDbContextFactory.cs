@@ -8,8 +8,16 @@ public sealed class BlendIdentityDbContextFactory : IDesignTimeDbContextFactory<
 {
     public BlendIdentityDbContext CreateDbContext(string[] args)
     {
+        var contentRoot = Directory.GetCurrentDirectory();
+        if (!File.Exists(Path.Combine(contentRoot, "appsettings.json"))
+            && File.Exists(Path.Combine(contentRoot, "Blend.BlazorApp", "appsettings.json")))
+        {
+            contentRoot = Path.Combine(contentRoot, "Blend.BlazorApp");
+        }
+
+        AppDomain.CurrentDomain.SetData("DataDirectory", contentRoot);
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(contentRoot)
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()

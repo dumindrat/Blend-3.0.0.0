@@ -1,0 +1,75 @@
+@page
+@model MenuItemsModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu items · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <main class="content-area">
+        <section class="panel">
+            <div class="panel-kicker">ADMINISTRATION</div>
+            <h1>Menu items</h1>
+            <p>Create and order operation links for the workspace navigation. Group labels organize related operations in the left pane; role-based visibility can be added later.</p>
+            <p><a class="button button-quiet" href="/" onclick="if (document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }">&larr; Back</a> · <a href="/Admin/Roles">Role management</a></p>
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
+            }
+            <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+            <h2>Create menu item</h2>
+            <form method="post" asp-page-handler="Create" class="menu-item-create-form">
+                <label asp-for="Input.Name">Display name</label>
+                <input asp-for="Input.Name" class="form-control" required maxlength="100" />
+                <label asp-for="Input.GroupName">Group text</label>
+                <input asp-for="Input.GroupName" class="form-control" required maxlength="80" />
+                <label asp-for="Input.Path">Operation path</label>
+                <input asp-for="Input.Path" class="form-control" placeholder="/Operations/Planning" required maxlength="512" />
+                <label asp-for="Input.SortOrder">Sort order</label>
+                <input asp-for="Input.SortOrder" class="form-control" type="number" min="0" />
+                <button class="button button-primary" type="submit">Create menu item</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Menu catalog</h2>
+            <div class="table-scroll">
+                <table class="data-table menu-items-table">
+                    <thead><tr><th>DISPLAY NAME</th><th>GROUP TEXT</th><th>OPERATION PATH</th><th>SORT ORDER</th><th>ACTIONS</th></tr></thead>
+                    <tbody>
+                        @foreach (var item in Model.MenuItems)
+                        {
+                            var formId = $"update-menu-item-{item.Id}";
+                            <tr>
+                                <td><input form="@formId" class="form-control" name="Input.Name" value="@item.Name" required maxlength="100" aria-label="Display name" /></td>
+                                <td><input form="@formId" class="form-control menu-group-input" name="Input.GroupName" value="@item.GroupName" required maxlength="80" aria-label="Group text" /></td>
+                                <td><input form="@formId" class="form-control" name="Input.Path" value="@item.Path" required maxlength="512" aria-label="Operation path" /></td>
+                                <td><input form="@formId" class="form-control menu-sort-order" name="Input.SortOrder" type="number" value="@item.SortOrder" min="0" aria-label="Sort order" /></td>
+                                <td class="menu-item-actions">
+                                    <form id="@formId" method="post" asp-page-handler="Update" asp-route-id="@item.Id">
+                                        <button class="button button-primary button-small" type="submit">Save</button>
+                                    </form>
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Delete this menu item?');">
+                                        <button class="button button-danger-quiet button-small" type="submit">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.MenuItems.Count == 0)
+                        {
+                            <tr><td colspan="5">No menu items have been created.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
