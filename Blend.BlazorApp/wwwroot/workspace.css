@@ -150,6 +150,15 @@ a { color: inherit; text-decoration: none; }
 .role-menu-actions form { display: inline-flex; }
 .menu-item-actions { display: flex; align-items: center; gap: 6px; }
 .menu-item-actions form { display: inline-flex; }
+.company-selector { display: grid; max-width: 330px; gap: 7px; margin: 18px 0; }
+.company-selector label { color: #505a6f; font-size: 10px; font-weight: 600; }
+.company-edit-form { display: grid; max-width: 760px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; align-items: center; }
+.company-edit-form label { color: #505a6f; font-size: 10px; font-weight: 600; }
+.company-edit-form .button { justify-self: start; }
+.company-enabled { display: flex; align-items: center; gap: 6px; }
+.company-address-second { margin-top: 5px; }
+.company-table .company-date { min-width: 135px; }
+.company-table td { vertical-align: middle; }
 .signout-page { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; background: radial-gradient(ellipse at 50% 35%, #f0efff 0, #f6f7fb 58%); }
 .panel.signout-card { width: min(100%, 430px); padding: 32px 38px; text-align: center; }
 .signout-brand { justify-content: center; padding-bottom: 22px; color: #20283a; }

@@ -6,6 +6,7 @@ public interface IUserAdministrationService
         string userName,
         string displayName,
         string? email,
-        string role,
+        string roleId,
+        Guid companyId,
         CancellationToken cancellationToken = default);
 }

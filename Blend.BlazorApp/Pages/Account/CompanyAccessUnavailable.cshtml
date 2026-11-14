@@ -1,0 +1,31 @@
+@page
+@model CompanyAccessUnavailableModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Company access unavailable · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <main class="signout-page">
+        <section class="panel signout-card" aria-labelledby="company-access-heading">
+            <a class="signin-brand signout-brand" href="/" aria-label="Blend Operations home">
+                <span class="brand-mark">B</span>
+                <span><strong>blend</strong><small>OPERATIONS SUITE</small></span>
+            </a>
+            <div class="signout-icon" aria-hidden="true"><span>!</span></div>
+            <span class="panel-kicker">SUBSCRIPTION STATUS</span>
+            <h1 id="company-access-heading">Company access unavailable</h1>
+            <p class="signout-copy">Your company’s subscription is not currently active. Please contact your company administrator for assistance.</p>
+            <a class="button button-primary button-wide" href="/Account/Logout">Continue to sign out</a>
+            <p class="signout-security">If you are a company administrator, contact Blend support to review your subscription.</p>
+        </section>
+    </main>
+</body>
+</html>

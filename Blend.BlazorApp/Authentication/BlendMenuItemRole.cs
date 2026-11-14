@@ -7,5 +7,5 @@ public sealed class BlendMenuItemRole
     public int MenuItemId { get; set; }
     public BlendMenuItem MenuItem { get; set; } = null!;
     public string RoleId { get; set; } = string.Empty;
-    public IdentityRole Role { get; set; } = null!;
+    public BlendIdentityRole Role { get; set; } = null!;
 }

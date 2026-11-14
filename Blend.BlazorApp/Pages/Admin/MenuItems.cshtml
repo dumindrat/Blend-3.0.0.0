@@ -24,8 +24,21 @@
                 <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
             }
             <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+            @if (User.IsInRole(BlendRoles.Admin))
+            {
+                <form method="get" class="company-selector">
+                    <label for="CompanyId">Company</label>
+                    <select id="CompanyId" name="CompanyId" class="form-control" onchange="this.form.submit()">
+                        @foreach (var company in Model.Companies)
+                        {
+                            <option value="@company.Id" selected="@(Model.CompanyId == company.Id.ToString("D") ? "selected" : null)">@company.Name</option>
+                        }
+                    </select>
+                </form>
+            }
             <h2>Create menu item</h2>
             <form method="post" asp-page-handler="Create" class="menu-item-create-form">
+                <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
                 <label asp-for="Input.Name">Display name</label>
                 <input asp-for="Input.Name" class="form-control" required maxlength="100" />
                 <label asp-for="Input.GroupName">Group text</label>
@@ -54,9 +67,11 @@
                                 <td><input form="@formId" class="form-control menu-sort-order" name="Input.SortOrder" type="number" value="@item.SortOrder" min="0" aria-label="Sort order" /></td>
                                 <td class="menu-item-actions">
                                     <form id="@formId" method="post" asp-page-handler="Update" asp-route-id="@item.Id">
+                                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
                                         <button class="button button-primary button-small" type="submit">Save</button>
                                     </form>
                                     <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Delete this menu item?');">
+                                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
                                         <button class="button button-danger-quiet button-small" type="submit">Delete</button>
                                     </form>
                                 </td>

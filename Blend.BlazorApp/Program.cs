@@ -25,7 +25,7 @@ builder.Services.AddIdentityCore<BlendIdentityUser>(options =>
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.AllowedForNewUsers = true;
     })
-    .AddRoles<IdentityRole>()
+    .AddRoles<BlendIdentityRole>()
     .AddEntityFrameworkStores<BlendIdentityDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -45,6 +45,14 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
             context.User.IsInRole(BlendRoles.Admin)
             || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers)));
+    options.AddPolicy(BlendPermissions.ManageRolesPolicy, policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole(BlendRoles.Admin)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageRoles)));
+    options.AddPolicy(BlendPermissions.ManageMenuItemsPolicy, policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole(BlendRoles.Admin)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageMenuItems)));
 });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorPages();
@@ -62,6 +70,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseMiddleware<BlendCompanyAccessMiddleware>();
 app.UseMiddleware<BlendMenuItemAuthorizationMiddleware>();
 app.UseAuthorization();
 app.UseAntiforgery();

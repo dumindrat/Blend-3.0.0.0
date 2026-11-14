@@ -22,9 +22,16 @@ public sealed class BlendMenuItemAuthorizationMiddleware
             return;
         }
 
+        var isAuthenticated = context.User.Identity?.IsAuthenticated == true;
+        var isPlatformAdmin = context.User.IsInRole(BlendRoles.Admin);
+        var companyId = Guid.TryParse(context.User.FindFirst(BlendClaims.CompanyId)?.Value, out var parsedCompanyId)
+            ? parsedCompanyId
+            : (Guid?)null;
+
         var menuItems = await database.MenuItems
             .AsNoTracking()
-            .Select(item => new { item.Id, item.Path })
+            .Where(item => !isAuthenticated || isPlatformAdmin || item.CompanyId == companyId)
+            .Select(item => new { item.Id, item.CompanyId, item.Path })
             .ToListAsync(context.RequestAborted);
         var menuItem = menuItems
             .Where(item => PathMatches(requestPath, item.Path))
@@ -37,25 +44,37 @@ public sealed class BlendMenuItemAuthorizationMiddleware
             return;
         }
 
-        if (context.User.Identity?.IsAuthenticated != true)
+        if (!isAuthenticated)
         {
             await context.ChallengeAsync(IdentityConstants.ApplicationScheme);
             return;
         }
 
-        if (context.User.IsInRole(BlendRoles.Admin))
+        if (isPlatformAdmin)
         {
             await _next(context);
             return;
         }
 
-        var allowedRoleNames = await database.MenuItemRoles
-            .AsNoTracking()
-            .Where(assignment => assignment.MenuItemId == menuItem.Id)
-            .Select(assignment => assignment.Role.Name!)
-            .ToListAsync(context.RequestAborted);
+        if (companyId is null)
+        {
+            await context.ForbidAsync(IdentityConstants.ApplicationScheme);
+            return;
+        }
 
-        if (allowedRoleNames.Any(context.User.IsInRole))
+        var roleIds = context.User.FindAll(BlendClaims.RoleId)
+            .Select(claim => claim.Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        var hasAccess = roleIds.Length > 0 && await database.MenuItemRoles
+            .AsNoTracking()
+            .AnyAsync(assignment => assignment.MenuItemId == menuItem.Id
+                && assignment.MenuItem.CompanyId == companyId
+                && roleIds.Contains(assignment.RoleId)
+                && assignment.Role.CompanyId == companyId,
+                context.RequestAborted);
+
+        if (hasAccess)
         {
             await _next(context);
             return;

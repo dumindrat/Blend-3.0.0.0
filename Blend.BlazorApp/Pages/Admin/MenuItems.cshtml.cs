@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Pages.Admin;
 
-[Authorize(Roles = BlendRoles.Admin, Policy = "PasswordChangeComplete")]
+[Authorize(Policy = "PasswordChangeComplete")]
+[Authorize(Policy = BlendPermissions.ManageMenuItemsPolicy)]
 public sealed class MenuItemsModel : PageModel
 {
     private readonly BlendIdentityDbContext _database;
@@ -20,6 +21,10 @@ public sealed class MenuItemsModel : PageModel
     [BindProperty]
     public MenuItemInput Input { get; set; } = new();
 
+    [BindProperty(SupportsGet = true)]
+    public string? CompanyId { get; set; }
+
+    public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<BlendMenuItem> MenuItems { get; private set; } = [];
     public string? SuccessMessage { get; private set; }
 
@@ -31,10 +36,17 @@ public sealed class MenuItemsModel : PageModel
         Input.GroupName = Input.GroupName?.Trim() ?? string.Empty;
         Input.Path = Input.Path?.Trim() ?? string.Empty;
         ValidateLocalPath();
+        var companyId = await GetManagedCompanyIdAsync();
+        if (companyId is null)
+        {
+            ModelState.AddModelError(string.Empty, "Select a company you are allowed to manage.");
+        }
+
         if (ModelState.IsValid)
         {
             _database.MenuItems.Add(new BlendMenuItem
             {
+                CompanyId = companyId!.Value,
                 Name = Input.Name,
                 GroupName = Input.GroupName,
                 Path = Input.Path,
@@ -55,6 +67,12 @@ public sealed class MenuItemsModel : PageModel
         Input.GroupName = Input.GroupName?.Trim() ?? string.Empty;
         Input.Path = Input.Path?.Trim() ?? string.Empty;
         ValidateLocalPath();
+        var companyId = await GetManagedCompanyIdAsync();
+        if (companyId is null)
+        {
+            ModelState.AddModelError(string.Empty, "Select a company you are allowed to manage.");
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadMenuItemsAsync();
@@ -62,7 +80,7 @@ public sealed class MenuItemsModel : PageModel
         }
 
         var menuItem = await _database.MenuItems.FirstOrDefaultAsync(
-            item => item.Id == id,
+            item => item.Id == id && item.CompanyId == companyId,
             HttpContext.RequestAborted);
         if (menuItem is null)
         {
@@ -83,8 +101,16 @@ public sealed class MenuItemsModel : PageModel
 
     public async Task<IActionResult> OnPostDeleteAsync(int id)
     {
+        var companyId = await GetManagedCompanyIdAsync();
+        if (companyId is null)
+        {
+            ModelState.AddModelError(string.Empty, "Select a company you are allowed to manage.");
+            await LoadMenuItemsAsync();
+            return Page();
+        }
+
         var menuItem = await _database.MenuItems.FirstOrDefaultAsync(
-            item => item.Id == id,
+            item => item.Id == id && item.CompanyId == companyId,
             HttpContext.RequestAborted);
         if (menuItem is null)
         {
@@ -111,11 +137,53 @@ public sealed class MenuItemsModel : PageModel
 
     private async Task LoadMenuItemsAsync()
     {
+        var isPlatformAdmin = User.IsInRole(BlendRoles.Admin);
+        if (isPlatformAdmin)
+        {
+            Companies = await _database.Companies.AsNoTracking().OrderBy(company => company.Name).ToListAsync(HttpContext.RequestAborted);
+            if (!Guid.TryParse(CompanyId, out var selectedCompanyId) || !Companies.Any(company => company.Id == selectedCompanyId))
+            {
+                CompanyId = Companies.FirstOrDefault()?.Id.ToString("D");
+            }
+        }
+        else
+        {
+            Companies = [];
+            CompanyId = User.FindFirst(BlendClaims.CompanyId)?.Value;
+        }
+
+        if (!Guid.TryParse(CompanyId, out var companyId))
+        {
+            MenuItems = [];
+            return;
+        }
+
         MenuItems = await _database.MenuItems
             .AsNoTracking()
+            .Where(item => item.CompanyId == companyId)
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.Name)
             .ToListAsync(HttpContext.RequestAborted);
+    }
+
+    private async Task<Guid?> GetManagedCompanyIdAsync()
+    {
+        if (!Guid.TryParse(CompanyId, out var companyId))
+        {
+            return null;
+        }
+
+        if (User.IsInRole(BlendRoles.Admin))
+        {
+            return await _database.Companies.AnyAsync(company => company.Id == companyId, HttpContext.RequestAborted)
+                ? companyId
+                : null;
+        }
+
+        return Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var claimedCompanyId)
+            && claimedCompanyId == companyId
+                ? companyId
+                : null;
     }
 
     public sealed class MenuItemInput

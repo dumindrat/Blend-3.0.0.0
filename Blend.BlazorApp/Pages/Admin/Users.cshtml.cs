@@ -14,15 +14,18 @@ namespace Blend.BlazorApp.Pages.Admin;
 public sealed class UsersModel : PageModel
 {
     private readonly IUserAdministrationService _userAdministration;
+    private readonly BlendIdentityDbContext _database;
     private readonly UserManager<BlendIdentityUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<BlendIdentityRole> _roleManager;
 
     public UsersModel(
         IUserAdministrationService userAdministration,
+        BlendIdentityDbContext database,
         UserManager<BlendIdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<BlendIdentityRole> roleManager)
     {
         _userAdministration = userAdministration;
+        _database = database;
         _userManager = userManager;
         _roleManager = roleManager;
     }
@@ -30,8 +33,12 @@ public sealed class UsersModel : PageModel
     [BindProperty]
     public CreateUserInput Input { get; set; } = new();
 
+    [BindProperty(SupportsGet = true)]
+    public string? CompanyId { get; set; }
+
+    public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<UserRow> Users { get; private set; } = [];
-    public IReadOnlyList<string> AvailableRoles { get; private set; } = [];
+    public IReadOnlyList<RoleOption> AvailableRoles { get; private set; } = [];
     public string? TemporaryPassword { get; private set; }
     public string? SuccessMessage { get; private set; }
 
@@ -39,13 +46,19 @@ public sealed class UsersModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        if (!Guid.TryParse(CompanyId, out var companyId) || !await CanManageCompanyAsync(companyId))
+        {
+            ModelState.AddModelError(string.Empty, "Select a company you are allowed to manage.");
+        }
+
         if (ModelState.IsValid)
         {
             var result = await _userAdministration.CreateUserAsync(
                 Input.UserName,
                 Input.DisplayName,
                 Input.Email,
-                Input.Role,
+                Input.RoleId,
+                companyId,
                 HttpContext.RequestAborted);
 
             if (result.Succeeded)
@@ -70,23 +83,60 @@ public sealed class UsersModel : PageModel
 
     private async Task LoadUsersAsync()
     {
+        var isPlatformAdmin = User.IsInRole(BlendRoles.Admin);
+        Companies = isPlatformAdmin
+            ? await _database.Companies.AsNoTracking().OrderBy(company => company.Name).ToListAsync(HttpContext.RequestAborted)
+            : [];
+
+        var claimedCompanyId = Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var parsedCompanyId) ? parsedCompanyId : (Guid?)null;
+        if (!isPlatformAdmin)
+        {
+            CompanyId = claimedCompanyId?.ToString("D");
+        }
+        else if (!Guid.TryParse(CompanyId, out var selectedCompanyId) || !await _database.Companies.AnyAsync(company => company.Id == selectedCompanyId, HttpContext.RequestAborted))
+        {
+            CompanyId = Companies.FirstOrDefault()?.Id.ToString("D");
+        }
+
+        if (!Guid.TryParse(CompanyId, out var companyId))
+        {
+            Users = [];
+            AvailableRoles = [];
+            return;
+        }
+
         AvailableRoles = await _roleManager.Roles
-            .Where(role => role.Name != null)
-            .OrderBy(role => role.Name)
-            .Select(role => role.Name!)
+            .Where(role => role.CompanyId == companyId && role.Name != null)
+            .OrderBy(role => role.DisplayName)
+            .Select(role => new RoleOption(role.Id, role.DisplayName))
             .ToListAsync(HttpContext.RequestAborted);
 
-        var users = await _userManager.Users
+        var companyUsers = await _userManager.Users
+            .Where(user => user.CompanyId == companyId)
             .OrderBy(user => user.UserName)
             .ToListAsync(HttpContext.RequestAborted);
-        var rows = new List<UserRow>(users.Count);
-        foreach (var user in users)
+        var roleNames = await _roleManager.Roles
+            .Where(role => role.CompanyId == companyId)
+            .ToDictionaryAsync(role => role.Name!, role => role.DisplayName, StringComparer.Ordinal, HttpContext.RequestAborted);
+        var rows = new List<UserRow>(companyUsers.Count);
+        foreach (var user in companyUsers)
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            rows.Add(new UserRow(user.UserName ?? string.Empty, user.DisplayName, string.Join(", ", roles), user.MustChangePassword));
+            var assignedRoles = await _userManager.GetRolesAsync(user);
+            rows.Add(new UserRow(user.UserName ?? string.Empty, user.DisplayName, string.Join(", ", assignedRoles.Where(roleNames.ContainsKey).Select(role => roleNames[role])), user.MustChangePassword));
         }
 
         Users = rows;
+    }
+
+    private async Task<bool> CanManageCompanyAsync(Guid companyId)
+    {
+        if (User.IsInRole(BlendRoles.Admin))
+        {
+            return await _database.Companies.AnyAsync(company => company.Id == companyId, HttpContext.RequestAborted);
+        }
+
+        return Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var claimedCompanyId)
+            && claimedCompanyId == companyId;
     }
 
     public sealed class CreateUserInput
@@ -104,8 +154,9 @@ public sealed class UsersModel : PageModel
         public string? Email { get; set; }
 
         [Required]
-        public string Role { get; set; } = BlendRoles.User;
+        public string RoleId { get; set; } = string.Empty;
     }
 
+    public sealed record RoleOption(string Id, string DisplayName);
     public sealed record UserRow(string UserName, string DisplayName, string Roles, bool MustChangePassword);
 }

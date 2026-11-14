@@ -8,11 +8,11 @@ namespace Blend.BlazorApp.Services;
 public sealed class UserAdministrationService : IUserAdministrationService
 {
     private readonly UserManager<BlendIdentityUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<BlendIdentityRole> _roleManager;
 
     public UserAdministrationService(
         UserManager<BlendIdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<BlendIdentityRole> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -22,7 +22,8 @@ public sealed class UserAdministrationService : IUserAdministrationService
         string userName,
         string displayName,
         string? email,
-        string role,
+        string roleId,
+        Guid companyId,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -30,9 +31,10 @@ public sealed class UserAdministrationService : IUserAdministrationService
         displayName = displayName.Trim();
         email = string.IsNullOrWhiteSpace(email) ? null : email.Trim();
 
-        if (!await _roleManager.RoleExistsAsync(role))
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role is null || role.CompanyId != companyId || string.IsNullOrWhiteSpace(role.Name))
         {
-            return Failure("Choose a valid role.");
+            return Failure("Choose a valid role for the selected company.");
         }
 
         if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(displayName))
@@ -45,6 +47,7 @@ public sealed class UserAdministrationService : IUserAdministrationService
             UserName = userName,
             Email = email,
             DisplayName = displayName,
+            CompanyId = companyId,
             MustChangePassword = true
         };
         var temporaryPassword = GenerateTemporaryPassword();
@@ -57,7 +60,7 @@ public sealed class UserAdministrationService : IUserAdministrationService
             };
         }
 
-        var addRoleResult = await _userManager.AddToRoleAsync(user, role);
+        var addRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
         if (!addRoleResult.Succeeded)
         {
             var deleteErrors = await DeleteCreatedUserAsync(user);

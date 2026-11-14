@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Pages.Admin;
 
-[Authorize(Roles = BlendRoles.Admin, Policy = "PasswordChangeComplete")]
+[Authorize(Policy = "PasswordChangeComplete")]
+[Authorize(Policy = BlendPermissions.ManageRolesPolicy)]
 public sealed class RolesModel : PageModel
 {
     private static readonly HashSet<string> SystemRoles = new(StringComparer.OrdinalIgnoreCase)
@@ -18,10 +19,10 @@ public sealed class RolesModel : PageModel
         BlendRoles.User
     };
 
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<BlendIdentityRole> _roleManager;
     private readonly BlendIdentityDbContext _database;
 
-    public RolesModel(RoleManager<IdentityRole> roleManager, BlendIdentityDbContext database)
+    public RolesModel(RoleManager<BlendIdentityRole> roleManager, BlendIdentityDbContext database)
     {
         _roleManager = roleManager;
         _database = database;
@@ -33,6 +34,10 @@ public sealed class RolesModel : PageModel
     [BindProperty]
     public MenuAssignmentInput MenuAssignment { get; set; } = new();
 
+    [BindProperty(SupportsGet = true)]
+    public string? CompanyId { get; set; }
+
+    public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<RoleRow> Roles { get; private set; } = [];
     public IReadOnlyList<MenuItemOption> MenuItems { get; private set; } = [];
     public IReadOnlyDictionary<string, IReadOnlySet<int>> AssignedMenuItemIds { get; private set; } = new Dictionary<string, IReadOnlySet<int>>();
@@ -43,16 +48,30 @@ public sealed class RolesModel : PageModel
     public async Task<IActionResult> OnPostCreateAsync()
     {
         Input.Name = Input.Name?.Trim() ?? string.Empty;
+        var companyId = Guid.TryParse(Input.CompanyId, out var selectedCompanyId) ? selectedCompanyId : (Guid?)null;
+        CompanyId = companyId?.ToString("D");
+        if (companyId is null || !await CanManageCompanyAsync(companyId.Value))
+        {
+            ModelState.AddModelError(nameof(Input.CompanyId), "Select a company you are allowed to manage.");
+        }
+
         if (ModelState.IsValid && !SystemRoles.Contains(Input.Name))
         {
-            var role = new IdentityRole(Input.Name);
+            if (await _roleManager.Roles.AnyAsync(role => role.CompanyId == companyId && role.DisplayName == Input.Name, HttpContext.RequestAborted))
+            {
+                ModelState.AddModelError(nameof(Input.Name), "A role with this name already exists in the company.");
+                await LoadRolesAsync();
+                return Page();
+            }
+
+            var role = new BlendIdentityRole($"{companyId:N}:{Guid.NewGuid():N}", Input.Name, companyId);
             var result = await _roleManager.CreateAsync(role);
             if (result.Succeeded)
             {
-                var permissionResult = await SetManageUsersPermissionAsync(role, Input.CanManageUsers);
+                var permissionResult = await SetRolePermissionsAsync(role, Input.CanManageUsers, Input.CanManageRoles, Input.CanManageMenuItems);
                 if (permissionResult.Count == 0)
                 {
-                    SuccessMessage = $"Role '{role.Name}' created.";
+                    SuccessMessage = $"Role '{role.DisplayName}' created.";
                     Input = new RoleInput();
                 }
                 else
@@ -87,6 +106,13 @@ public sealed class RolesModel : PageModel
         }
 
         var role = await _roleManager.FindByIdAsync(Input.Id);
+        if (role is not null && role.CompanyId is null)
+        {
+            ModelState.AddModelError(string.Empty, "Platform roles cannot be changed from company role management.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
         if (role is null)
         {
             ModelState.AddModelError(string.Empty, "The selected role no longer exists.");
@@ -94,9 +120,9 @@ public sealed class RolesModel : PageModel
             return Page();
         }
 
-        if (SystemRoles.Contains(role.Name ?? string.Empty))
+        if (role.CompanyId is null || SystemRoles.Contains(role.DisplayName))
         {
-            ModelState.AddModelError(string.Empty, "The built-in Admin and User roles cannot be changed.");
+            ModelState.AddModelError(string.Empty, "Built-in roles cannot be changed from company role management.");
             await LoadRolesAsync();
             return Page();
         }
@@ -108,7 +134,25 @@ public sealed class RolesModel : PageModel
             return Page();
         }
 
-        role.Name = Input.Name;
+        if (!Guid.TryParse(Input.CompanyId, out var updateCompanyId)
+            || role.CompanyId != updateCompanyId
+            || !await CanManageCompanyAsync(updateCompanyId))
+        {
+            ModelState.AddModelError(string.Empty, "The role does not belong to a company you are allowed to manage.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        if (await _roleManager.Roles.AnyAsync(
+            candidate => candidate.CompanyId == updateCompanyId && candidate.Id != role.Id && candidate.DisplayName == Input.Name,
+            HttpContext.RequestAborted))
+        {
+            ModelState.AddModelError(nameof(Input.Name), "A role with this name already exists in the company.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        role.DisplayName = Input.Name;
         var updateResult = await _roleManager.UpdateAsync(role);
         if (!updateResult.Succeeded)
         {
@@ -117,7 +161,7 @@ public sealed class RolesModel : PageModel
             return Page();
         }
 
-        var permissionErrors = await SetManageUsersPermissionAsync(role, Input.CanManageUsers);
+        var permissionErrors = await SetRolePermissionsAsync(role, Input.CanManageUsers, Input.CanManageRoles, Input.CanManageMenuItems);
         if (permissionErrors.Count > 0)
         {
             foreach (var error in permissionErrors)
@@ -127,7 +171,7 @@ public sealed class RolesModel : PageModel
         }
         else
         {
-            SuccessMessage = $"Role '{role.Name}' updated. Users assigned this role must sign out and back in for permission changes to take effect.";
+            SuccessMessage = $"Role '{role.DisplayName}' updated. Users assigned this role must sign out and back in for permission changes to take effect.";
         }
 
         await LoadRolesAsync();
@@ -137,6 +181,15 @@ public sealed class RolesModel : PageModel
     public async Task<IActionResult> OnPostAssignMenuItemsAsync()
     {
         var role = await _roleManager.FindByIdAsync(MenuAssignment.RoleId);
+        if (role is not null && (role.CompanyId is null || !Guid.TryParse(CompanyId, out var assignmentCompanyId)
+            || role.CompanyId != assignmentCompanyId
+            || !await CanManageCompanyAsync(assignmentCompanyId)))
+        {
+            ModelState.AddModelError(string.Empty, "The role does not belong to a company you are allowed to manage.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
         if (role is null)
         {
             ModelState.AddModelError(string.Empty, "The selected role no longer exists.");
@@ -153,7 +206,7 @@ public sealed class RolesModel : PageModel
 
         var selectedIds = (MenuAssignment.MenuItemIds ?? []).Distinct().ToArray();
         var validIds = await _database.MenuItems
-            .Where(item => selectedIds.Contains(item.Id))
+            .Where(item => selectedIds.Contains(item.Id) && item.CompanyId == role.CompanyId)
             .Select(item => item.Id)
             .ToListAsync(HttpContext.RequestAborted);
         if (validIds.Count != selectedIds.Length)
@@ -175,15 +228,34 @@ public sealed class RolesModel : PageModel
         }
 
         await _database.SaveChangesAsync(HttpContext.RequestAborted);
-        SuccessMessage = $"Menu item assignments for role '{role.Name}' saved.";
+        SuccessMessage = $"Menu item assignments for role '{role.DisplayName}' saved.";
         await LoadRolesAsync();
         return Page();
     }
 
     private async Task LoadRolesAsync()
     {
-        MenuItems = await _database.MenuItems
+        if (User.IsInRole(BlendRoles.Admin))
+        {
+            Companies = await _database.Companies.AsNoTracking().OrderBy(company => company.Name).ToListAsync(HttpContext.RequestAborted);
+        }
+        else if (Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var claimedCompanyId))
+        {
+            Companies = await _database.Companies.AsNoTracking().Where(company => company.Id == claimedCompanyId).ToListAsync(HttpContext.RequestAborted);
+            CompanyId = claimedCompanyId.ToString("D");
+        }
+        else
+        {
+            Companies = [];
+        }
+
+        var selectedCompanyId = Guid.TryParse(CompanyId, out var parsedCompanyId) && Companies.Any(company => company.Id == parsedCompanyId)
+            ? parsedCompanyId
+            : Companies.FirstOrDefault()?.Id;
+        CompanyId = selectedCompanyId?.ToString("D");
+        MenuItems = selectedCompanyId is null ? [] : await _database.MenuItems
             .AsNoTracking()
+            .Where(item => item.CompanyId == selectedCompanyId)
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.Name)
             .Select(item => new MenuItemOption(item.Id, item.Name, item.GroupName))
@@ -199,29 +271,52 @@ public sealed class RolesModel : PageModel
             StringComparer.Ordinal);
 
         var rows = new List<RoleRow>();
-        foreach (var role in _roleManager.Roles.OrderBy(role => role.Name))
+        if (selectedCompanyId is not null)
         {
-            var claims = await _roleManager.GetClaimsAsync(role);
-            rows.Add(new RoleRow(
-                role.Id,
-                role.Name ?? string.Empty,
-                claims.Any(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == BlendPermissions.ManageUsers),
-                SystemRoles.Contains(role.Name ?? string.Empty)));
+            foreach (var role in _roleManager.Roles.Where(role => role.CompanyId == selectedCompanyId).OrderBy(role => role.DisplayName))
+            {
+                var claims = await _roleManager.GetClaimsAsync(role);
+                rows.Add(new RoleRow(
+                    role.Id,
+                    role.DisplayName,
+                    claims.Any(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == BlendPermissions.ManageUsers),
+                    claims.Any(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == BlendPermissions.ManageRoles),
+                    claims.Any(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == BlendPermissions.ManageMenuItems),
+                    role.DisplayName.Equals(BlendRoles.User, StringComparison.OrdinalIgnoreCase)));
+            }
         }
 
         Roles = rows;
     }
 
-    private async Task<IReadOnlyList<string>> SetManageUsersPermissionAsync(IdentityRole role, bool enabled)
+    private async Task<IReadOnlyList<string>> SetRolePermissionsAsync(BlendIdentityRole role, bool canManageUsers, bool canManageRoles, bool canManageMenuItems)
     {
         var errors = new List<string>();
-        var permissionClaims = (await _roleManager.GetClaimsAsync(role))
-            .Where(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == BlendPermissions.ManageUsers)
-            .ToArray();
+        await SetPermissionAsync(role, BlendPermissions.ManageUsers, canManageUsers, errors);
+        await SetPermissionAsync(role, BlendPermissions.ManageRoles, canManageRoles, errors);
+        await SetPermissionAsync(role, BlendPermissions.ManageMenuItems, canManageMenuItems, errors);
+        return errors;
+    }
 
-        if (enabled && permissionClaims.Length == 0)
+    private async Task<bool> CanManageCompanyAsync(Guid companyId)
+    {
+        if (User.IsInRole(BlendRoles.Admin))
         {
-            var result = await _roleManager.AddClaimAsync(role, new Claim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers));
+            return await _database.Companies.AnyAsync(company => company.Id == companyId, HttpContext.RequestAborted);
+        }
+
+        return Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var claimedCompanyId)
+            && claimedCompanyId == companyId;
+    }
+
+    private async Task SetPermissionAsync(BlendIdentityRole role, string permission, bool enabled, List<string> errors)
+    {
+        var existingClaims = (await _roleManager.GetClaimsAsync(role))
+            .Where(claim => claim.Type == BlendPermissions.ClaimType && claim.Value == permission)
+            .ToArray();
+        if (enabled && existingClaims.Length == 0)
+        {
+            var result = await _roleManager.AddClaimAsync(role, new Claim(BlendPermissions.ClaimType, permission));
             if (!result.Succeeded)
             {
                 errors.AddRange(result.Errors.Select(error => error.Description));
@@ -229,7 +324,7 @@ public sealed class RolesModel : PageModel
         }
         else if (!enabled)
         {
-            foreach (var claim in permissionClaims)
+            foreach (var claim in existingClaims)
             {
                 var result = await _roleManager.RemoveClaimAsync(role, claim);
                 if (!result.Succeeded)
@@ -238,8 +333,6 @@ public sealed class RolesModel : PageModel
                 }
             }
         }
-
-        return errors;
     }
 
     private void AddErrors(IdentityResult result)
@@ -263,11 +356,14 @@ public sealed class RolesModel : PageModel
         public string Id { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(256)]
+        [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
+        public string? CompanyId { get; set; }
         public bool CanManageUsers { get; set; }
+        public bool CanManageRoles { get; set; }
+        public bool CanManageMenuItems { get; set; }
     }
 
-    public sealed record RoleRow(string Id, string Name, bool CanManageUsers, bool IsSystemRole);
+    public sealed record RoleRow(string Id, string Name, bool CanManageUsers, bool CanManageRoles, bool CanManageMenuItems, bool IsSystemRole);
 }

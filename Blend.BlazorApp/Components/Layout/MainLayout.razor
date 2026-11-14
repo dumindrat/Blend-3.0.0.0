@@ -29,11 +29,14 @@
             <AuthorizeView Policy="ManageUsers">
                 <Authorized><a class="nav-link" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
             </AuthorizeView>
+            <AuthorizeView Policy="ManageRoles">
+                <Authorized><a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a></Authorized>
+            </AuthorizeView>
+            <AuthorizeView Policy="ManageMenuItems">
+                <Authorized><a class="nav-link" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a></Authorized>
+            </AuthorizeView>
             <AuthorizeView Roles="Admin">
-                <Authorized>
-                    <a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a>
-                    <a class="nav-link" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a>
-                </Authorized>
+                <Authorized><a class="nav-link" href="/Admin/Companies"><span class="nav-icon">▦</span>Companies</a></Authorized>
             </AuthorizeView>
         </nav>
         <div class="sidebar-bottom">
@@ -79,17 +82,21 @@
         var menuQuery = Database.MenuItems.AsNoTracking();
         if (!user.IsInRole(BlendRoles.Admin))
         {
-            var roleNames = user.FindAll(ClaimTypes.Role)
-                .Select(claim => claim.Value)
-                .Distinct(StringComparer.Ordinal)
-                .ToArray();
-            if (roleNames.Length == 0)
+            if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
             {
                 return;
             }
 
-            menuQuery = menuQuery.Where(item => Database.MenuItemRoles.Any(assignment =>
-                assignment.MenuItemId == item.Id && roleNames.Contains(assignment.Role.Name!)));
+            var roleIds = user.FindAll(BlendClaims.RoleId)
+                .Select(claim => claim.Value)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+            menuQuery = menuQuery.Where(item => item.CompanyId == companyId
+                && roleIds.Length > 0
+                && Database.MenuItemRoles.Any(assignment =>
+                    assignment.MenuItemId == item.Id
+                    && roleIds.Contains(assignment.RoleId)
+                    && assignment.Role.CompanyId == companyId));
         }
 
         var menuItems = await menuQuery

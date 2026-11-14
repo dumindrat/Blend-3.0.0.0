@@ -5,6 +5,8 @@ namespace Blend.BlazorApp.Authentication;
 public sealed class BlendMenuItem
 {
     public int Id { get; set; }
+    public Guid CompanyId { get; set; }
+    public BlendCompany Company { get; set; } = null!;
 
     [Required]
     [StringLength(100)]

@@ -3,19 +3,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Authentication;
 
-public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser>
+public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser, BlendIdentityRole, string>
 {
     public BlendIdentityDbContext(DbContextOptions<BlendIdentityDbContext> options)
         : base(options)
     {
     }
 
+    public DbSet<BlendCompany> Companies => Set<BlendCompany>();
     public DbSet<BlendMenuItem> MenuItems => Set<BlendMenuItem>();
     public DbSet<BlendMenuItemRole> MenuItemRoles => Set<BlendMenuItemRole>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<BlendIdentityUser>()
+            .HasOne(user => user.Company)
+            .WithMany()
+            .HasForeignKey(user => user.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<BlendIdentityRole>()
+            .HasOne(role => role.Company)
+            .WithMany()
+            .HasForeignKey(role => role.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<BlendIdentityRole>()
+            .HasIndex(role => new { role.CompanyId, role.DisplayName })
+            .IsUnique()
+            .HasFilter("[CompanyId] IS NOT NULL");
+
+        builder.Entity<BlendMenuItem>()
+            .HasOne(item => item.Company)
+            .WithMany()
+            .HasForeignKey(item => item.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<BlendMenuItemRole>(entity =>
         {
