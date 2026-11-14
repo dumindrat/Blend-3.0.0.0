@@ -25,11 +25,13 @@ public sealed class CompaniesModel : PageModel
 
     public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public string? SuccessMessage { get; private set; }
+    public bool ShowCreateDialog { get; private set; }
 
     public async Task OnGetAsync() => await LoadCompaniesAsync();
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
+        ShowCreateDialog = true;
         NormalizeInput();
         ValidateSubscriptionDates();
         if (ModelState.IsValid)
@@ -64,6 +66,7 @@ public sealed class CompaniesModel : PageModel
             {
                 await transaction.CommitAsync(HttpContext.RequestAborted);
                 SuccessMessage = $"Company '{company.Name}' created with Company Admin and User roles.";
+                ShowCreateDialog = false;
                 Input = new CompanyInput { SubscriptionStartDate = DateOnly.FromDateTime(DateTime.UtcNow), SubscriptionEndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1)), IsEnabled = true };
             }
         }

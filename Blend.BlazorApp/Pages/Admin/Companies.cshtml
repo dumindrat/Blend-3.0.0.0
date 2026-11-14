@@ -18,31 +18,52 @@
         <section class="panel">
             <div class="panel-kicker">PLATFORM ADMINISTRATION</div>
             <h1>Companies</h1>
-            <p>Create companies, maintain their contact details, and manage subscription access windows. Expired, future, or disabled subscriptions block company users.</p>
-            <p><a class="button button-quiet" href="/" onclick="if (document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }">&larr; Back</a></p>
+            <div class="company-list-heading">
+                <div>
+                    <p>Create companies, maintain their contact details, and manage subscription access windows. Expired, future, or disabled subscriptions block company users.</p>
+                    <a class="button button-quiet" href="/" onclick="if (document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }">&larr; Back</a>
+                </div>
+                <button class="button button-primary" type="button" onclick="document.getElementById('create-company-dialog').showModal()">Create company</button>
+            </div>
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
                 <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
             }
-            <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
-            <h2>Create company</h2>
-            <form method="post" asp-page-handler="Create" class="company-edit-form">
-                <label asp-for="Input.Name">Company name</label><input asp-for="Input.Name" class="form-control" required maxlength="160" />
-                <label asp-for="Input.AddressLine1">Address line 1</label><input asp-for="Input.AddressLine1" class="form-control" maxlength="200" />
-                <label asp-for="Input.AddressLine2">Address line 2</label><input asp-for="Input.AddressLine2" class="form-control" maxlength="200" />
-                <label asp-for="Input.City">City</label><input asp-for="Input.City" class="form-control" maxlength="100" />
-                <label asp-for="Input.Region">State / region</label><input asp-for="Input.Region" class="form-control" maxlength="100" />
-                <label asp-for="Input.PostalCode">Postal code</label><input asp-for="Input.PostalCode" class="form-control" maxlength="30" />
-                <label asp-for="Input.Country">Country</label><input asp-for="Input.Country" class="form-control" maxlength="100" />
-                <label asp-for="Input.SubscriptionStartDate">Subscription starts (UTC date)</label><input asp-for="Input.SubscriptionStartDate" class="form-control" type="date" required />
-                <label asp-for="Input.SubscriptionEndDate">Subscription ends (UTC date, inclusive)</label><input asp-for="Input.SubscriptionEndDate" class="form-control" type="date" required />
-                <label class="company-enabled"><input asp-for="Input.IsEnabled" /> Enabled</label>
-                <button class="button button-primary" type="submit">Create company</button>
-            </form>
+            @if (!Model.ShowCreateDialog)
+            {
+                <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+            }
+            <dialog id="create-company-dialog" class="modal-card modal-wide company-create-dialog" aria-labelledby="create-company-heading">
+                <div class="modal-heading">
+                    <div>
+                        <div class="panel-kicker">NEW COMPANY</div>
+                        <h2 id="create-company-heading">Create company</h2>
+                        <p class="muted">Add company details and set its subscription period.</p>
+                    </div>
+                    <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('create-company-dialog').close()">&times;</button>
+                </div>
+                <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+                <form method="post" asp-page-handler="Create" class="company-create-form">
+                    <div class="company-modal-field"><label asp-for="Input.Name">Company name</label><input asp-for="Input.Name" class="form-control" required maxlength="160" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.AddressLine1">Address line 1</label><input asp-for="Input.AddressLine1" class="form-control" maxlength="200" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.AddressLine2">Address line 2</label><input asp-for="Input.AddressLine2" class="form-control" maxlength="200" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.City">City</label><input asp-for="Input.City" class="form-control" maxlength="100" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.Region">State / region</label><input asp-for="Input.Region" class="form-control" maxlength="100" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.PostalCode">Postal code</label><input asp-for="Input.PostalCode" class="form-control" maxlength="30" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.Country">Country</label><input asp-for="Input.Country" class="form-control" maxlength="100" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.SubscriptionStartDate">Subscription starts (UTC date)</label><input asp-for="Input.SubscriptionStartDate" class="form-control" type="date" required /></div>
+                    <div class="company-modal-field"><label asp-for="Input.SubscriptionEndDate">Subscription ends (UTC date, inclusive)</label><input asp-for="Input.SubscriptionEndDate" class="form-control" type="date" required /></div>
+                    <label class="company-enabled company-modal-enabled"><input asp-for="Input.IsEnabled" /> Enabled</label>
+                    <div class="modal-actions company-modal-actions">
+                        <button class="button button-quiet" type="button" onclick="document.getElementById('create-company-dialog').close()">Cancel</button>
+                        <button class="button button-primary" type="submit">Create company</button>
+                    </div>
+                </form>
+            </dialog>
         </section>
 
         <section class="panel">
-            <h2>Company accounts</h2>
+            <h2>Companies</h2>
             <div class="table-scroll">
                 <table class="data-table company-table">
                     <thead><tr><th>COMPANY</th><th>ADDRESS</th><th>SUBSCRIPTION</th><th>STATUS</th><th>SAVE</th></tr></thead>
@@ -88,5 +109,11 @@
             </div>
         </section>
     </main>
+    @if (Model.ShowCreateDialog)
+    {
+        <script>
+            document.getElementById('create-company-dialog').showModal();
+        </script>
+    }
 </body>
 </html>

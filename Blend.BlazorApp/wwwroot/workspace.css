@@ -159,6 +159,20 @@ a { color: inherit; text-decoration: none; }
 .company-address-second { margin-top: 5px; }
 .company-table .company-date { min-width: 135px; }
 .company-table td { vertical-align: middle; }
+.company-list-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-top: 16px; }
+.company-list-heading p { max-width: 760px; }
+.company-create-dialog { width: min(100% - 32px, 760px); max-width: none; max-height: min(90vh, 900px); margin: auto; }
+.company-create-dialog::backdrop { background: #11162680; backdrop-filter: blur(3px); }
+.company-create-form { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 16px; }
+.company-modal-field { display: flex; min-width: 0; flex-direction: column; }
+.company-modal-field label { margin-top: 12px; }
+.company-modal-enabled { align-self: end; }
+.company-modal-actions { grid-column: 1 / -1; }
+@media (max-width: 600px) {
+    .company-list-heading { flex-direction: column; }
+    .company-create-form { grid-template-columns: 1fr; }
+    .company-modal-actions { grid-column: auto; }
+}
 .signout-page { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; background: radial-gradient(ellipse at 50% 35%, #f0efff 0, #f6f7fb 58%); }
 .panel.signout-card { width: min(100%, 430px); padding: 32px 38px; text-align: center; }
 .signout-brand { justify-content: center; padding-bottom: 22px; color: #20283a; }
