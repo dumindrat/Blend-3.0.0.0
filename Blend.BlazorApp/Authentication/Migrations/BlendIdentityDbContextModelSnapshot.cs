@@ -125,6 +125,21 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.ToTable("MenuItems");
                 });
 
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemRole", b =>
+                {
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("MenuItemId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("MenuItemRoles");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -256,6 +271,25 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemRole", b =>
+                {
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendMenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

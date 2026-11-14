@@ -62,6 +62,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseMiddleware<BlendMenuItemAuthorizationMiddleware>();
 app.UseAuthorization();
 app.UseAntiforgery();
 

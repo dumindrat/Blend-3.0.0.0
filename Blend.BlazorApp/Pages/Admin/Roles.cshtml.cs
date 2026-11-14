@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Pages.Admin;
 
@@ -18,16 +19,23 @@ public sealed class RolesModel : PageModel
     };
 
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly BlendIdentityDbContext _database;
 
-    public RolesModel(RoleManager<IdentityRole> roleManager)
+    public RolesModel(RoleManager<IdentityRole> roleManager, BlendIdentityDbContext database)
     {
         _roleManager = roleManager;
+        _database = database;
     }
 
     [BindProperty]
     public RoleInput Input { get; set; } = new();
 
+    [BindProperty]
+    public MenuAssignmentInput MenuAssignment { get; set; } = new();
+
     public IReadOnlyList<RoleRow> Roles { get; private set; } = [];
+    public IReadOnlyList<MenuItemOption> MenuItems { get; private set; } = [];
+    public IReadOnlyDictionary<string, IReadOnlySet<int>> AssignedMenuItemIds { get; private set; } = new Dictionary<string, IReadOnlySet<int>>();
     public string? SuccessMessage { get; private set; }
 
     public async Task OnGetAsync() => await LoadRolesAsync();
@@ -126,8 +134,70 @@ public sealed class RolesModel : PageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostAssignMenuItemsAsync()
+    {
+        var role = await _roleManager.FindByIdAsync(MenuAssignment.RoleId);
+        if (role is null)
+        {
+            ModelState.AddModelError(string.Empty, "The selected role no longer exists.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        if (string.Equals(role.Name, BlendRoles.Admin, StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(string.Empty, "The built-in Admin role already has access to all menu items.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        var selectedIds = (MenuAssignment.MenuItemIds ?? []).Distinct().ToArray();
+        var validIds = await _database.MenuItems
+            .Where(item => selectedIds.Contains(item.Id))
+            .Select(item => item.Id)
+            .ToListAsync(HttpContext.RequestAborted);
+        if (validIds.Count != selectedIds.Length)
+        {
+            ModelState.AddModelError(string.Empty, "One or more selected menu items no longer exist.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        var assignments = await _database.MenuItemRoles
+            .Where(assignment => assignment.RoleId == role.Id)
+            .ToListAsync(HttpContext.RequestAborted);
+        var selectedSet = selectedIds.ToHashSet();
+        _database.MenuItemRoles.RemoveRange(assignments.Where(assignment => !selectedSet.Contains(assignment.MenuItemId)));
+        var existingIds = assignments.Select(assignment => assignment.MenuItemId).ToHashSet();
+        foreach (var menuItemId in selectedIds.Where(menuItemId => !existingIds.Contains(menuItemId)))
+        {
+            _database.MenuItemRoles.Add(new BlendMenuItemRole { RoleId = role.Id, MenuItemId = menuItemId });
+        }
+
+        await _database.SaveChangesAsync(HttpContext.RequestAborted);
+        SuccessMessage = $"Menu item assignments for role '{role.Name}' saved.";
+        await LoadRolesAsync();
+        return Page();
+    }
+
     private async Task LoadRolesAsync()
     {
+        MenuItems = await _database.MenuItems
+            .AsNoTracking()
+            .OrderBy(item => item.SortOrder)
+            .ThenBy(item => item.Name)
+            .Select(item => new MenuItemOption(item.Id, item.Name, item.GroupName))
+            .ToListAsync(HttpContext.RequestAborted);
+        var assignments = await _database.MenuItemRoles
+            .AsNoTracking()
+            .GroupBy(assignment => assignment.RoleId)
+            .Select(group => new { RoleId = group.Key, MenuItemIds = group.Select(assignment => assignment.MenuItemId).ToList() })
+            .ToListAsync(HttpContext.RequestAborted);
+        AssignedMenuItemIds = assignments.ToDictionary(
+            assignment => assignment.RoleId,
+            assignment => (IReadOnlySet<int>)assignment.MenuItemIds.ToHashSet(),
+            StringComparer.Ordinal);
+
         var rows = new List<RoleRow>();
         foreach (var role in _roleManager.Roles.OrderBy(role => role.Name))
         {
@@ -179,6 +249,14 @@ public sealed class RolesModel : PageModel
             ModelState.AddModelError(string.Empty, error.Description);
         }
     }
+
+    public sealed class MenuAssignmentInput
+    {
+        public string RoleId { get; set; } = string.Empty;
+        public List<int> MenuItemIds { get; set; } = [];
+    }
+
+    public sealed record MenuItemOption(int Id, string Name, string GroupName);
 
     public sealed class RoleInput
     {

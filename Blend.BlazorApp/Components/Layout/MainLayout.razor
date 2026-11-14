@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@using System.Security.Claims
 @using Blend.BlazorApp.Authentication
 @using Microsoft.EntityFrameworkCore
 @inject BlendIdentityDbContext Database
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="app-frame">
     <aside class="sidebar">
@@ -67,8 +69,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var menuItems = await Database.MenuItems
-            .AsNoTracking()
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            return;
+        }
+
+        var menuQuery = Database.MenuItems.AsNoTracking();
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var roleNames = user.FindAll(ClaimTypes.Role)
+                .Select(claim => claim.Value)
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+            if (roleNames.Length == 0)
+            {
+                return;
+            }
+
+            menuQuery = menuQuery.Where(item => Database.MenuItemRoles.Any(assignment =>
+                assignment.MenuItemId == item.Id && roleNames.Contains(assignment.Role.Name!)));
+        }
+
+        var menuItems = await menuQuery
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.Name)
             .ToListAsync();

@@ -17,7 +17,7 @@
         <section class="panel">
             <div class="panel-kicker">ADMINISTRATION</div>
             <h1>Roles</h1>
-            <p>Create roles and grant access to the operations currently available in the app. Built-in roles cannot be renamed.</p>
+            <p>Create roles, choose their permissions, and assign each role access to multiple operations. Built-in roles cannot be renamed.</p>
             <p><a class="button button-quiet" href="/" onclick="if (document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }">&larr; Back</a> · <a href="/Admin/Users">Manage users</a></p>
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
@@ -37,32 +37,71 @@
             <h2>Existing roles</h2>
             <div class="table-scroll">
                 <table class="data-table">
-                    <thead><tr><th>ROLE</th><th>PERMISSIONS</th><th>UPDATE</th></tr></thead>
+                    <thead><tr><th>ROLE</th><th>PERMISSIONS</th><th>ASSIGNED MENU ITEMS</th><th>ACTIONS</th></tr></thead>
                     <tbody>
                         @foreach (var role in Model.Roles)
                         {
+                            var assignmentFormId = $"assign-menu-items-{role.Id}";
+                            var assignedMenuItemIds = Model.AssignedMenuItemIds.TryGetValue(role.Id, out var itemIds) ? itemIds : new HashSet<int>();
                             <tr>
                                 @if (role.IsSystemRole)
                                 {
                                     <td><strong>@role.Name</strong> <span>(built-in)</span></td>
                                     <td>@(role.Name == "Admin" ? "All administrative access" : "No administrative permissions")</td>
-                                    <td>Protected</td>
+                                    <td>
+                                        @if (role.Name == "Admin")
+                                        {
+                                            <span>All menu items</span>
+                                        }
+                                        else
+                                        {
+                                            <form id="@assignmentFormId" method="post" asp-page-handler="AssignMenuItems">
+                                                <input type="hidden" name="MenuAssignment.RoleId" value="@role.Id" />
+                                            </form>
+                                            <div class="role-menu-options">
+                                                @foreach (var item in Model.MenuItems)
+                                                {
+                                                    <label><input form="@assignmentFormId" type="checkbox" name="MenuAssignment.MenuItemIds" value="@item.Id" checked="@(assignedMenuItemIds.Contains(item.Id) ? "checked" : null)" /> @item.Name</label>
+                                                }
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (role.Name != "Admin")
+                                        {
+                                            <button class="button button-primary button-small" type="submit" form="@assignmentFormId">Save menu items</button>
+                                        }
+                                        else
+                                        {
+                                            <span>Protected</span>
+                                        }
+                                    </td>
                                 }
                                 else
                                 {
-                                    var formId = $"update-role-{role.Id}";
+                                    var updateFormId = $"update-role-{role.Id}";
+                                    <td><input form="@updateFormId" class="form-control role-name-input" name="Input.Name" value="@role.Name" required maxlength="256" aria-label="Role name" /></td>
                                     <td>
-                                        <input form="@formId" class="form-control" name="Input.Name" value="@role.Name" required maxlength="256" style="width: 12rem; max-width: 100%;" aria-label="Role name" />
+                                        <label><input form="@updateFormId" type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
+                                        <input form="@updateFormId" type="hidden" name="Input.CanManageUsers" value="false" />
                                     </td>
                                     <td>
-                                        <label><input form="@formId" type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
-                                        <input form="@formId" type="hidden" name="Input.CanManageUsers" value="false" />
-                                    </td>
-                                    <td>
-                                        <form id="@formId" method="post" asp-page-handler="Update">
-                                            <input type="hidden" name="Input.Id" value="@role.Id" />
-                                            <button class="button button-primary" type="submit">Save</button>
+                                        <form id="@assignmentFormId" method="post" asp-page-handler="AssignMenuItems">
+                                            <input type="hidden" name="MenuAssignment.RoleId" value="@role.Id" />
                                         </form>
+                                        <div class="role-menu-options">
+                                            @foreach (var item in Model.MenuItems)
+                                            {
+                                                <label><input form="@assignmentFormId" type="checkbox" name="MenuAssignment.MenuItemIds" value="@item.Id" checked="@(assignedMenuItemIds.Contains(item.Id) ? "checked" : null)" /> @item.Name <small>@item.GroupName</small></label>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="role-menu-actions">
+                                        <form id="@updateFormId" method="post" asp-page-handler="Update">
+                                            <input type="hidden" name="Input.Id" value="@role.Id" />
+                                            <button class="button button-primary button-small" type="submit">Save role</button>
+                                        </form>
+                                        <button class="button button-quiet button-small" type="submit" form="@assignmentFormId">Save menu items</button>
                                     </td>
                                 }
                             </tr>
