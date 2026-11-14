@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+
+<div class="app-frame">
+    <aside class="sidebar">
+        <a class="brand" href="/">
+            <span class="brand-mark">B</span>
+            <span><strong>blend</strong><small>Operations suite</small></span>
+        </a>
+        <div class="nav-caption">WORKSPACE</div>
+        <nav class="side-nav" aria-label="Main navigation">
+            <a class="nav-link active" href="/"><span class="nav-icon">◫</span>Overview</a>
+            <AuthorizeView Roles="Admin">
+                <Authorized><a class="nav-link" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
+            </AuthorizeView>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="nav-caption">ACCOUNT</div>
+            <AuthorizeView>
+                <Authorized Context="authState">
+                    <div class="connection-state"><span class="status-dot"></span> Signed in</div>
+                    <div class="sidebar-user"><span class="avatar">@Initials(authState.User.Identity?.Name)</span><span><strong>@authState.User.Identity?.Name</strong><small>@string.Join(", ", authState.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(claim => claim.Value))</small></span></div>
+                    <a class="nav-link" href="/Account/ChangePassword">Change password</a>
+                    <a class="nav-link" href="/Account/Logout">Sign out</a>
+                </Authorized>
+            </AuthorizeView>
+            <div class="sidebar-version">Modern client · .NET 10</div>
+        </div>
+    </aside>
+    <div class="main-shell">
+        <header class="topbar">
+            <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
+            <div class="topbar-right"><span class="live-indicator"></span> Live operations</div>
+        </header>
+        <main class="content-area">@Body</main>
+    </div>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <button class="dismiss" aria-label="Dismiss">×</button>
+</div>
+
+@code {
+    private static string Initials(string? name) => string.IsNullOrWhiteSpace(name) ? "B" : name[..1].ToUpperInvariant();
+}

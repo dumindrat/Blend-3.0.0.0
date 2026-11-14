@@ -1,0 +1,16 @@
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<p>Redirecting…</p>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var mustChangePassword = authenticationState.User.HasClaim("blend:must-change-password", "true");
+        var target = mustChangePassword
+            ? "/Account/ChangePassword"
+            : $"/Account/Login?returnUrl={Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery)}";
+        Navigation.NavigateTo(target, forceLoad: true);
+    }
+}

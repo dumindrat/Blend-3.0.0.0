@@ -1,0 +1,64 @@
+@page
+@model UsersModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User administration · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <main class="content-area">
+        <section class="panel">
+            <div class="panel-kicker">ADMINISTRATION</div>
+            <h1>Users</h1>
+            <p><a href="/">Back to workspace</a></p>
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
+                <p><strong>Temporary password:</strong> <code>@Model.TemporaryPassword</code></p>
+            }
+            <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
+            <form method="post">
+                <label asp-for="Input.UserName">Username</label>
+                <input asp-for="Input.UserName" class="form-control" autocomplete="off" required />
+                <label asp-for="Input.DisplayName">Display name</label>
+                <input asp-for="Input.DisplayName" class="form-control" required />
+                <label asp-for="Input.Email">Email (optional)</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" />
+                <label asp-for="Input.Role">Role</label>
+                <select asp-for="Input.Role" class="form-control">
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <button class="button button-primary" type="submit">Create user</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Existing accounts</h2>
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead><tr><th>USERNAME</th><th>NAME</th><th>ROLE</th><th>STATUS</th></tr></thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.DisplayName</td>
+                                <td>@user.Roles</td>
+                                <td>@(user.MustChangePassword ? "Password change required" : "Active")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

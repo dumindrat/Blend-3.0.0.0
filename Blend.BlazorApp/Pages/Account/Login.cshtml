@@ -1,0 +1,33 @@
+@page
+@model LoginModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Sign in";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in · Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <main class="content-area">
+        <section class="panel login-card">
+            <div class="panel-kicker">BLEND OPERATIONS</div>
+            <h1>Sign in</h1>
+            <div asp-validation-summary="ModelOnly" class="alert alert-error" role="alert"></div>
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <label asp-for="Input.UserName">Username</label>
+                <input asp-for="Input.UserName" class="form-control" autocomplete="username" required />
+                <label asp-for="Input.Password">Password</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" required />
+                <button class="button button-primary button-wide" type="submit">Sign in</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

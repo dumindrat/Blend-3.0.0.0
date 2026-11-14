@@ -50,6 +50,8 @@ namespace Blend.BuisnessService
             registerComponent.RegisterType<IBuyerService, BuyerManagement>();
             registerComponent.RegisterType<IUserRegistration, UserRegistrationService>();
             registerComponent.RegisterType<IUserService, UserService>();
+            registerComponent.RegisterType<Blend.BuisnessService.Authentication.IUserLookupService, Blend.BuisnessService.Authentication.UserService>();
+            registerComponent.RegisterType<Blend.BuisnessService.Authentication.IAuthenticationService, Blend.BuisnessService.Authentication.AuthenticationService>();
             registerComponent.RegisterType<IMenuService, MenuService>();
             registerComponent.RegisterType<ITokenServices, TokenServices>();
             registerComponent.RegisterType<IBrokerService, BrokerService>();
