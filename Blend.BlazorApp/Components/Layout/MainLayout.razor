@@ -50,7 +50,7 @@
                     <div class="sidebar-user"><span class="avatar">@Initials(authState.User.Identity?.Name)</span><span><strong>@authState.User.Identity?.Name</strong><small>@string.Join(", ", authState.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(claim => claim.Value))</small></span></div>
                     <a class="nav-link @(IsWorkingCompanyPage ? "active" : null)" href="/Account/WorkingCompany">Working company</a>
                     <a class="nav-link" href="/Account/ChangePassword">Change password</a>
-                    <a class="nav-link" href="/Account/Logout">Sign out</a>
+                    <button class="nav-link logout-trigger" type="button" onclick="document.getElementById('logout-confirmation').showModal()">Sign out</button>
                 </Authorized>
             </AuthorizeView>
             <div class="sidebar-version">Modern client · .NET 10</div>
@@ -76,6 +76,28 @@
             </div>
         </header>
         <main class="content-area">@Body</main>
+        <dialog id="logout-confirmation" class="modal-card module-confirmation-dialog logout-confirmation-dialog" aria-labelledby="logout-heading" aria-describedby="logout-copy">
+            <div class="logout-confirmation-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" focusable="false">
+                    <path d="M25 8H12a3 3 0 0 0-3 3v26a3 3 0 0 0 3 3h13" />
+                    <path d="M22 24h18m-7-7 7 7-7 7" />
+                </svg>
+            </div>
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">ACCOUNT</div>
+                    <h2 id="logout-heading">Ready to sign out?</h2>
+                </div>
+            </div>
+            <p id="logout-copy" class="module-confirmation-copy">You’ll need to sign in again to access your Blend workspace.</p>
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" onclick="document.getElementById('logout-confirmation').close()">Stay signed in</button>
+                <form method="post" action="/Account/Logout">
+                    <AntiforgeryToken />
+                    <button class="button button-primary" type="submit">Sign out</button>
+                </form>
+            </div>
+        </dialog>
         <dialog id="module-switch-confirmation" class="modal-card module-confirmation-dialog" aria-labelledby="module-switch-heading" aria-describedby="module-switch-copy">
             <div class="modal-heading">
                 <div>
@@ -102,7 +124,7 @@
     private IReadOnlyList<MenuGroup> MenuGroups { get; set; } = [];
     private IReadOnlyList<BlendModule> Modules { get; set; } = [];
     private string? ActiveCompanyName { get; set; }
-    private string ModuleStorageKey { get; set; } = "blend-active-module-admin";
+    private string ModuleStorageKey { get; set; } = "blend-active-module-none";
     private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', 2)[0];
     private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
     private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
@@ -125,32 +147,26 @@
                 .SingleOrDefaultAsync();
         }
 
-        if (isPlatformAdmin)
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
         {
-            Modules = await Database.Modules.AsNoTracking().Include(module => module.Company)
-                .OrderBy(module => module.Company.Name).ThenBy(module => module.Name).ToListAsync();
-        }
-        else if (Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var moduleCompanyId))
-        {
-            ModuleStorageKey = $"blend-active-module-{moduleCompanyId:D}";
-            Modules = await Database.Modules.AsNoTracking().Where(module => module.CompanyId == moduleCompanyId)
-                .OrderBy(module => module.Name).ToListAsync();
+            return;
         }
 
-        var menuQuery = Database.MenuItems.AsNoTracking();
+        ModuleStorageKey = $"blend-active-module-{companyId:D}";
+        Modules = await Database.Modules.AsNoTracking()
+            .Include(module => module.Company)
+            .Where(module => module.CompanyId == companyId)
+            .OrderBy(module => module.Name)
+            .ToListAsync();
+
+        var menuQuery = Database.MenuItems.AsNoTracking().Where(item => item.CompanyId == companyId);
         if (!isPlatformAdmin)
         {
-            if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
-            {
-                return;
-            }
-
             var roleIds = user.FindAll(BlendClaims.RoleId)
                 .Select(claim => claim.Value)
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
-            menuQuery = menuQuery.Where(item => item.CompanyId == companyId
-                && roleIds.Length > 0
+            menuQuery = menuQuery.Where(item => roleIds.Length > 0
                 && Database.MenuItemRoles.Any(assignment =>
                     assignment.MenuItemId == item.Id
                     && roleIds.Contains(assignment.RoleId)

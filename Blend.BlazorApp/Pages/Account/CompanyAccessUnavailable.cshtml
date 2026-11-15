@@ -23,7 +23,9 @@
             <span class="panel-kicker">SUBSCRIPTION STATUS</span>
             <h1 id="company-access-heading">Company access unavailable</h1>
             <p class="signout-copy">Your company’s subscription is not currently active. Please contact your company administrator for assistance.</p>
-            <a class="button button-primary button-wide" href="/Account/Logout">Continue to sign out</a>
+            <form method="post" asp-page="/Account/Logout">
+                <button class="button button-primary button-wide" type="submit">Continue to sign out</button>
+            </form>
             <p class="signout-security">If you are a company administrator, contact Blend support to review your subscription.</p>
         </section>
     </main>

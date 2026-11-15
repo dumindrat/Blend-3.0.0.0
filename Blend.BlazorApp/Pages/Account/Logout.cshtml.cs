@@ -16,6 +16,8 @@ public sealed class LogoutModel : PageModel
         _signInManager = signInManager;
     }
 
+    public IActionResult OnGet() => LocalRedirect("/");
+
     public async Task<IActionResult> OnPostAsync()
     {
         await _signInManager.SignOutAsync();

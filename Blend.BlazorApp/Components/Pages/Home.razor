@@ -23,7 +23,7 @@
                 <AuthorizeView Policy="ManageUsers">
                     <Authorized><a class="button button-primary" href="/Admin/Users">Manage users</a></Authorized>
                 </AuthorizeView>
-                <a class="button button-quiet" href="/Account/Logout">Sign out</a>
+                <button class="button button-quiet" type="button" onclick="document.getElementById('logout-confirmation').showModal()">Sign out</button>
             </div>
         </section>
     </Authorized>

@@ -25,6 +25,7 @@ a { color: inherit; text-decoration: none; }
 .menu-group-caption { padding-top: 16px; }
 .side-nav { display: grid; min-height: 0; gap: 5px; align-content: start; overflow-y: auto; }
 .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 8px; color: #a6acbf; font-size: 13px; font-weight: 500; }
+.logout-trigger { width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; }
 .nav-link .nav-icon { flex: 0 0 18px; }
 .nav-link.active { background: #282b40; color: white; }
 .nav-link.disabled { cursor: default; opacity: .64; }
@@ -303,6 +304,12 @@ a { color: inherit; text-decoration: none; }
 .module-confirmation-copy { color: #687187; font-size: 13px; line-height: 1.65; }
 .module-confirmation-copy strong { color: #293247; }
 .module-confirmation-dialog .modal-actions { margin-top: 24px; }
+.logout-confirmation-dialog::backdrop { background: #111626; }
+.logout-confirmation-icon { display: grid; width: 48px; height: 48px; place-items: center; margin-bottom: 15px; border: 1px solid #e6e5ff; border-radius: 14px; background: linear-gradient(145deg, #f3f2ff, #e9e8ff); color: #5c55d6; box-shadow: 0 5px 14px #5149d91a; }
+.logout-confirmation-icon svg { width: 29px; height: 29px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.4; }
+.logout-confirmation-dialog .modal-heading { margin-bottom: 8px; }
+.logout-confirmation-dialog .modal-actions form { display: inline-flex; }
+.logout-confirmation-dialog .modal-actions { justify-content: space-between; }
 .modal-wide { width: min(100%, 760px); }
 .modal-heading { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 19px; }
 .modal-heading h2 { margin-top: 7px; font-size: 18px; }
