@@ -43,6 +43,7 @@ a { color: inherit; text-decoration: none; }
 .breadcrumb-muted { color: #949bad; }
 .breadcrumb-divider { padding: 0 12px; color: #bbc0cc; }
 .topbar-right { display: flex; align-items: center; gap: 12px; color: #6b7488; font-size: 11px; }
+.company-switcher { margin: 0; }
 .module-switcher { display: flex; align-items: center; gap: 8px; color: #70798d; font-size: 9px; font-weight: 700; letter-spacing: .8px; }
 .module-switcher select { min-width: 145px; padding: 7px 28px 7px 10px; border: 1px solid #e1e4ec; border-radius: 7px; background: white; color: #353e52; font-size: 12px; font-weight: 600; letter-spacing: 0; }
 .module-nav-group { display: contents; }
@@ -227,8 +228,11 @@ a { color: inherit; text-decoration: none; }
 .user-list-heading h2 { margin: 0 0 4px; }
 .user-list-heading p { margin: 0; color: #858da0; font-size: 10px; }
 .user-table { min-width: 650px; }
-.user-table th:last-child { width: 76px; }
+.user-table th:last-child { width: 150px; }
 .user-table td:last-child { text-align: right; }
+.company-membership-row { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(160px, .7fr) minmax(220px, 1fr); align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eceef4; }
+.company-membership-choice { display: flex; align-items: center; gap: 9px; color: #414b60; font-size: 12px; font-weight: 650; }
+.company-membership-choice input { width: 16px; height: 16px; accent-color: #6764d7; }
 
 .menu-item-summary { color: #293247 !important; font-weight: 650 !important; }
 .menu-item-path { overflow: hidden; color: #858da0 !important; text-overflow: ellipsis; }
@@ -243,6 +247,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 600px) {
     .company-list-heading, .user-list-heading { flex-direction: column; }
     .company-create-form { grid-template-columns: 1fr; }
+    .company-membership-row { grid-template-columns: 1fr; }
     .company-modal-actions { grid-column: auto; }
 }
 .signout-page { display: grid; min-height: 100vh; place-items: center; padding: 28px 18px; background: radial-gradient(ellipse at 50% 35%, #f0efff 0, #f6f7fb 58%); }

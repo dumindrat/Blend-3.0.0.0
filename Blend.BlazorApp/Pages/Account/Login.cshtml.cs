@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blend.BlazorApp.Pages.Account;
 
@@ -59,15 +60,23 @@ public sealed class LoginModel : PageModel
         var isPlatformAdmin = await _userManager.IsInRoleAsync(user, BlendRoles.Admin);
         if (!isPlatformAdmin)
         {
-            var company = user.CompanyId is { } companyId
-                ? await _database.Companies.FindAsync([companyId], HttpContext.RequestAborted)
-                : null;
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate)
+            var activeCompany = await _database.UserCompanies
+                .Where(membership => membership.UserId == user.Id
+                    && membership.Company.IsEnabled
+                    && today >= membership.Company.SubscriptionStartDate
+                    && today <= membership.Company.SubscriptionEndDate)
+                .OrderBy(membership => membership.CompanyId == user.CompanyId ? 0 : 1)
+                .ThenBy(membership => membership.Company.Name)
+                .Select(membership => membership.Company)
+                .FirstOrDefaultAsync(HttpContext.RequestAborted);
+            if (activeCompany is null)
             {
                 ModelState.AddModelError(string.Empty, "Company access is unavailable. Contact your administrator.");
                 return Page();
             }
+
+            HttpContext.Items[BlendClaims.PendingCompanyId] = activeCompany.Id;
         }
 
         var signInResult = await _signInManager.PasswordSignInAsync(

@@ -11,26 +11,17 @@
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
                 <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
-                <p><strong>Temporary password:</strong> <code>@Model.TemporaryPassword</code></p>
-            }
-            @if (User.IsInRole(BlendRoles.Admin))
-            {
-                <form method="get" class="company-selector">
-                    <label for="CompanyId">Company</label>
-                    <select id="CompanyId" name="CompanyId" class="form-control" onchange="this.form.submit()">
-                        @foreach (var company in Model.Companies)
-                        {
-                            <option value="@company.Id" selected="@(Model.CompanyId == company.Id.ToString("D") ? "selected" : null)">@company.Name</option>
-                        }
-                    </select>
-                </form>
+                @if (Model.TemporaryPassword is not null)
+                {
+                    <p><strong>Temporary password:</strong> <code>@Model.TemporaryPassword</code></p>
+                }
             }
             <div class="user-list-heading">
                 <div>
                     <h2>Accounts</h2>
-                    <p>Manage user access for @(Model.Companies.FirstOrDefault(company => company.Id.ToString("D") == Model.CompanyId)?.Name ?? "your company").</p>
+                    <p>@(User.IsInRole(BlendRoles.Admin) ? "Manage accounts and their company access." : "Manage user access for your company.")</p>
                 </div>
-                <button class="button button-primary" type="button" onclick="document.getElementById('create-user-dialog').showModal()" disabled="@(Model.CompanyId is null || Model.AvailableRoles.Count == 0)">Create user</button>
+                <button class="button button-primary" type="button" onclick="document.getElementById('create-user-dialog').showModal()" disabled="@(User.IsInRole(BlendRoles.Admin) ? Model.Companies.Count == 0 || Model.CompanyRoles.Count == 0 : Model.CompanyId is null || Model.AvailableRoles.Count == 0)">Add user</button>
             </div>
             @if (!Model.ShowCreateDialog && Model.ShowEditUserId is null)
             {
@@ -39,9 +30,9 @@
             <dialog id="create-user-dialog" class="modal-card modal-wide company-create-dialog" aria-labelledby="create-user-heading">
                 <div class="modal-heading">
                     <div>
-                        <div class="panel-kicker">NEW ACCOUNT</div>
-                        <h2 id="create-user-heading">Create user</h2>
-                        <p class="muted">A temporary password will be generated. The user must change it at first sign-in.</p>
+                        <div class="panel-kicker">USER ACCESS</div>
+                        <h2 id="create-user-heading">Add user</h2>
+                        <p class="muted">Enter an existing username to add that account to the selected company, or enter a new username to create an account.</p>
                     </div>
                     <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('create-user-dialog').close()">&times;</button>
                 </div>
@@ -50,16 +41,45 @@
                     <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
                 }
                 <form method="post" class="company-create-form">
-                    <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                    @if (User.IsInRole(BlendRoles.Admin))
+                    {
+                        <div class="company-modal-field"><label for="CompanyId">Company</label>
+                            <select id="CompanyId" name="CompanyId" class="form-control" data-add-user-company required>
+                                @foreach (var company in Model.Companies)
+                                {
+                                    <option value="@company.Id" selected="@(Model.CompanyId == company.Id.ToString("D") ? "selected" : null)">@company.Name</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                    }
                     <div class="company-modal-field"><label asp-for="Input.UserName">Username</label><input asp-for="Input.UserName" class="form-control" autocomplete="off" required /></div>
-                    <div class="company-modal-field"><label asp-for="Input.DisplayName">Display name</label><input asp-for="Input.DisplayName" class="form-control" required /></div>
-                    <div class="company-modal-field"><label asp-for="Input.Email">Email (optional)</label><input asp-for="Input.Email" class="form-control" autocomplete="email" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.DisplayName">Display name (new accounts only)</label><input asp-for="Input.DisplayName" class="form-control" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.Email">Email (new accounts only)</label><input asp-for="Input.Email" class="form-control" autocomplete="email" /></div>
                     <div class="company-modal-field"><label asp-for="Input.RoleId">Role</label>
-                        <select asp-for="Input.RoleId" class="form-control" required>
+                        <select asp-for="Input.RoleId" class="form-control" required data-add-user-role>
                             <option value="">Select a role</option>
-                            @foreach (var role in Model.AvailableRoles)
+                            @if (User.IsInRole(BlendRoles.Admin))
                             {
-                                <option value="@role.Id">@role.DisplayName</option>
+                                @foreach (var group in Model.CompanyRoles.GroupBy(role => new { role.CompanyId, role.CompanyName }))
+                                {
+                                    <optgroup label="@group.Key.CompanyName" data-company-id="@group.Key.CompanyId">
+                                        @foreach (var role in group)
+                                        {
+                                            <option value="@role.Id" data-company-id="@role.CompanyId">@role.DisplayName</option>
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                            else
+                            {
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <option value="@role.Id">@role.DisplayName</option>
+                                }
                             }
                         </select>
                     </div>
@@ -75,25 +95,76 @@
             <h2>Existing accounts</h2>
             <div class="table-scroll">
                 <table class="data-table user-table">
-                    <thead><tr><th>USERNAME</th><th>NAME</th><th>ROLE</th><th>STATUS</th><th></th></tr></thead>
+                    <thead><tr><th>USERNAME</th><th>NAME</th>@if (User.IsInRole(BlendRoles.Admin)) { <th>COMPANIES</th> }<th>ROLE</th><th>STATUS</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var user in Model.Users)
                         {
                             var editDialogId = $"edit-user-{user.Id}";
+                            var membershipDialogId = $"edit-companies-{user.Id}";
                             var isEditing = Model.ShowEditUserId == user.Id;
+                            var isMembershipEditing = Model.ShowMembershipUserId == user.Id;
                             <tr>
                                 <td>@user.UserName</td>
                                 <td>@user.DisplayName</td>
+                                @if (User.IsInRole(BlendRoles.Admin))
+                                {
+                                    <td>@string.Join(", ", user.Companies)</td>
+                                }
                                 <td>@user.Roles</td>
                                 <td>@(user.MustChangePassword ? "Password change required" : "Active")</td>
                                 <td class="company-actions">
+                                    @if (User.IsInRole(BlendRoles.Admin))
+                                    {
+                                        <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@membershipDialogId').showModal()">Companies</button>
+                                        <dialog id="@membershipDialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@membershipDialogId-heading">
+                                            <div class="modal-heading">
+                                                <div>
+                                                    <div class="panel-kicker">COMPANY ACCESS</div>
+                                                    <h2 id="@membershipDialogId-heading">Companies for @user.UserName</h2>
+                                                    <p class="muted">Choose the companies this account can access and its role in each company.</p>
+                                                </div>
+                                                <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('@membershipDialogId').close()">&times;</button>
+                                            </div>
+                                            @if (isMembershipEditing)
+                                            {
+                                                <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+                                            }
+                                            <form method="post" asp-page-handler="UpdateMemberships" asp-route-id="@user.Id" class="company-create-form">
+                                                <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                                                @for (var index = 0; index < user.CompanyMemberships.Count; index++)
+                                                {
+                                                    var companyAccess = user.CompanyMemberships[index];
+                                                    var postedAccess = isMembershipEditing
+                                                        ? Model.MembershipInput.CompanyMemberships.FirstOrDefault(item => item.CompanyId == companyAccess.CompanyId)
+                                                        : null;
+                                                    var hasAccess = postedAccess?.HasAccess ?? companyAccess.HasAccess;
+                                                    var roleId = postedAccess?.RoleId ?? companyAccess.RoleId;
+                                                    <input type="hidden" name="MembershipInput.CompanyMemberships[@index].CompanyId" value="@companyAccess.CompanyId" />
+                                                    <div class="company-membership-row">
+                                                        <label class="company-membership-choice"><input type="checkbox" name="MembershipInput.CompanyMemberships[@index].HasAccess" value="true" checked="@(hasAccess ? "checked" : null)" /> @companyAccess.CompanyName</label>
+                                                        <select class="form-control" name="MembershipInput.CompanyMemberships[@index].RoleId" aria-label="Role in @companyAccess.CompanyName">
+                                                            <option value="">Select role</option>
+                                                            @foreach (var role in companyAccess.AvailableRoles)
+                                                            {
+                                                                <option value="@role.Id" selected="@(roleId == role.Id ? "selected" : null)">@role.DisplayName</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                }
+                                                <div class="modal-actions company-modal-actions">
+                                                    <button class="button button-quiet" type="button" onclick="document.getElementById('@membershipDialogId').close()">Cancel</button>
+                                                    <button class="button button-primary" type="submit">Save company access</button>
+                                                </div>
+                                            </form>
+                                        </dialog>
+                                    }
                                     <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@editDialogId').showModal()">Edit</button>
                                     <dialog id="@editDialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@editDialogId-heading">
                                         <div class="modal-heading">
-                                            <div>
-                                                <div class="panel-kicker">ACCOUNT DETAILS</div>
-                                                <h2 id="@editDialogId-heading">Edit @user.UserName</h2>
-                                                <p class="muted">Update profile information and company role.</p>
+                                                <div>
+                                                    <div class="panel-kicker">ACCOUNT DETAILS</div>
+                                                    <h2 id="@editDialogId-heading">Edit @user.UserName</h2>
+                                                    <p class="muted">Update profile information.@(User.IsInRole(BlendRoles.Admin) ? " Manage company roles in the Companies editor." : " Update this company's role.")</p>
                                             </div>
                                             <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('@editDialogId').close()">&times;</button>
                                         </div>
@@ -106,16 +177,19 @@
                                             <div class="company-modal-field"><label for="@editDialogId-username">Username</label><input id="@editDialogId-username" class="form-control" name="EditInput.UserName" value="@(isEditing ? Model.EditInput.UserName : user.UserName)" required maxlength="256" autocomplete="off" /></div>
                                             <div class="company-modal-field"><label for="@editDialogId-displayname">Display name</label><input id="@editDialogId-displayname" class="form-control" name="EditInput.DisplayName" value="@(isEditing ? Model.EditInput.DisplayName : user.DisplayName)" required maxlength="256" /></div>
                                             <div class="company-modal-field"><label for="@editDialogId-email">Email (optional)</label><input id="@editDialogId-email" class="form-control" name="EditInput.Email" type="email" value="@(isEditing ? Model.EditInput.Email : user.Email)" maxlength="256" autocomplete="email" /></div>
-                                            <div class="company-modal-field">
-                                                <label for="@editDialogId-role">Role</label>
-                                                <select id="@editDialogId-role" class="form-control" name="EditInput.RoleId" required>
-                                                    <option value="">Select a role</option>
-                                                    @foreach (var role in Model.AvailableRoles)
-                                                    {
-                                                        <option value="@role.Id" selected="@((isEditing ? Model.EditInput.RoleId : user.RoleId) == role.Id ? "selected" : null)">@role.DisplayName</option>
-                                                    }
-                                                </select>
-                                            </div>
+                                            @if (!User.IsInRole(BlendRoles.Admin))
+                                            {
+                                                <div class="company-modal-field">
+                                                    <label for="@editDialogId-role">Role</label>
+                                                    <select id="@editDialogId-role" class="form-control" name="EditInput.RoleId" required>
+                                                        <option value="">Select a role</option>
+                                                        @foreach (var role in Model.AvailableRoles)
+                                                        {
+                                                            <option value="@role.Id" selected="@((isEditing ? Model.EditInput.RoleId : user.RoleId) == role.Id ? "selected" : null)">@role.DisplayName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            }
                                             <div class="modal-actions company-modal-actions">
                                                 <button class="button button-quiet" type="button" onclick="document.getElementById('@editDialogId').close()">Cancel</button>
                                                 <button class="button button-primary" type="submit">Save changes</button>
@@ -127,7 +201,7 @@
                         }
                         @if (Model.Users.Count == 0)
                         {
-                            <tr><td colspan="5" class="company-empty-state">No users have been created for this company yet.</td></tr>
+                            <tr><td colspan="@(User.IsInRole(BlendRoles.Admin) ? 6 : 5)" class="company-empty-state">No users have been created for this company yet.</td></tr>
                         }
                     </tbody>
                 </table>
@@ -144,5 +218,33 @@
     {
         <script>
             document.getElementById('edit-user-@Model.ShowEditUserId').showModal();
+        </script>
+    }
+    @if (Model.ShowMembershipUserId is not null)
+    {
+        <script>
+            document.getElementById('edit-companies-@Model.ShowMembershipUserId').showModal();
+        </script>
+    }
+    @if (User.IsInRole(BlendRoles.Admin))
+    {
+        <script>
+            const addUserCompany = document.querySelector('[data-add-user-company]');
+            const addUserRole = document.querySelector('[data-add-user-role]');
+            const filterAddUserRoles = clearSelection => {
+                const companyId = addUserCompany.value;
+                const selectedRole = addUserRole.selectedOptions[0];
+                if (clearSelection || selectedRole?.dataset.companyId !== companyId) {
+                    addUserRole.value = '';
+                }
+                for (const option of addUserRole.querySelectorAll('option[data-company-id]')) {
+                    option.hidden = option.dataset.companyId !== companyId;
+                }
+                for (const group of addUserRole.querySelectorAll('optgroup[data-company-id]')) {
+                    group.hidden = group.dataset.companyId !== companyId;
+                }
+            };
+            addUserCompany.addEventListener('change', () => filterAddUserRoles(true));
+            filterAddUserRoles(false);
         </script>
     }
