@@ -42,11 +42,14 @@ public sealed class RolesModel : PageModel
     public IReadOnlyList<MenuItemOption> MenuItems { get; private set; } = [];
     public IReadOnlyDictionary<string, IReadOnlySet<int>> AssignedMenuItemIds { get; private set; } = new Dictionary<string, IReadOnlySet<int>>();
     public string? SuccessMessage { get; private set; }
+    public bool ShowCreateDialog { get; private set; }
+    public string? ShowEditRoleId { get; private set; }
 
     public async Task OnGetAsync() => await LoadRolesAsync();
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
+        ShowCreateDialog = true;
         Input.Name = Input.Name?.Trim() ?? string.Empty;
         var companyId = Guid.TryParse(Input.CompanyId, out var selectedCompanyId) ? selectedCompanyId : (Guid?)null;
         CompanyId = companyId?.ToString("D");
@@ -72,6 +75,7 @@ public sealed class RolesModel : PageModel
                 if (permissionResult.Count == 0)
                 {
                     SuccessMessage = $"Role '{role.DisplayName}' created.";
+                    ShowCreateDialog = false;
                     Input = new RoleInput();
                 }
                 else
@@ -98,6 +102,8 @@ public sealed class RolesModel : PageModel
 
     public async Task<IActionResult> OnPostUpdateAsync()
     {
+        ShowEditRoleId = Input.Id;
+        CompanyId = Input.CompanyId;
         Input.Name = Input.Name?.Trim() ?? string.Empty;
         if (!ModelState.IsValid)
         {
@@ -172,6 +178,7 @@ public sealed class RolesModel : PageModel
         else
         {
             SuccessMessage = $"Role '{role.DisplayName}' updated. Users assigned this role must sign out and back in for permission changes to take effect.";
+            ShowEditRoleId = null;
         }
 
         await LoadRolesAsync();

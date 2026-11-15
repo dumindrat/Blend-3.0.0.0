@@ -32,87 +32,162 @@
             {
                 <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
             }
-            <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
-            <h2>Create role</h2>
-            <form method="post" asp-page-handler="Create">
-                <input type="hidden" asp-for="Input.CompanyId" value="@Model.CompanyId" />
-                <label asp-for="Input.Name">Role name</label>
-                <input asp-for="Input.Name" class="form-control" required maxlength="100" />
-                <label><input asp-for="Input.CanManageUsers" /> Manage users</label>
-                <label><input asp-for="Input.CanManageRoles" /> Manage roles</label>
-                <label><input asp-for="Input.CanManageMenuItems" /> Manage menu items</label>
-                <button class="button button-primary" type="submit" disabled="@(Model.CompanyId is null)">Create role</button>
-            </form>
+            <div class="user-list-heading">
+                <div>
+                    <h2>Roles</h2>
+                    <p>Manage role access for @Model.Companies.FirstOrDefault(company => company.Id.ToString("D") == Model.CompanyId)?.Name.</p>
+                </div>
+                <button class="button button-primary" type="button" onclick="document.getElementById('create-role-dialog').showModal()" disabled="@(Model.CompanyId is null)">Create role</button>
+            </div>
+            @if (!Model.ShowCreateDialog && Model.ShowEditRoleId is null)
+            {
+                <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+            }
+            <dialog id="create-role-dialog" class="modal-card modal-wide company-create-dialog" aria-labelledby="create-role-heading">
+                <div class="modal-heading">
+                    <div>
+                        <div class="panel-kicker">NEW ROLE</div>
+                        <h2 id="create-role-heading">Create role</h2>
+                        <p class="muted">Choose a name and assign administrative permissions.</p>
+                    </div>
+                    <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('create-role-dialog').close()">&times;</button>
+                </div>
+                @if (Model.ShowCreateDialog)
+                {
+                    <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+                }
+                <form method="post" asp-page-handler="Create" class="role-edit-form">
+                    <input type="hidden" name="Input.CompanyId" value="@Model.CompanyId" />
+                    <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                    <div class="company-modal-field"><label asp-for="Input.Name">Role name</label><input asp-for="Input.Name" class="form-control" required maxlength="100" /></div>
+                    <div class="role-permissions">
+                        <label><input asp-for="Input.CanManageUsers" /> Manage users</label>
+                        <label><input asp-for="Input.CanManageRoles" /> Manage roles</label>
+                        <label><input asp-for="Input.CanManageMenuItems" /> Manage menu items</label>
+                    </div>
+                    <div class="modal-actions company-modal-actions">
+                        <button class="button button-quiet" type="button" onclick="document.getElementById('create-role-dialog').close()">Cancel</button>
+                        <button class="button button-primary" type="submit">Create role</button>
+                    </div>
+                </form>
+            </dialog>
         </section>
 
         <section class="panel">
             <h2>Existing roles</h2>
             <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table role-table">
                     <thead><tr><th>ROLE</th><th>PERMISSIONS</th><th>ASSIGNED MENU ITEMS</th><th>ACTIONS</th></tr></thead>
                     <tbody>
                         @foreach (var role in Model.Roles)
                         {
                             var assignmentFormId = $"assign-menu-items-{role.Id}";
+                            var editDialogId = $"edit-role-{role.Id}";
+                            var isEditing = Model.ShowEditRoleId == role.Id;
                             var assignedMenuItemIds = Model.AssignedMenuItemIds.TryGetValue(role.Id, out var itemIds) ? itemIds : new HashSet<int>();
                             <tr>
-                                @if (role.IsSystemRole)
-                                {
-                                    <td><strong>@role.Name</strong> <span>(built-in)</span></td>
-                                    <td>@(role.CanManageUsers ? "Manage users" : "No administrative permissions")<br />@(role.CanManageRoles ? "Manage roles" : string.Empty)<br />@(role.CanManageMenuItems ? "Manage menu items" : string.Empty)</td>
-                                    <td>
-                                        <form id="@assignmentFormId" method="post" asp-page-handler="AssignMenuItems">
-                                            <input type="hidden" name="MenuAssignment.RoleId" value="@role.Id" />
-                                            <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
-                                        </form>
+                                <td class="role-summary"><strong>@role.Name</strong>@if (role.IsSystemRole) { <span>(built-in)</span> }</td>
+                                <td class="role-permissions-summary">
+                                    @if (role.CanManageUsers || role.CanManageRoles || role.CanManageMenuItems)
+                                    {
+                                        @if (role.CanManageUsers) { <span>Manage users</span> }
+                                        @if (role.CanManageRoles) { <span>Manage roles</span> }
+                                        @if (role.CanManageMenuItems) { <span>Manage menu items</span> }
+                                    }
+                                    else
+                                    {
+                                        <span class="muted">No administrative permissions</span>
+                                    }
+                                </td>
+                                <td>
+                                    <form id="@assignmentFormId" method="post" asp-page-handler="AssignMenuItems">
+                                        <input type="hidden" name="MenuAssignment.RoleId" value="@role.Id" />
+                                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                                    </form>
+                                    @if (role.IsSystemRole)
+                                    {
                                         <div class="role-menu-options">
                                             @foreach (var item in Model.MenuItems)
                                             {
                                                 <label><input form="@assignmentFormId" type="checkbox" name="MenuAssignment.MenuItemIds" value="@item.Id" checked="@(assignedMenuItemIds.Contains(item.Id) ? "checked" : null)" /> @item.Name</label>
                                             }
                                         </div>
-                                    </td>
-                                    <td><button class="button button-primary button-small" type="submit" form="@assignmentFormId">Save menu items</button></td>
-                                }
-                                else
-                                {
-                                    var updateFormId = $"update-role-{role.Id}";
-                                    <td><input form="@updateFormId" class="form-control role-name-input" name="Input.Name" value="@role.Name" required maxlength="100" aria-label="Role name" /></td>
-                                    <td>
-                                        <label><input form="@updateFormId" type="checkbox" name="Input.CanManageUsers" value="true" checked="@(role.CanManageUsers ? "checked" : null)" /> Manage users</label>
-                                        <input form="@updateFormId" type="hidden" name="Input.CanManageUsers" value="false" />
-                                        <label><input form="@updateFormId" type="checkbox" name="Input.CanManageRoles" value="true" checked="@(role.CanManageRoles ? "checked" : null)" /> Manage roles</label>
-                                        <input form="@updateFormId" type="hidden" name="Input.CanManageRoles" value="false" />
-                                        <label><input form="@updateFormId" type="checkbox" name="Input.CanManageMenuItems" value="true" checked="@(role.CanManageMenuItems ? "checked" : null)" /> Manage menu items</label>
-                                        <input form="@updateFormId" type="hidden" name="Input.CanManageMenuItems" value="false" />
-                                    </td>
-                                    <td>
-                                        <form id="@assignmentFormId" method="post" asp-page-handler="AssignMenuItems">
-                                            <input type="hidden" name="MenuAssignment.RoleId" value="@role.Id" />
-                                            <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
-                                        </form>
+                                    }
+                                    else
+                                    {
                                         <div class="role-menu-options">
                                             @foreach (var item in Model.MenuItems)
                                             {
                                                 <label><input form="@assignmentFormId" type="checkbox" name="MenuAssignment.MenuItemIds" value="@item.Id" checked="@(assignedMenuItemIds.Contains(item.Id) ? "checked" : null)" /> @item.Name <small>@item.GroupName</small></label>
                                             }
                                         </div>
-                                    </td>
-                                    <td class="role-menu-actions">
-                                        <form id="@updateFormId" method="post" asp-page-handler="Update">
-                                            <input type="hidden" name="Input.Id" value="@role.Id" />
-                                            <input type="hidden" name="Input.CompanyId" value="@Model.CompanyId" />
-                                            <button class="button button-primary button-small" type="submit">Save role</button>
-                                        </form>
-                                        <button class="button button-quiet button-small" type="submit" form="@assignmentFormId">Save menu items</button>
-                                    </td>
-                                }
+                                    }
+                                </td>
+                                <td class="role-menu-actions">
+                                    @if (role.IsSystemRole)
+                                    {
+                                        <span class="muted">Built-in</span>
+                                    }
+                                    else
+                                    {
+                                        <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@editDialogId').showModal()">Edit</button>
+                                        <dialog id="@editDialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@editDialogId-heading">
+                                            <div class="modal-heading">
+                                                <div>
+                                                    <div class="panel-kicker">ROLE SETTINGS</div>
+                                                    <h2 id="@editDialogId-heading">Edit @role.Name</h2>
+                                                    <p class="muted">Update this role's name and administrative permissions.</p>
+                                                </div>
+                                                <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('@editDialogId').close()">&times;</button>
+                                            </div>
+                                            @if (isEditing)
+                                            {
+                                                <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+                                            }
+                                            <form method="post" asp-page-handler="Update" class="role-edit-form">
+                                                <input type="hidden" name="Input.Id" value="@role.Id" />
+                                                <input type="hidden" name="Input.CompanyId" value="@Model.CompanyId" />
+                                                <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                                                <div class="company-modal-field"><label for="@editDialogId-name">Role name</label><input id="@editDialogId-name" class="form-control" name="Input.Name" value="@(isEditing ? Model.Input.Name : role.Name)" required maxlength="100" /></div>
+                                                <div class="role-permissions">
+                                                    <label><input type="checkbox" name="Input.CanManageUsers" value="true" checked="@((isEditing ? Model.Input.CanManageUsers : role.CanManageUsers) ? "checked" : null)" /> Manage users</label>
+                                                    <input type="hidden" name="Input.CanManageUsers" value="false" />
+                                                    <label><input type="checkbox" name="Input.CanManageRoles" value="true" checked="@((isEditing ? Model.Input.CanManageRoles : role.CanManageRoles) ? "checked" : null)" /> Manage roles</label>
+                                                    <input type="hidden" name="Input.CanManageRoles" value="false" />
+                                                    <label><input type="checkbox" name="Input.CanManageMenuItems" value="true" checked="@((isEditing ? Model.Input.CanManageMenuItems : role.CanManageMenuItems) ? "checked" : null)" /> Manage menu items</label>
+                                                    <input type="hidden" name="Input.CanManageMenuItems" value="false" />
+                                                </div>
+                                                <div class="modal-actions company-modal-actions">
+                                                    <button class="button button-quiet" type="button" onclick="document.getElementById('@editDialogId').close()">Cancel</button>
+                                                    <button class="button button-primary" type="submit">Save changes</button>
+                                                </div>
+                                            </form>
+                                        </dialog>
+                                    }
+                                    <button class="button button-quiet button-small" type="submit" form="@assignmentFormId">Save menu items</button>
+                                </td>
                             </tr>
+                        }
+                        @if (Model.Roles.Count == 0)
+                        {
+                            <tr><td colspan="4" class="company-empty-state">No roles have been created for this company yet.</td></tr>
                         }
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
+    @if (Model.ShowCreateDialog)
+    {
+        <script>
+            document.getElementById('create-role-dialog').showModal();
+        </script>
+    }
+    @if (Model.ShowEditRoleId is not null)
+    {
+        <script>
+            document.getElementById('edit-role-@Model.ShowEditRoleId').showModal();
+        </script>
+    }
 </body>
 </html>

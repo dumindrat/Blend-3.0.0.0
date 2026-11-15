@@ -27,11 +27,14 @@ public sealed class MenuItemsModel : PageModel
     public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<BlendMenuItem> MenuItems { get; private set; } = [];
     public string? SuccessMessage { get; private set; }
+    public bool ShowCreateDialog { get; private set; }
+    public int? ShowEditItemId { get; private set; }
 
     public async Task OnGetAsync() => await LoadMenuItemsAsync();
 
     public async Task<IActionResult> OnPostCreateAsync()
     {
+        ShowCreateDialog = true;
         Input.Name = Input.Name?.Trim() ?? string.Empty;
         Input.GroupName = Input.GroupName?.Trim() ?? string.Empty;
         Input.Path = Input.Path?.Trim() ?? string.Empty;
@@ -54,6 +57,7 @@ public sealed class MenuItemsModel : PageModel
             });
             await _database.SaveChangesAsync(HttpContext.RequestAborted);
             SuccessMessage = $"Menu item '{Input.Name}' created.";
+            ShowCreateDialog = false;
             Input = new MenuItemInput();
         }
 
@@ -63,6 +67,7 @@ public sealed class MenuItemsModel : PageModel
 
     public async Task<IActionResult> OnPostUpdateAsync(int id)
     {
+        ShowEditItemId = id;
         Input.Name = Input.Name?.Trim() ?? string.Empty;
         Input.GroupName = Input.GroupName?.Trim() ?? string.Empty;
         Input.Path = Input.Path?.Trim() ?? string.Empty;
@@ -95,6 +100,7 @@ public sealed class MenuItemsModel : PageModel
         menuItem.SortOrder = Input.SortOrder;
         await _database.SaveChangesAsync(HttpContext.RequestAborted);
         SuccessMessage = $"Menu item '{menuItem.Name}' updated.";
+        ShowEditItemId = null;
         await LoadMenuItemsAsync();
         return Page();
     }

@@ -66,43 +66,58 @@
             <h2>Companies</h2>
             <div class="table-scroll">
                 <table class="data-table company-table">
-                    <thead><tr><th>COMPANY</th><th>ADDRESS</th><th>SUBSCRIPTION</th><th>STATUS</th><th>SAVE</th></tr></thead>
+                    <thead><tr><th>COMPANY</th><th>SUBSCRIPTION PERIOD</th><th>STATUS</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var company in Model.Companies)
                         {
-                            var formId = $"update-company-{company.Id:N}";
                             var active = company.IsEnabled && today >= company.SubscriptionStartDate && today <= company.SubscriptionEndDate;
+                            var address = string.Join(", ", new[] { company.AddressLine1, company.AddressLine2, company.City, company.Region, company.PostalCode, company.Country }.Where(value => !string.IsNullOrWhiteSpace(value)));
+                            var dialogId = $"edit-company-{company.Id:N}";
                             <tr>
-                                <td>
-                                    <input form="@formId" class="form-control" name="Input.Name" value="@company.Name" required maxlength="160" aria-label="Company name" />
-                                    <input form="@formId" class="form-control company-address-second" name="Input.AddressLine1" value="@company.AddressLine1" maxlength="200" aria-label="Address line 1" placeholder="Address line 1" />
-                                    <input form="@formId" class="form-control company-address-second" name="Input.AddressLine2" value="@company.AddressLine2" maxlength="200" aria-label="Address line 2" placeholder="Address line 2" />
+                                <td class="company-summary">
+                                    <strong>@company.Name</strong>
+                                    <span>@(string.IsNullOrWhiteSpace(address) ? "No address provided" : address)</span>
                                 </td>
-                                <td>
-                                    <input form="@formId" class="form-control" name="Input.City" value="@company.City" maxlength="100" aria-label="City" placeholder="City" />
-                                    <input form="@formId" class="form-control company-address-second" name="Input.Region" value="@company.Region" maxlength="100" aria-label="State or region" placeholder="State / region" />
-                                    <input form="@formId" class="form-control company-address-second" name="Input.PostalCode" value="@company.PostalCode" maxlength="30" aria-label="Postal code" placeholder="Postal code" />
-                                    <input form="@formId" class="form-control company-address-second" name="Input.Country" value="@company.Country" maxlength="100" aria-label="Country" placeholder="Country" />
+                                <td class="company-subscription">
+                                    <span>@company.SubscriptionStartDate.ToString("MMM d, yyyy")</span>
+                                    <span>to @company.SubscriptionEndDate.ToString("MMM d, yyyy")</span>
                                 </td>
-                                <td>
-                                    <label>Start <input form="@formId" class="form-control company-date" name="Input.SubscriptionStartDate" type="date" value="@company.SubscriptionStartDate.ToString("yyyy-MM-dd")" required /></label>
-                                    <label>End <input form="@formId" class="form-control company-date" name="Input.SubscriptionEndDate" type="date" value="@company.SubscriptionEndDate.ToString("yyyy-MM-dd")" required /></label>
-                                </td>
-                                <td>
-                                    <span class="blend-chip">@(active ? "Active" : company.IsEnabled ? "Out of term" : "Disabled")</span>
-                                    <label class="company-enabled"><input form="@formId" type="checkbox" name="Input.IsEnabled" value="true" checked="@(company.IsEnabled ? "checked" : null)" /> Enabled</label>
-                                    <input form="@formId" type="hidden" name="Input.IsEnabled" value="false" />
-                                </td>
-                                <td>
-                                    <form id="@formId" method="post" asp-page-handler="Update" asp-route-id="@company.Id">
-                                        <button class="button button-primary button-small" type="submit">Save</button>
-                                    </form>
+                                <td><span class="company-status @(active ? "company-status-active" : company.IsEnabled ? "company-status-pending" : "company-status-disabled")">@(active ? "Active" : company.IsEnabled ? "Out of term" : "Disabled")</span></td>
+                                <td class="company-actions">
+                                    <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@dialogId').showModal()">Edit</button>
+                                    <dialog id="@dialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@dialogId-heading">
+                                        <div class="modal-heading">
+                                            <div>
+                                                <div class="panel-kicker">COMPANY DETAILS</div>
+                                                <h2 id="@dialogId-heading">Edit @company.Name</h2>
+                                                <p class="muted">Update contact information and subscription access.</p>
+                                            </div>
+                                            <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('@dialogId').close()">&times;</button>
+                                        </div>
+                                        <form method="post" asp-page-handler="Update" asp-route-id="@company.Id" class="company-create-form">
+                                            <div class="company-modal-field"><label>Company name</label><input class="form-control" name="Input.Name" value="@company.Name" required maxlength="160" /></div>
+                                            <div class="company-modal-field"><label>Address line 1</label><input class="form-control" name="Input.AddressLine1" value="@company.AddressLine1" maxlength="200" /></div>
+                                            <div class="company-modal-field"><label>Address line 2</label><input class="form-control" name="Input.AddressLine2" value="@company.AddressLine2" maxlength="200" /></div>
+                                            <div class="company-modal-field"><label>City</label><input class="form-control" name="Input.City" value="@company.City" maxlength="100" /></div>
+                                            <div class="company-modal-field"><label>State / region</label><input class="form-control" name="Input.Region" value="@company.Region" maxlength="100" /></div>
+                                            <div class="company-modal-field"><label>Postal code</label><input class="form-control" name="Input.PostalCode" value="@company.PostalCode" maxlength="30" /></div>
+                                            <div class="company-modal-field"><label>Country</label><input class="form-control" name="Input.Country" value="@company.Country" maxlength="100" /></div>
+                                            <div class="company-modal-field"><label>Subscription starts (UTC date)</label><input class="form-control" name="Input.SubscriptionStartDate" type="date" value="@company.SubscriptionStartDate.ToString("yyyy-MM-dd")" required /></div>
+                                            <div class="company-modal-field"><label>Subscription ends (UTC date, inclusive)</label><input class="form-control" name="Input.SubscriptionEndDate" type="date" value="@company.SubscriptionEndDate.ToString("yyyy-MM-dd")" required /></div>
+                                            <label class="company-enabled company-modal-enabled"><input type="checkbox" name="Input.IsEnabled" value="true" checked="@(company.IsEnabled ? "checked" : null)" /> Enabled</label>
+                                            <input type="hidden" name="Input.IsEnabled" value="false" />
+                                            <div class="modal-actions company-modal-actions">
+                                                <button class="button button-quiet" type="button" onclick="document.getElementById('@dialogId').close()">Cancel</button>
+                                                <button class="button button-primary" type="submit">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
                                 </td>
                             </tr>
                         }
                         @if (Model.Companies.Count == 0)
                         {
-                            <tr><td colspan="5">No companies have been created.</td></tr>
+                            <tr><td colspan="4" class="company-empty-state">No companies have been created yet.</td></tr>
                         }
                     </tbody>
                 </table>
