@@ -8,18 +8,18 @@ namespace Blend.BlazorApp.Authentication;
 
 public sealed class BlendUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<BlendIdentityUser, BlendIdentityRole>
 {
-    private readonly BlendIdentityDbContext _database;
+    private readonly IDbContextFactory<BlendIdentityDbContext> _databaseFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public BlendUserClaimsPrincipalFactory(
         UserManager<BlendIdentityUser> userManager,
         RoleManager<BlendIdentityRole> roleManager,
         Microsoft.Extensions.Options.IOptions<IdentityOptions> optionsAccessor,
-        BlendIdentityDbContext database,
+        IDbContextFactory<BlendIdentityDbContext> databaseFactory,
         IHttpContextAccessor httpContextAccessor)
         : base(userManager, roleManager, optionsAccessor)
     {
-        _database = database;
+        _databaseFactory = databaseFactory;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -51,12 +51,13 @@ public sealed class BlendUserClaimsPrincipalFactory : UserClaimsPrincipalFactory
 
     private async Task<bool> CanUseCompanyAsync(BlendIdentityUser user, Guid companyId)
     {
+        await using var database = _databaseFactory.CreateDbContext();
         if (await UserManager.IsInRoleAsync(user, BlendRoles.Admin))
         {
-            return await _database.Companies.AsNoTracking().AnyAsync(company => company.Id == companyId);
+            return await database.Companies.AsNoTracking().AnyAsync(company => company.Id == companyId);
         }
 
-        return await _database.UserCompanies.AsNoTracking().AnyAsync(
+        return await database.UserCompanies.AsNoTracking().AnyAsync(
             membership => membership.UserId == user.Id && membership.CompanyId == companyId);
     }
 

@@ -11,7 +11,7 @@ public sealed class BlendCompanyAccessMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, BlendIdentityDbContext database)
+    public async Task InvokeAsync(HttpContext context, IDbContextFactory<BlendIdentityDbContext> databaseFactory)
     {
         var user = context.User;
         if (user.Identity?.IsAuthenticated != true || user.IsInRole(BlendRoles.Admin))
@@ -25,6 +25,8 @@ public sealed class BlendCompanyAccessMiddleware
             await _next(context);
             return;
         }
+
+        await using var database = databaseFactory.CreateDbContext();
 
         var companyIdValue = user.FindFirst(BlendClaims.CompanyId)?.Value;
         if (!Guid.TryParse(companyIdValue, out var companyId))

@@ -1,0 +1,153 @@
+@page "/Brokers"
+@rendermode InteractiveServer
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Brokers
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IBrokerService BrokerService
+
+<PageTitle>Brokers</PageTitle>
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">BUSINESS DIRECTORY</span>
+        <h1>Brokers</h1>
+        @if (CompanyName is not null)
+        {
+            <p class="muted">All brokers for @CompanyName.</p>
+        }
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <section class="panel loading-state"><span class="spinner"></span>Loading brokers...</section>
+}
+else if (PageMessage is not null)
+{
+    <section class="panel empty-state">
+        <div class="empty-icon" aria-hidden="true">!</div>
+        <strong>@PageMessage</strong>
+        <p>Select an active working company to view its broker records.</p>
+        <a class="button button-quiet" href="/Account/WorkingCompany">Choose working company</a>
+    </section>
+}
+else
+{
+    <section class="panel notes-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-kicker">COMPANY MAPPING @CompanyMappingId</div>
+                <h2>Broker directory <span class="count-pill">@BrokerRecords.Count</span></h2>
+            </div>
+        </div>
+        @if (BrokerRecords.Count == 0)
+        {
+            <div class="empty-state compact-empty">
+                <strong>No brokers found</strong>
+                <p>There are no broker records for this working company.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">CODE</th>
+                            <th scope="col">BROKER</th>
+                            <th scope="col">CONTACT</th>
+                            <th scope="col">PHONE</th>
+                            <th scope="col">EMAIL</th>
+                            <th scope="col">ADDRESS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var broker in BrokerRecords)
+                        {
+                            <tr @key="broker.BrokerId">
+                                <td>@broker.BrokerId</td>
+                                <td>@(broker.BrokerCode ?? "-")</td>
+                                <td>@(broker.BrokerName ?? "-")</td>
+                                <td>@(broker.ContactPerson ?? "-")</td>
+                                <td>@(broker.Tel ?? "-")</td>
+                                <td>@(broker.Email ?? "-")</td>
+                                <td>@(broker.Address ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span>Working company: @CompanyName (mapping @CompanyMappingId)</span>
+                <span>@BrokerRecords.Count broker@(BrokerRecords.Count == 1 ? "" : "s")</span>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private IReadOnlyList<Broker> BrokerRecords { get; set; } = [];
+    private string? CompanyName { get; set; }
+    private int? CompanyMappingId { get; set; }
+    private string? PageMessage { get; set; }
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+            {
+                PageMessage = "No working company is selected for your account.";
+                return;
+            }
+
+            var company = await Database.Companies.AsNoTracking()
+                .Where(item => item.Id == companyId)
+                .Select(item => new
+                {
+                    item.Name,
+                    item.CompanyNumber,
+                    item.IsEnabled,
+                    item.SubscriptionStartDate,
+                    item.SubscriptionEndDate
+                })
+                .SingleOrDefaultAsync();
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (company is null
+                || !company.IsEnabled
+                || today < company.SubscriptionStartDate
+                || today > company.SubscriptionEndDate)
+            {
+                PageMessage = "The selected working company is unavailable.";
+                return;
+            }
+
+            if (!user.IsInRole(BlendRoles.Admin))
+            {
+                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var hasMembership = userId is not null && await Database.UserCompanies.AsNoTracking()
+                    .AnyAsync(membership => membership.UserId == userId && membership.CompanyId == companyId);
+                if (!hasMembership)
+                {
+                    PageMessage = "You are not entitled to access the selected working company.";
+                    return;
+                }
+            }
+
+            CompanyName = company.Name;
+            CompanyMappingId = company.CompanyNumber;
+            BrokerRecords = BrokerService.GetAllBrokers("all", company.CompanyNumber);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

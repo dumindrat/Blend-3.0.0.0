@@ -13,7 +13,7 @@ public sealed class BlendMenuItemAuthorizationMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, BlendIdentityDbContext database)
+    public async Task InvokeAsync(HttpContext context, IDbContextFactory<BlendIdentityDbContext> databaseFactory)
     {
         var requestPath = context.Request.Path.Value;
         if (string.IsNullOrEmpty(requestPath) || IsStaticResource(requestPath))
@@ -21,6 +21,8 @@ public sealed class BlendMenuItemAuthorizationMiddleware
             await _next(context);
             return;
         }
+
+        await using var database = databaseFactory.CreateDbContext();
 
         var isAuthenticated = context.User.Identity?.IsAuthenticated == true;
         var isPlatformAdmin = context.User.IsInRole(BlendRoles.Admin);

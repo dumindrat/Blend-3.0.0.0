@@ -31,3 +31,8 @@
 /Blend.DataService.Tests/obj
 /Blend.BlazorApp/bin/Release/net10.0
 /Blend.BusinessService/bin
+/Blend.DataService/bin/Release/netstandard2.0
+/Blend.DataService.Tests/bin/Release/net10.0
+/Blend.BusinessService/obj
+/Blend.BusinessService.Tests/bin
+/Blend.BusinessService.Tests/obj

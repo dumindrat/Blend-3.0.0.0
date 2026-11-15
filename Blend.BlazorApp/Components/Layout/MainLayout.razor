@@ -2,7 +2,7 @@
 @using System.Security.Claims
 @using Blend.BlazorApp.Authentication
 @using Microsoft.EntityFrameworkCore
-@inject BlendIdentityDbContext Database
+@inject IDbContextFactory<BlendIdentityDbContext> DatabaseFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
@@ -17,6 +17,7 @@
             <a class="nav-link active" href="/"><span class="nav-icon">◫</span>Overview</a>
             <AuthorizeView>
                 <Authorized>
+                    <a class="nav-link @(IsBrokersPage ? "active" : null)" href="/Brokers"><span class="nav-icon">▤</span>Brokers</a>
                     @foreach (var group in MenuGroups)
                     {
                         <div class="module-nav-group" data-module-group data-module-id="@group.ModuleId">
@@ -128,6 +129,7 @@
     private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', 2)[0];
     private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
     private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
+    private bool IsBrokersPage => CurrentPath.Equals("Brokers", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,10 +140,12 @@
             return;
         }
 
+        await using var database = DatabaseFactory.CreateDbContext();
+
         var isPlatformAdmin = user.IsInRole(BlendRoles.Admin);
         if (Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var activeCompanyId))
         {
-            ActiveCompanyName = await Database.Companies.AsNoTracking()
+            ActiveCompanyName = await database.Companies.AsNoTracking()
                 .Where(company => company.Id == activeCompanyId)
                 .Select(company => company.Name)
                 .SingleOrDefaultAsync();
@@ -153,13 +157,13 @@
         }
 
         ModuleStorageKey = $"blend-active-module-{companyId:D}";
-        Modules = await Database.Modules.AsNoTracking()
+        Modules = await database.Modules.AsNoTracking()
             .Include(module => module.Company)
             .Where(module => module.CompanyId == companyId)
             .OrderBy(module => module.Name)
             .ToListAsync();
 
-        var menuQuery = Database.MenuItems.AsNoTracking().Where(item => item.CompanyId == companyId);
+        var menuQuery = database.MenuItems.AsNoTracking().Where(item => item.CompanyId == companyId);
         if (!isPlatformAdmin)
         {
             var roleIds = user.FindAll(BlendClaims.RoleId)
@@ -167,7 +171,7 @@
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
             menuQuery = menuQuery.Where(item => roleIds.Length > 0
-                && Database.MenuItemRoles.Any(assignment =>
+                && database.MenuItemRoles.Any(assignment =>
                     assignment.MenuItemId == item.Id
                     && roleIds.Contains(assignment.RoleId)
                     && assignment.Role.CompanyId == companyId));

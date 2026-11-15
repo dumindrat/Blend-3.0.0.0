@@ -33,7 +33,7 @@ public sealed class BrokerDataServiceTests
 
         Assert.AreSame(expected, actual);
         Assert.AreEqual("trn_BrokerGet", mapper.ProcedureName);
-        Assert.AreEqual(string.Empty, Parameter<string>(mapper.Parameters, "BrokerName"));
+        Assert.AreEqual(string.Empty, Parameter<string>(mapper.Parameters, "serachstring"));
         Assert.AreEqual(12, Parameter<int>(mapper.Parameters, "CompanyId"));
     }
 
@@ -45,7 +45,7 @@ public sealed class BrokerDataServiceTests
 
         service.GetAllBrokers("North", 3);
 
-        Assert.AreEqual("North", Parameter<string>(mapper.Parameters, "BrokerName"));
+        Assert.AreEqual("North", Parameter<string>(mapper.Parameters, "serachstring"));
         Assert.AreEqual(3, Parameter<int>(mapper.Parameters, "CompanyId"));
     }
 

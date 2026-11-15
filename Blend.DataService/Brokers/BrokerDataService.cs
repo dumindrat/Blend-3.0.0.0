@@ -21,7 +21,7 @@ namespace Blend.DataService.Brokers
         public IReadOnlyList<BrokerRecord> GetAllBrokers(string searchText, int companyId)
         {
             var searchBy = searchText == "all" ? string.Empty : searchText;
-            return _mapper.Query<BrokerRecord>("trn_BrokerGet", new { BrokerName = searchBy, CompanyId = companyId });
+            return _mapper.Query<BrokerRecord>("trn_BrokerGet", new { serachstring = searchBy, CompanyId = companyId });
         }
 
         public bool CreateBroker(BrokerRecord broker)

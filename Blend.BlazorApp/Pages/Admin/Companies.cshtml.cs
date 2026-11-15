@@ -41,7 +41,7 @@ public sealed class CompaniesModel : PageModel
             if (companyNumber is null)
             {
                 await transaction.RollbackAsync(HttpContext.RequestAborted);
-                ModelState.AddModelError(string.Empty, "All four-digit company numbers are in use. No more than 9,000 companies can be assigned a number.");
+                ModelState.AddModelError(string.Empty, "All company mapping IDs (1-3) are in use. No more than three companies can be mapped.");
                 await LoadCompaniesAsync();
                 return Page();
             }
@@ -77,7 +77,7 @@ public sealed class CompaniesModel : PageModel
             else
             {
                 await transaction.CommitAsync(HttpContext.RequestAborted);
-                SuccessMessage = $"Company '{company.Name}' created with company number {company.CompanyNumber}, Company Admin, and User roles.";
+                SuccessMessage = $"Company '{company.Name}' created with mapping ID {company.CompanyNumber}, Company Admin, and User roles.";
                 ShowCreateDialog = false;
                 Input = new CompanyInput { SubscriptionStartDate = DateOnly.FromDateTime(DateTime.UtcNow), SubscriptionEndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1)), IsEnabled = true };
             }
@@ -157,7 +157,7 @@ public sealed class CompaniesModel : PageModel
         var usedNumbers = await _database.Companies
             .Select(company => company.CompanyNumber)
             .ToHashSetAsync(HttpContext.RequestAborted);
-        var availableNumbers = Enumerable.Range(1_000, 9_000)
+        var availableNumbers = Enumerable.Range(1, 3)
             .Where(companyNumber => !usedNumbers.Contains(companyNumber))
             .ToArray();
         if (availableNumbers.Length == 0)

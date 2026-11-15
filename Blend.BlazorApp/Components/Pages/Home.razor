@@ -16,7 +16,7 @@
         <section class="panel">
             <div class="panel-kicker">ACCOUNT</div>
             <h2>You're signed in</h2>
-            <p>Authentication and role management are enabled. Blend data operations will be restored after the legacy data API is migrated to this authentication system.</p>
+            <p>Authentication and role management are enabled. Broker records are available from the Brokers page for your active working company.</p>
             <p><strong>Your roles:</strong> @string.Join(", ", authState.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(claim => claim.Value))</p>
             <div class="heading-actions">
                 <a class="button button-quiet" href="/Account/ChangePassword">Change password</a>

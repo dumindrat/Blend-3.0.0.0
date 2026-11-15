@@ -1,42 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <sqlMap namespace="TestApp" xmlns="http://ibatis.apache.org/mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" >
 
   <alias>
-    <typeAlias alias="broker" type="Blend.BuisnessEntities.AuctionBrokers.TeaBroker"/>
+	<typeAlias alias="broker" type="Blend.BuisnessEntities.AuctionBrokers.TeaBroker"/>
   </alias>
 
   <statements>
 
-    <procedure id="GetBrokers" parameterMap="get-allbrokers-params"  resultMap="get-allbrokers-result">
-      trn_BrokerGet
-    </procedure>
-    <procedure id="GetBrokerById" parameterMap="get-allbrokerbyid-params"  resultMap="get-allbrokers-result">
-      trn_BrokerGetById
-    </procedure>
+	<procedure id="GetBrokers" parameterMap="get-allbrokers-params"  resultMap="get-allbrokers-result">
+	  trn_BrokerGet
+	</procedure>
+	<procedure id="GetBrokerById" parameterMap="get-allbrokerbyid-params"  resultMap="get-allbrokers-result">
+	  trn_BrokerGetById
+	</procedure>
   </statements>
 
   <parameterMaps>
-    <parameterMap id="get-allbrokers-params">
-      <parameter property="BrokerName" direction  ="Input"/>
-      <parameter property="CompanyId" direction  ="Input"/>
-    </parameterMap>
-    <parameterMap id="get-allbrokerbyid-params">
-      <parameter property="BrokerId" column="BrokerId" />
-    </parameterMap>
+	<parameterMap id="get-allbrokers-params">
+	  <parameter property="BrokerName" direction  ="Input"/>
+	  <parameter property="CompanyId" direction  ="Input"/>
+	</parameterMap>
+	<parameterMap id="get-allbrokerbyid-params">
+	  <parameter property="BrokerId" column="BrokerId" />
+	</parameterMap>
   </parameterMaps>
 
   <resultMaps>
-    <resultMap id="get-allbrokers-result" class="Blend.BuisnessEntities.AuctionBrokers.TeaBroker">
-      <result property="BrokerId" column="BrokerId" dbType="Int"/>
-      <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
-      <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
-      <result property="Address" column="Address" dbType="Varchar"/>
-      <result property="Email" column="Email" dbType="Varchar"/>
-      <result property="Tel" column="Tel" dbType="Varchar"/>
-      <result property="ContactPerson" column="ContactPerson" dbType="Varchar"/>
-      <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
-      <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
-    </resultMap>
+	<resultMap id="get-allbrokers-result" class="Blend.BuisnessEntities.AuctionBrokers.TeaBroker">
+	  <result property="BrokerId" column="BrokerId" dbType="Int"/>
+	  <result property="BrokerCode" column="BrokerCode" dbType="Varchar"/>
+	  <result property="BrokerName" column="BrokerName" dbType="Varchar"/>
+	  <result property="Address" column="Address" dbType="Varchar"/>
+	  <result property="Email" column="Email" dbType="Varchar"/>
+	  <result property="Tel" column="Tel" dbType="Varchar"/>
+	  <result property="ContactPerson" column="ContactPerson" dbType="Varchar"/>
+	  <result property="ModifiedDate" column="ModifiedDate" dbType="Varchar"/>
+	  <result property="RowVersion" column="RowVersion" dbType="VarBinary"/>
+	</resultMap>
 
   </resultMaps>
 </sqlMap>
