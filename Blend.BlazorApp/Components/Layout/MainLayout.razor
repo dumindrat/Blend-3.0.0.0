@@ -18,11 +18,13 @@
                 <Authorized>
                     @foreach (var group in MenuGroups)
                     {
-                        <div class="nav-caption menu-group-caption">@group.Name</div>
-                        @foreach (var item in group.Items)
-                        {
-                            <a class="nav-link" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
-                        }
+                        <div class="module-nav-group" data-module-group data-module-id="@group.ModuleId">
+                            <div class="nav-caption menu-group-caption">@group.Name</div>
+                            @foreach (var item in group.Items)
+                            {
+                                <a class="nav-link" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                            }
+                        </div>
                     }
                 </Authorized>
             </AuthorizeView>
@@ -55,9 +57,28 @@
     <div class="main-shell">
         <header class="topbar">
             <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
-            <div class="topbar-right"><span class="live-indicator"></span> Live operations</div>
+            <div class="topbar-right">
+                @if (Modules.Count > 0)
+                {
+                    <label class="module-switcher"><span>MODULE</span><select aria-label="Select module" data-module-selector data-module-storage-key="@ModuleStorageKey">@foreach (var module in Modules) { <option value="@module.Id">@(module.Company is null ? module.Name : $"{module.Company.Name} · {module.Name}")</option> }</select></label>
+                }
+                <span class="live-indicator"></span> Live operations
+            </div>
         </header>
         <main class="content-area">@Body</main>
+        <dialog id="module-switch-confirmation" class="modal-card module-confirmation-dialog" aria-labelledby="module-switch-heading" aria-describedby="module-switch-copy">
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">CHANGE MODULE</div>
+                    <h2 id="module-switch-heading">Switch workspace?</h2>
+                </div>
+            </div>
+            <p id="module-switch-copy" class="module-confirmation-copy">Are you sure you want to move to the <strong id="module-switch-destination"></strong> module?</p>
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" data-module-switch-cancel>Cancel</button>
+                <button class="button button-primary" type="button" data-module-switch-confirm>Switch module</button>
+            </div>
+        </dialog>
     </div>
 </div>
 
@@ -69,6 +90,8 @@
 
 @code {
     private IReadOnlyList<MenuGroup> MenuGroups { get; set; } = [];
+    private IReadOnlyList<BlendModule> Modules { get; set; } = [];
+    private string ModuleStorageKey { get; set; } = "blend-active-module-admin";
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,8 +102,21 @@
             return;
         }
 
+        var isPlatformAdmin = user.IsInRole(BlendRoles.Admin);
+        if (isPlatformAdmin)
+        {
+            Modules = await Database.Modules.AsNoTracking().Include(module => module.Company)
+                .OrderBy(module => module.Company.Name).ThenBy(module => module.Name).ToListAsync();
+        }
+        else if (Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var moduleCompanyId))
+        {
+            ModuleStorageKey = $"blend-active-module-{moduleCompanyId:D}";
+            Modules = await Database.Modules.AsNoTracking().Where(module => module.CompanyId == moduleCompanyId)
+                .OrderBy(module => module.Name).ToListAsync();
+        }
+
         var menuQuery = Database.MenuItems.AsNoTracking();
-        if (!user.IsInRole(BlendRoles.Admin))
+        if (!isPlatformAdmin)
         {
             if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
             {
@@ -105,12 +141,14 @@
             .ToListAsync();
 
         MenuGroups = menuItems
-            .GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase)
-            .Select(group => new MenuGroup(group.Key, group.ToArray()))
+            .GroupBy(item => item.ModuleId)
+            .SelectMany(moduleGroup => moduleGroup
+                .GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase)
+                .Select(group => new MenuGroup(moduleGroup.Key, group.Key, group.ToArray())))
             .ToArray();
     }
 
     private static string Initials(string? name) => string.IsNullOrWhiteSpace(name) ? "B" : name[..1].ToUpperInvariant();
 
-    private sealed record MenuGroup(string Name, IReadOnlyList<BlendMenuItem> Items);
+    private sealed record MenuGroup(int ModuleId, string Name, IReadOnlyList<BlendMenuItem> Items);
 }

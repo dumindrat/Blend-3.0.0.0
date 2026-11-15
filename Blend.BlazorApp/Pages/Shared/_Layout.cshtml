@@ -5,9 +5,26 @@
 @{
     var currentPath = Context.Request.Path.Value ?? "/";
     var isPlatformAdmin = User.IsInRole(BlendRoles.Admin);
+    var companyIdValue = User.FindFirst(BlendClaims.CompanyId)?.Value;
+    var moduleStorageKey = isPlatformAdmin ? "blend-active-module-admin" : $"blend-active-module-{companyIdValue ?? "none"}";
+    var modules = new List<BlendModule>();
     var menuItems = new List<BlendMenuItem>();
     if (User.Identity?.IsAuthenticated == true)
     {
+        var moduleQuery = Database.Modules.AsNoTracking();
+        if (isPlatformAdmin)
+        {
+            moduleQuery = moduleQuery.Include(module => module.Company);
+        }
+        else if (Guid.TryParse(companyIdValue, out var moduleCompanyId))
+        {
+            moduleQuery = moduleQuery.Where(module => module.CompanyId == moduleCompanyId);
+        }
+        else
+        {
+            moduleQuery = moduleQuery.Where(module => false);
+        }
+        modules = await moduleQuery.OrderBy(module => module.Company.Name).ThenBy(module => module.Name).ToListAsync();
         var menuQuery = Database.MenuItems.AsNoTracking();
         if (!isPlatformAdmin)
         {
@@ -50,12 +67,17 @@
             <div class="nav-caption">WORKSPACE</div>
             <nav class="side-nav" aria-label="Main navigation">
                 <a class="nav-link @(currentPath == "/" ? "active" : null)" href="/"><span class="nav-icon">◫</span>Overview</a>
-                @foreach (var group in menuGroups)
+                @foreach (var module in modules)
                 {
-                    <div class="nav-caption menu-group-caption">@group.Key</div>
-                    @foreach (var item in group)
+                    @foreach (var group in menuItems.Where(item => item.ModuleId == module.Id).GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase))
                     {
-                        <a class="nav-link @(string.Equals(currentPath, item.Path, StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                        <div class="module-nav-group" data-module-group data-module-id="@module.Id">
+                            <div class="nav-caption menu-group-caption">@group.Key</div>
+                            @foreach (var item in group)
+                            {
+                                <a class="nav-link @(string.Equals(currentPath, item.Path, StringComparison.OrdinalIgnoreCase) ? "active" : null)" data-module-id="@module.Id" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                            }
+                        </div>
                     }
                 }
                 @if (isPlatformAdmin || User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers))
@@ -92,10 +114,30 @@
         <div class="main-shell">
             <header class="topbar">
                 <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
-                <div class="topbar-right"><span class="live-indicator"></span> Live operations</div>
+                <div class="topbar-right">
+                    @if (modules.Count > 0)
+                    {
+                        <label class="module-switcher"><span>MODULE</span><select aria-label="Select module" data-module-selector data-module-storage-key="@moduleStorageKey">@foreach (var module in modules) { <option value="@module.Id">@(module.Company is null ? module.Name : $"{module.Company.Name} · {module.Name}")</option> }</select></label>
+                    }
+                    <span class="live-indicator"></span> Live operations
+                </div>
             </header>
             @RenderBody()
         </div>
     </div>
+    <dialog id="module-switch-confirmation" class="modal-card module-confirmation-dialog" aria-labelledby="module-switch-heading" aria-describedby="module-switch-copy">
+        <div class="modal-heading">
+            <div>
+                <div class="panel-kicker">CHANGE MODULE</div>
+                <h2 id="module-switch-heading">Switch workspace?</h2>
+            </div>
+        </div>
+        <p id="module-switch-copy" class="module-confirmation-copy">Are you sure you want to move to the <strong id="module-switch-destination"></strong> module?</p>
+        <div class="modal-actions">
+            <button class="button button-quiet" type="button" data-module-switch-cancel>Cancel</button>
+            <button class="button button-primary" type="button" data-module-switch-confirm>Switch module</button>
+        </div>
+    </dialog>
+    <script src="~/module-selector.js"></script>
 </body>
 </html>

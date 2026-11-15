@@ -11,6 +11,7 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
     }
 
     public DbSet<BlendCompany> Companies => Set<BlendCompany>();
+    public DbSet<BlendModule> Modules => Set<BlendModule>();
     public DbSet<BlendMenuItem> MenuItems => Set<BlendMenuItem>();
     public DbSet<BlendMenuItemRole> MenuItemRoles => Set<BlendMenuItemRole>();
     public DbSet<BlendMenuItemOperation> MenuItemOperations => Set<BlendMenuItemOperation>();
@@ -41,10 +42,25 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
             .HasIndex(company => company.CompanyNumber)
             .IsUnique();
 
+        builder.Entity<BlendModule>(entity =>
+        {
+            entity.HasIndex(module => new { module.CompanyId, module.Name }).IsUnique();
+            entity.HasOne(module => module.Company)
+                .WithMany()
+                .HasForeignKey(module => module.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
         builder.Entity<BlendMenuItem>()
             .HasOne(item => item.Company)
             .WithMany()
             .HasForeignKey(item => item.CompanyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<BlendMenuItem>()
+            .HasOne(item => item.Module)
+            .WithMany()
+            .HasForeignKey(item => item.ModuleId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<BlendMenuItemRole>(entity =>

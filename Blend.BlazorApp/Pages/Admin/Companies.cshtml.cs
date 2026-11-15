@@ -63,6 +63,8 @@ public sealed class CompaniesModel : PageModel
             };
             _database.Companies.Add(company);
             await _database.SaveChangesAsync(HttpContext.RequestAborted);
+            _database.Modules.Add(new BlendModule { CompanyId = company.Id, Name = "Blend" });
+            await _database.SaveChangesAsync(HttpContext.RequestAborted);
             var roleCreationErrors = await CreateDefaultRolesAsync(company);
             if (roleCreationErrors.Count > 0)
             {

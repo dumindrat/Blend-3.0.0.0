@@ -8,6 +8,9 @@ public sealed class BlendMenuItem
     public Guid CompanyId { get; set; }
     public BlendCompany Company { get; set; } = null!;
 
+    public int ModuleId { get; set; }
+    public BlendModule Module { get; set; } = null!;
+
     [Required]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;
