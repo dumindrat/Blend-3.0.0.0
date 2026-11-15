@@ -1,12 +1,18 @@
 @page "/Brokers"
 @rendermode InteractiveServer
+@implements IAsyncDisposable
 @attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Microsoft.Data.SqlClient
 @using Blend.BlazorApp.Authentication
 @using Blend.BusinessService.Brokers
 @using Microsoft.EntityFrameworkCore
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlendIdentityDbContext Database
 @inject IBrokerService BrokerService
+@inject ILogger<Brokers> Logger
+@inject IJSRuntime JS
 
 <PageTitle>Brokers</PageTitle>
 
@@ -16,9 +22,15 @@
         <h1>Brokers</h1>
         @if (CompanyName is not null)
         {
-            <p class="muted">All brokers for @CompanyName.</p>
+            <p class="muted">Manage brokers for @CompanyName.</p>
         }
     </div>
+    @if (CanCreate)
+    {
+        <div class="heading-actions">
+            <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@IsBusy">Add broker</button>
+        </div>
+    }
 </div>
 
 @if (IsLoading)
@@ -36,18 +48,115 @@ else if (PageMessage is not null)
 }
 else
 {
+    @if (ErrorMessage is not null && !IsEditorOpen && PendingDeleteBroker is null)
+    {
+        <div class="alert alert-error" role="alert">@ErrorMessage</div>
+    }
+    @if (SuccessMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@SuccessMessage</div>
+    }
+    @if (!CanCreate && !CanEdit && !CanDelete)
+    {
+        <div class="alert alert-info" role="status">Your role has no broker write operations assigned. Ask an administrator to grant Create, Edit, or Delete on the Brokers menu item.</div>
+    }
+
+    <dialog @ref="EditorDialog" class="modal-card modal-wide broker-editor" aria-labelledby="broker-editor-heading">
+        @if (IsEditorOpen)
+        {
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">BROKER RECORD</div>
+                    <h2 id="broker-editor-heading">@(EditingBroker is null ? "Add broker" : $"Edit {EditingBroker.BrokerName}")</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelEditAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <EditForm Model="@Form" OnValidSubmit="SaveBrokerAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <fieldset class="broker-form-grid" disabled="@IsBusy">
+                    <div>
+                        <label for="broker-code">Broker code</label>
+                        <InputText id="broker-code" class="form-control" @bind-Value="Form.BrokerCode" maxlength="3" />
+                        <ValidationMessage For="@(() => Form.BrokerCode)" />
+                    </div>
+                    <div>
+                        <label for="broker-name">Broker name</label>
+                        <InputText id="broker-name" class="form-control" @bind-Value="Form.BrokerName" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.BrokerName)" />
+                    </div>
+                    <div>
+                        <label for="broker-contact">Contact person</label>
+                        <InputText id="broker-contact" class="form-control" @bind-Value="Form.ContactPerson" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.ContactPerson)" />
+                    </div>
+                    <div>
+                        <label for="broker-phone">Phone</label>
+                        <InputText id="broker-phone" class="form-control" @bind-Value="Form.Tel" maxlength="10" />
+                        <ValidationMessage For="@(() => Form.Tel)" />
+                    </div>
+                    <div>
+                        <label for="broker-email">Email</label>
+                        <InputText id="broker-email" type="email" class="form-control" @bind-Value="Form.Email" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.Email)" />
+                    </div>
+                    <div class="broker-address-field">
+                        <label for="broker-address">Address</label>
+                        <InputTextArea id="broker-address" class="form-control" @bind-Value="Form.Address" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.Address)" />
+                    </div>
+                </fieldset>
+                <div class="modal-actions">
+                    <button class="button button-quiet" type="button" @onclick="CancelEditAsync" disabled="@IsBusy">Cancel</button>
+                    <button class="button button-primary" type="submit" disabled="@IsBusy">@(IsSaving ? "Saving..." : "Save broker")</button>
+                </div>
+            </EditForm>
+        }
+    </dialog>
+
+    <dialog @ref="DeleteDialog" class="modal-card module-confirmation-dialog broker-delete-dialog" aria-labelledby="delete-broker-heading" aria-describedby="delete-broker-copy">
+        @if (PendingDeleteBroker is not null)
+        {
+            <div class="broker-delete-icon" aria-hidden="true">!</div>
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">DELETE BROKER</div>
+                    <h2 id="delete-broker-heading">Delete broker?</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelDeleteAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            <p id="delete-broker-copy" class="module-confirmation-copy">Are you sure you want to delete <strong>@PendingDeleteBroker.BrokerName</strong> (@PendingDeleteBroker.BrokerCode)? This action cannot be undone.</p>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" @onclick="CancelDeleteAsync" disabled="@IsBusy" autofocus>Cancel</button>
+                <button class="button button-danger" type="button" @onclick="DeleteBrokerAsync" disabled="@IsBusy">@(IsDeleting ? "Deleting..." : "Delete broker")</button>
+            </div>
+        }
+    </dialog>
+
     <section class="panel notes-panel">
         <div class="panel-header">
             <div>
                 <div class="panel-kicker">COMPANY MAPPING @CompanyMappingId</div>
                 <h2>Broker directory <span class="count-pill">@BrokerRecords.Count</span></h2>
             </div>
+            <div class="broker-toolbar">
+                <input class="form-control broker-search" aria-label="Search brokers" placeholder="Search brokers" maxlength="50" @bind="SearchText" @bind:event="oninput" @onkeydown="HandleSearchKeyDown" disabled="@IsBusy" />
+                <button class="button button-quiet button-small" type="button" @onclick="SearchBrokersAsync" disabled="@IsBusy">Search</button>
+            </div>
         </div>
         @if (BrokerRecords.Count == 0)
         {
             <div class="empty-state compact-empty">
                 <strong>No brokers found</strong>
-                <p>There are no broker records for this working company.</p>
+                <p>There are no broker records matching this search for the working company.</p>
             </div>
         }
         else
@@ -63,6 +172,10 @@ else
                             <th scope="col">PHONE</th>
                             <th scope="col">EMAIL</th>
                             <th scope="col">ADDRESS</th>
+                            @if (CanEdit || CanDelete)
+                            {
+                                <th scope="col" class="actions-heading">ACTIONS</th>
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -76,6 +189,19 @@ else
                                 <td>@(broker.Tel ?? "-")</td>
                                 <td>@(broker.Email ?? "-")</td>
                                 <td>@(broker.Address ?? "-")</td>
+                                @if (CanEdit || CanDelete)
+                                {
+                                    <td class="row-actions">
+                                        @if (CanEdit)
+                                        {
+                                            <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(broker)" disabled="@IsBusy">Edit</button>
+                                        }
+                                        @if (CanDelete)
+                                        {
+                                            <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(broker)" disabled="@IsBusy">Delete</button>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         }
                     </tbody>
@@ -90,10 +216,32 @@ else
 }
 
 @code {
+    private const string BrokersPath = "/Brokers";
     private IReadOnlyList<Broker> BrokerRecords { get; set; } = [];
+    private BrokerFormInput Form { get; set; } = new();
+    private Broker? EditingBroker { get; set; }
+    private Broker? PendingDeleteBroker { get; set; }
+    private ElementReference EditorDialog;
+    private ElementReference DeleteDialog;
+    private IJSObjectReference? DialogModule;
+    private DotNetObjectReference<Brokers>? DialogCallback;
+    private bool OpenEditorAfterRender;
+    private bool OpenDeleteAfterRender;
     private string? CompanyName { get; set; }
+    private Guid? CompanyId { get; set; }
     private int? CompanyMappingId { get; set; }
     private string? PageMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? SuccessMessage { get; set; }
+    private string SearchText { get; set; } = string.Empty;
+    private bool CanCreate { get; set; }
+    private bool CanEdit { get; set; }
+    private bool CanDelete { get; set; }
+    private bool IsEditorOpen { get; set; }
+    private bool IsSaving { get; set; }
+    private bool IsDeleting { get; set; }
+    private bool IsSearching { get; set; }
+    private bool IsBusy => IsSaving || IsDeleting || IsSearching;
     private bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
@@ -101,53 +249,508 @@ else
         try
         {
             var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authenticationState.User;
-            if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null)
             {
-                PageMessage = "No working company is selected for your account.";
+                PageMessage = "The selected working company is unavailable or you are not entitled to access it.";
                 return;
-            }
-
-            var company = await Database.Companies.AsNoTracking()
-                .Where(item => item.Id == companyId)
-                .Select(item => new
-                {
-                    item.Name,
-                    item.CompanyNumber,
-                    item.IsEnabled,
-                    item.SubscriptionStartDate,
-                    item.SubscriptionEndDate
-                })
-                .SingleOrDefaultAsync();
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            if (company is null
-                || !company.IsEnabled
-                || today < company.SubscriptionStartDate
-                || today > company.SubscriptionEndDate)
-            {
-                PageMessage = "The selected working company is unavailable.";
-                return;
-            }
-
-            if (!user.IsInRole(BlendRoles.Admin))
-            {
-                var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                var hasMembership = userId is not null && await Database.UserCompanies.AsNoTracking()
-                    .AnyAsync(membership => membership.UserId == userId && membership.CompanyId == companyId);
-                if (!hasMembership)
-                {
-                    PageMessage = "You are not entitled to access the selected working company.";
-                    return;
-                }
             }
 
             CompanyName = company.Name;
-            CompanyMappingId = company.CompanyNumber;
-            BrokerRecords = BrokerService.GetAllBrokers("all", company.CompanyNumber);
+            CompanyId = company.Id;
+            CompanyMappingId = company.MappingId;
+            await LoadOperationPermissionsAsync(authenticationState.User, company);
+            LoadBrokerRecords(company.MappingId);
         }
         finally
         {
             IsLoading = false;
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (OpenEditorAfterRender)
+        {
+            OpenEditorAfterRender = false;
+            DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Brokers.razor.js");
+            DialogCallback ??= DotNetObjectReference.Create(this);
+            await DialogModule.InvokeVoidAsync("show", EditorDialog, DialogCallback, nameof(CancelEditorFromDialogAsync));
+        }
+        if (OpenDeleteAfterRender)
+        {
+            OpenDeleteAfterRender = false;
+            DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Brokers.razor.js");
+            DialogCallback ??= DotNetObjectReference.Create(this);
+            await DialogModule.InvokeVoidAsync("show", DeleteDialog, DialogCallback, nameof(CancelDeleteFromDialogAsync));
+        }
+    }
+
+    [JSInvokable]
+    public Task CancelEditorFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelEditAsync();
+        StateHasChanged();
+    });
+
+    [JSInvokable]
+    public Task CancelDeleteFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelDeleteAsync();
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        DialogCallback?.Dispose();
+        if (DialogModule is not null)
+        {
+            try
+            {
+                await DialogModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+
+    private async Task<WorkingCompany?> GetWorkingCompanyAsync(ClaimsPrincipal user)
+    {
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+        {
+            return null;
+        }
+
+        var company = await Database.Companies.AsNoTracking()
+            .Where(item => item.Id == companyId)
+            .Select(item => new
+            {
+                item.Id,
+                item.Name,
+                item.CompanyNumber,
+                item.IsEnabled,
+                item.SubscriptionStartDate,
+                item.SubscriptionEndDate
+            })
+            .SingleOrDefaultAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (company is null
+            || !company.IsEnabled
+            || today < company.SubscriptionStartDate
+            || today > company.SubscriptionEndDate)
+        {
+            return null;
+        }
+
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hasMembership = userId is not null && await Database.UserCompanies.AsNoTracking()
+                .AnyAsync(membership => membership.UserId == userId && membership.CompanyId == companyId);
+            if (!hasMembership)
+            {
+                return null;
+            }
+        }
+
+        return new WorkingCompany(company.Id, company.Name, company.CompanyNumber);
+    }
+
+    private async Task LoadOperationPermissionsAsync(ClaimsPrincipal user, WorkingCompany company)
+    {
+        if (user.IsInRole(BlendRoles.Admin))
+        {
+            CanCreate = CanEdit = CanDelete = true;
+            return;
+        }
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roleIds = user.FindAll(BlendClaims.RoleId)
+            .Select(claim => claim.Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        if (userId is null || roleIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var brokerMenuItemIds = await Database.MenuItems.AsNoTracking()
+            .Where(item => item.CompanyId == company.Id)
+            .Select(item => new { item.Id, item.Path })
+            .ToListAsync();
+        var menuItemIds = brokerMenuItemIds
+            .Where(item => string.Equals(item.Path.TrimEnd('/'), BrokersPath, StringComparison.OrdinalIgnoreCase))
+            .Select(item => item.Id)
+            .ToArray();
+        if (menuItemIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var operationKeys = await Database.RoleOperations.AsNoTracking()
+            .Where(assignment => roleIds.Contains(assignment.RoleId)
+                && assignment.Role.CompanyId == company.Id
+                && Database.UserRoles.Any(userRole => userRole.UserId == userId && userRole.RoleId == assignment.RoleId)
+                && menuItemIds.Contains(assignment.Operation.MenuItemId)
+                && Database.MenuItemRoles.Any(menuAssignment =>
+                    menuAssignment.MenuItemId == assignment.Operation.MenuItemId
+                    && menuAssignment.RoleId == assignment.RoleId))
+            .Select(assignment => assignment.Operation.Key)
+            .ToListAsync();
+        CanCreate = operationKeys.Contains("create", StringComparer.OrdinalIgnoreCase);
+        CanEdit = operationKeys.Contains("edit", StringComparer.OrdinalIgnoreCase);
+        CanDelete = operationKeys.Contains("delete", StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void LoadBrokerRecords(int mappingId)
+    {
+        var search = string.IsNullOrWhiteSpace(SearchText) ? "all" : SearchText.Trim();
+        BrokerRecords = BrokerService.GetAllBrokers(search, mappingId);
+    }
+
+    private void BeginCreate()
+    {
+        EditingBroker = null;
+        Form = new BrokerFormInput();
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private void BeginEdit(Broker broker)
+    {
+        EditingBroker = broker;
+        Form = new BrokerFormInput
+        {
+            BrokerCode = broker.BrokerCode ?? string.Empty,
+            BrokerName = broker.BrokerName ?? string.Empty,
+            ContactPerson = broker.ContactPerson ?? string.Empty,
+            Tel = broker.Tel ?? string.Empty,
+            Email = broker.Email ?? string.Empty,
+            Address = broker.Address ?? string.Empty
+        };
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private async Task CancelEditAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        await CloseEditorAsync();
+        ErrorMessage = null;
+    }
+
+    private async Task CloseEditorAsync()
+    {
+        if (DialogModule is not null)
+        {
+            await DialogModule.InvokeVoidAsync("close", EditorDialog);
+        }
+        IsEditorOpen = false;
+        EditingBroker = null;
+        Form = new BrokerFormInput();
+    }
+
+    private void BeginDelete(Broker broker)
+    {
+        PendingDeleteBroker = broker;
+        OpenDeleteAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private async Task CancelDeleteAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        await CloseDeleteAsync();
+        ErrorMessage = null;
+    }
+
+    private async Task CloseDeleteAsync()
+    {
+        if (DialogModule is not null)
+        {
+            await DialogModule.InvokeVoidAsync("close", DeleteDialog);
+        }
+        PendingDeleteBroker = null;
+    }
+
+    private async Task SaveBrokerAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsSaving = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before saving.";
+                return;
+            }
+
+            var operationKey = EditingBroker is null ? "create" : "edit";
+            await LoadOperationPermissionsAsync(user, company);
+            if (!HasOperationPermission(operationKey))
+            {
+                ErrorMessage = $"Your role is not permitted to {operationKey} brokers for this company.";
+                return;
+            }
+
+            var userName = user.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length > 45)
+            {
+                ErrorMessage = "Your account name cannot be recorded by the broker database. Contact an administrator.";
+                return;
+            }
+
+            var broker = new Broker
+            {
+                BrokerId = EditingBroker?.BrokerId ?? 0,
+                CompanyId = company.MappingId,
+                BrokerCode = Clean(Form.BrokerCode),
+                BrokerName = Clean(Form.BrokerName),
+                ContactPerson = Clean(Form.ContactPerson),
+                Tel = Clean(Form.Tel),
+                Email = Clean(Form.Email),
+                Address = Clean(Form.Address),
+                User = userName
+            };
+
+            if (EditingBroker is null)
+            {
+                var result = BrokerService.CreateBroker(broker);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+                SuccessMessage = "Broker created.";
+            }
+            else
+            {
+                if (EditingBroker.RowVersion is null)
+                {
+                    ErrorMessage = "The broker has no version information. Refresh the list before editing.";
+                    return;
+                }
+
+                var currentBroker = BrokerService.GetAllBrokers("all", company.MappingId)
+                    .FirstOrDefault(item => item.BrokerId == broker.BrokerId);
+                if (currentBroker is null)
+                {
+                    ErrorMessage = "This broker is no longer available for the selected company. Refresh the list and try again.";
+                    return;
+                }
+
+                broker.RowVersion = EditingBroker.RowVersion;
+                var result = BrokerService.UpdateBroker(broker);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+                SuccessMessage = "Broker updated.";
+            }
+
+            await CloseEditorAsync();
+            CompanyName = company.Name;
+            CompanyMappingId = company.MappingId;
+            TryRefreshBrokerRecords(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "A broker could not be saved for mapping ID {CompanyMappingId}.", CompanyMappingId);
+            ErrorMessage = "The broker could not be saved. It may have changed; refresh the list and try again.";
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task DeleteBrokerAsync()
+    {
+        var brokerToDelete = PendingDeleteBroker;
+        if (brokerToDelete is null || IsBusy)
+        {
+            return;
+        }
+
+        IsDeleting = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before deleting.";
+                return;
+            }
+
+            await LoadOperationPermissionsAsync(user, company);
+            if (!CanDelete)
+            {
+                ErrorMessage = "Your role is not permitted to delete brokers for this company.";
+                return;
+            }
+
+            if (brokerToDelete.RowVersion is null)
+            {
+                ErrorMessage = "The broker has no version information. Refresh the list before deleting.";
+                return;
+            }
+
+            var currentBroker = BrokerService.GetAllBrokers("all", company.MappingId)
+                .FirstOrDefault(item => item.BrokerId == brokerToDelete.BrokerId);
+            if (currentBroker?.RowVersion is null || !currentBroker.RowVersion.SequenceEqual(brokerToDelete.RowVersion))
+            {
+                ErrorMessage = "The broker was changed, deleted, or no longer belongs to this company. Refresh the list and try again.";
+                return;
+            }
+
+            try
+            {
+                var result = BrokerService.DeleteBroker(brokerToDelete.BrokerId);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+            }
+            catch (SqlException exception) when (exception.Errors.Cast<SqlError>().Any(error => error.Number == 547))
+            {
+                Logger.LogWarning(exception, "Broker {BrokerId} could not be deleted due to a database constraint for mapping ID {CompanyMappingId}.", brokerToDelete.BrokerId, CompanyMappingId);
+                ErrorMessage = "This broker cannot be deleted because it is referenced by other records, such as purchase details. Remove or reassign those references before trying again.";
+                return;
+            }
+
+            await CloseDeleteAsync();
+            SuccessMessage = "Broker deleted.";
+            CompanyName = company.Name;
+            CompanyMappingId = company.MappingId;
+            TryRefreshBrokerRecords(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Broker {BrokerId} could not be deleted for mapping ID {CompanyMappingId}.", brokerToDelete.BrokerId, CompanyMappingId);
+            ErrorMessage = "The broker could not be deleted. Please try again or contact an administrator.";
+        }
+        finally
+        {
+            IsDeleting = false;
+        }
+    }
+
+    private async Task SearchBrokersAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsSearching = true;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before searching.";
+                return;
+            }
+
+            ErrorMessage = null;
+            TryRefreshBrokerRecords(company.MappingId);
+        }
+        finally
+        {
+            IsSearching = false;
+        }
+    }
+
+    private void TryRefreshBrokerRecords(int mappingId)
+    {
+        try
+        {
+            LoadBrokerRecords(mappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Broker list refresh failed for mapping ID {CompanyMappingId}.", mappingId);
+            ErrorMessage = "The broker list could not be refreshed. Try the search again.";
+        }
+    }
+
+    private async Task HandleSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await SearchBrokersAsync();
+        }
+    }
+
+    private bool HasOperationPermission(string key) => key switch
+    {
+        "create" => CanCreate,
+        "edit" => CanEdit,
+        "delete" => CanDelete,
+        _ => false
+    };
+
+    private static string? Clean(string value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+
+    private sealed class BrokerFormInput
+    {
+        [Required]
+        [StringLength(3)]
+        [Display(Name = "Broker code")]
+        public string BrokerCode { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(45)]
+        [Display(Name = "Broker name")]
+        public string BrokerName { get; set; } = string.Empty;
+
+        [StringLength(45)]
+        [Display(Name = "Contact person")]
+        public string ContactPerson { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        [Display(Name = "Phone")]
+        public string Tel { get; set; } = string.Empty;
+
+        [StringLength(45)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [StringLength(45)]
+        public string Address { get; set; } = string.Empty;
     }
 }

@@ -90,6 +90,28 @@ public sealed class BrokerServiceTests
         Assert.ThrowsExactly<ArgumentNullException>(() => service.CreateBroker(null!));
     }
 
+    [TestMethod]
+    public void UpdateBroker_WhenDataServiceReportsFailure_ReturnsFailure()
+    {
+        var service = new BrokerService(new FakeBrokerDataService { CreateResult = false });
+
+        var result = service.UpdateBroker(new Broker { BrokerId = 8, CompanyId = 2, RowVersion = [1] });
+
+        Assert.IsFalse(result.Succeeded);
+        Assert.AreEqual("The broker could not be updated.", result.ErrorMessage);
+    }
+
+    [TestMethod]
+    public void DeleteBroker_WhenDataServiceReportsFailure_ReturnsFailure()
+    {
+        var service = new BrokerService(new FakeBrokerDataService { CreateResult = false });
+
+        var result = service.DeleteBroker(8);
+
+        Assert.IsFalse(result.Succeeded);
+        Assert.AreEqual("The broker could not be deleted.", result.ErrorMessage);
+    }
+
     private sealed class FakeBrokerDataService : IBrokerDataService
     {
         public BrokerRecord? Broker { get; init; }
