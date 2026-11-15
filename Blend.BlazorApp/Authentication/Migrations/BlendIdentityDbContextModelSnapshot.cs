@@ -223,6 +223,38 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.ToTable("MenuItems");
                 });
 
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemOperation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("MenuItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("MenuItemOperations");
+                });
+
             modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemRole", b =>
                 {
                     b.Property<int>("MenuItemId")
@@ -236,6 +268,21 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("MenuItemRoles");
+                });
+
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendRoleOperation", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleId", "OperationId");
+
+                    b.HasIndex("OperationId");
+
+                    b.ToTable("RoleOperations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -375,6 +422,17 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemOperation", b =>
+                {
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendMenuItem", "MenuItem")
+                        .WithMany("Operations")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+                });
+
             modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItemRole", b =>
                 {
                     b.HasOne("Blend.BlazorApp.Authentication.BlendMenuItem", "MenuItem")
@@ -390,6 +448,25 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .IsRequired();
 
                     b.Navigation("MenuItem");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendRoleOperation", b =>
+                {
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendMenuItemOperation", "Operation")
+                        .WithMany()
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendIdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Operation");
 
                     b.Navigation("Role");
                 });
@@ -443,6 +520,11 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItem", b =>
+                {
+                    b.Navigation("Operations");
                 });
 #pragma warning restore 612, 618
         }

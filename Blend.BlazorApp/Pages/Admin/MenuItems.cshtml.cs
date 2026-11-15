@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Blend.BlazorApp.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,14 @@ namespace Blend.BlazorApp.Pages.Admin;
 [Authorize(Policy = BlendPermissions.ManageMenuItemsPolicy)]
 public sealed class MenuItemsModel : PageModel
 {
+    private static readonly (string Key, string Name, int SortOrder)[] DefaultOperations =
+    [
+        ("create", "Create", 0),
+        ("edit", "Edit", 1),
+        ("delete", "Delete", 2),
+        ("print", "Print", 3)
+    ];
+
     private readonly BlendIdentityDbContext _database;
 
     public MenuItemsModel(BlendIdentityDbContext database)
@@ -21,14 +30,20 @@ public sealed class MenuItemsModel : PageModel
     [BindProperty]
     public MenuItemInput Input { get; set; } = new();
 
+    [BindProperty]
+    [ValidateNever]
+    public OperationFormInput OperationInput { get; set; } = new();
+
     [BindProperty(SupportsGet = true)]
     public string? CompanyId { get; set; }
 
     public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<BlendMenuItem> MenuItems { get; private set; } = [];
+    public IReadOnlyDictionary<int, IReadOnlyList<BlendMenuItemOperation>> OperationsByMenuItem { get; private set; } = new Dictionary<int, IReadOnlyList<BlendMenuItemOperation>>();
     public string? SuccessMessage { get; private set; }
     public bool ShowCreateDialog { get; private set; }
     public int? ShowEditItemId { get; private set; }
+    public int? ShowOperationsMenuItemId { get; private set; }
 
     public async Task OnGetAsync() => await LoadMenuItemsAsync();
 
@@ -47,16 +62,27 @@ public sealed class MenuItemsModel : PageModel
 
         if (ModelState.IsValid)
         {
-            _database.MenuItems.Add(new BlendMenuItem
+            var menuItem = new BlendMenuItem
             {
                 CompanyId = companyId!.Value,
                 Name = Input.Name,
                 GroupName = Input.GroupName,
                 Path = Input.Path,
                 SortOrder = Input.SortOrder
-            });
+            };
+            _database.MenuItems.Add(menuItem);
+            foreach (var operation in DefaultOperations)
+            {
+                menuItem.Operations.Add(new BlendMenuItemOperation
+                {
+                    Key = operation.Key,
+                    Name = operation.Name,
+                    SortOrder = operation.SortOrder
+                });
+            }
+
             await _database.SaveChangesAsync(HttpContext.RequestAborted);
-            SuccessMessage = $"Menu item '{Input.Name}' created.";
+            SuccessMessage = $"Menu item '{Input.Name}' created with Create, Edit, Delete, and Print operations.";
             ShowCreateDialog = false;
             Input = new MenuItemInput();
         }
@@ -101,6 +127,84 @@ public sealed class MenuItemsModel : PageModel
         await _database.SaveChangesAsync(HttpContext.RequestAborted);
         SuccessMessage = $"Menu item '{menuItem.Name}' updated.";
         ShowEditItemId = null;
+        await LoadMenuItemsAsync();
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostAddOperationAsync(int id)
+    {
+        ModelState.Clear();
+        TryValidateModel(OperationInput, nameof(OperationInput));
+        OperationInput.Name = OperationInput.Name?.Trim() ?? string.Empty;
+        if (!TryCreateOperationKey(OperationInput.Name, out var operationKey))
+        {
+            ModelState.AddModelError(nameof(OperationInput.Name), "Enter an operation name containing at least one letter or number.");
+        }
+
+        var companyId = await GetManagedCompanyIdAsync();
+        var menuItem = companyId is null
+            ? null
+            : await _database.MenuItems.FirstOrDefaultAsync(item => item.Id == id && item.CompanyId == companyId, HttpContext.RequestAborted);
+        if (menuItem is null)
+        {
+            ModelState.AddModelError(string.Empty, "The selected menu item does not belong to a company you are allowed to manage.");
+        }
+        else
+        {
+            ShowOperationsMenuItemId = id;
+        }
+
+        if (ModelState.IsValid)
+        {
+            if (await _database.MenuItemOperations.AnyAsync(operation => operation.MenuItemId == id && operation.Key == operationKey, HttpContext.RequestAborted))
+            {
+                ModelState.AddModelError(nameof(OperationInput.Name), "This operation already exists for the menu item.");
+            }
+            else
+            {
+                var sortOrder = await _database.MenuItemOperations
+                    .Where(operation => operation.MenuItemId == id)
+                    .Select(operation => (int?)operation.SortOrder)
+                    .MaxAsync(HttpContext.RequestAborted) ?? -1;
+                _database.MenuItemOperations.Add(new BlendMenuItemOperation
+                {
+                    MenuItemId = id,
+                    Key = operationKey,
+                    Name = OperationInput.Name,
+                    SortOrder = sortOrder + 1
+                });
+                await _database.SaveChangesAsync(HttpContext.RequestAborted);
+                SuccessMessage = $"Operation '{OperationInput.Name}' added to '{menuItem!.Name}'.";
+                OperationInput = new OperationFormInput();
+            }
+        }
+
+        await LoadMenuItemsAsync();
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostDeleteOperationAsync(int id, int operationId)
+    {
+        ModelState.Clear();
+        var companyId = await GetManagedCompanyIdAsync();
+        var operation = companyId is null
+            ? null
+            : await _database.MenuItemOperations
+                .Include(itemOperation => itemOperation.MenuItem)
+                .FirstOrDefaultAsync(itemOperation => itemOperation.Id == operationId && itemOperation.MenuItemId == id
+                    && itemOperation.MenuItem.CompanyId == companyId, HttpContext.RequestAborted);
+        if (operation is null)
+        {
+            ModelState.AddModelError(string.Empty, "The selected operation does not belong to a company you are allowed to manage.");
+        }
+        else
+        {
+            ShowOperationsMenuItemId = id;
+            _database.MenuItemOperations.Remove(operation);
+            await _database.SaveChangesAsync(HttpContext.RequestAborted);
+            SuccessMessage = $"Operation '{operation.Name}' removed. Its role grants were also removed.";
+        }
+
         await LoadMenuItemsAsync();
         return Page();
     }
@@ -170,6 +274,37 @@ public sealed class MenuItemsModel : PageModel
             .OrderBy(item => item.SortOrder)
             .ThenBy(item => item.Name)
             .ToListAsync(HttpContext.RequestAborted);
+        var operations = await _database.MenuItemOperations
+            .AsNoTracking()
+            .Where(operation => operation.MenuItem.CompanyId == companyId)
+            .OrderBy(operation => operation.SortOrder)
+            .ThenBy(operation => operation.Name)
+            .ToListAsync(HttpContext.RequestAborted);
+        OperationsByMenuItem = operations
+            .GroupBy(operation => operation.MenuItemId)
+            .ToDictionary(group => group.Key, group => (IReadOnlyList<BlendMenuItemOperation>)group.ToArray());
+    }
+
+    private static bool TryCreateOperationKey(string name, out string key)
+    {
+        var keyBuilder = new System.Text.StringBuilder();
+        var previousWasSeparator = false;
+        foreach (var character in name.Trim())
+        {
+            if (char.IsLetterOrDigit(character))
+            {
+                keyBuilder.Append(char.ToLowerInvariant(character));
+                previousWasSeparator = false;
+            }
+            else if (!previousWasSeparator && keyBuilder.Length > 0)
+            {
+                keyBuilder.Append('-');
+                previousWasSeparator = true;
+            }
+        }
+
+        key = keyBuilder.ToString().Trim('-');
+        return key.Length is > 0 and <= 80;
     }
 
     private async Task<Guid?> GetManagedCompanyIdAsync()
@@ -192,10 +327,17 @@ public sealed class MenuItemsModel : PageModel
                 : null;
     }
 
+    public sealed class OperationFormInput
+    {
+        [StringLength(80)]
+        public string Name { get; set; } = string.Empty;
+    }
+
     public sealed class MenuItemInput
     {
         [Required]
         [StringLength(100)]
+        [Display(Name = "Display name")]
         public string Name { get; set; } = string.Empty;
 
         [Required]

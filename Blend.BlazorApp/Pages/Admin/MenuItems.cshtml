@@ -23,7 +23,7 @@
             {
                 <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
             }
-            @if (!Model.ShowCreateDialog && Model.ShowEditItemId is null)
+            @if (!Model.ShowCreateDialog && Model.ShowEditItemId is null && Model.ShowOperationsMenuItemId is null)
             {
                 <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
             }
@@ -77,25 +77,68 @@
             <h2>Existing menu items</h2>
             <div class="table-scroll">
                 <table class="data-table menu-items-table">
-                    <thead><tr><th>ITEM</th><th>GROUP</th><th>PATH</th><th>ORDER</th><th></th></tr></thead>
+                    <thead><tr><th>ITEM</th><th>GROUP</th><th>OPERATIONS</th><th>PATH</th><th>ORDER</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var item in Model.MenuItems)
                         {
                             var editDialogId = $"edit-menu-item-{item.Id}";
+                            var operationsDialogId = $"menu-item-operations-{item.Id}";
                             var isEditing = Model.ShowEditItemId == item.Id;
+                            var isManagingOperations = Model.ShowOperationsMenuItemId == item.Id;
+                            var operations = Model.OperationsByMenuItem.TryGetValue(item.Id, out var itemOperations) ? itemOperations : [];
                             <tr>
                                 <td class="menu-item-summary"><strong>@item.Name</strong></td>
                                 <td>@item.GroupName</td>
+                                <td class="menu-operation-summary">@string.Join(", ", operations.Select(operation => operation.Name))</td>
                                 <td class="menu-item-path">@item.Path</td>
                                 <td>@item.SortOrder</td>
                                 <td class="company-actions">
                                     <div class="menu-item-actions">
                                         <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@editDialogId').showModal()">Edit</button>
-                                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Delete this menu item?');">
+                                        <button class="button button-quiet button-small" type="button" onclick="document.getElementById('@operationsDialogId').showModal()">Operations</button>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Delete this menu item and its operation assignments?');">
                                             <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
                                             <button class="button button-danger-quiet button-small" type="submit">Delete</button>
                                         </form>
                                     </div>
+                                    <dialog id="@operationsDialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@operationsDialogId-heading">
+                                        <div class="modal-heading">
+                                            <div>
+                                                <div class="panel-kicker">OPERATION PERMISSIONS</div>
+                                                <h2 id="@operationsDialogId-heading">@item.Name operations</h2>
+                                                <p class="muted">Define actions for this module; roles can be granted each action from Role management.</p>
+                                            </div>
+                                            <button class="icon-button" type="button" aria-label="Close" onclick="document.getElementById('@operationsDialogId').close()">&times;</button>
+                                        </div>
+                                        @if (isManagingOperations)
+                                        {
+                                            <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+                                        }
+                                        <div class="operation-list">
+                                            @foreach (var operation in operations)
+                                            {
+                                                <div class="operation-row">
+                                                    <span><strong>@operation.Name</strong><small>@operation.Key</small></span>
+                                                    <form method="post" asp-page-handler="DeleteOperation" asp-route-id="@item.Id" asp-route-operationId="@operation.Id" onsubmit="return confirm('Remove this operation and its grants from all roles?');">
+                                                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                                                        <button class="button button-danger-quiet button-small" type="submit">Remove</button>
+                                                    </form>
+                                                </div>
+                                            }
+                                            @if (operations.Count == 0)
+                                            {
+                                                <p class="muted">No operations defined yet.</p>
+                                            }
+                                        </div>
+                                        <form method="post" asp-page-handler="AddOperation" asp-route-id="@item.Id" class="operation-add-form">
+                                            <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+                                            <div class="company-modal-field"><label for="@operationsDialogId-name">Add custom operation</label><input id="@operationsDialogId-name" class="form-control" name="OperationInput.Name" value="@(isManagingOperations ? Model.OperationInput.Name : string.Empty)" placeholder="Approve, Close, Export..." maxlength="80" required /></div>
+                                            <div class="modal-actions company-modal-actions">
+                                                <button class="button button-quiet" type="button" onclick="document.getElementById('@operationsDialogId').close()">Done</button>
+                                                <button class="button button-primary" type="submit">Add operation</button>
+                                            </div>
+                                        </form>
+                                    </dialog>
                                     <dialog id="@editDialogId" class="modal-card modal-wide company-create-dialog" aria-labelledby="@editDialogId-heading">
                                         <div class="modal-heading">
                                             <div>

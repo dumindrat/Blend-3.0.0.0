@@ -21,4 +21,5 @@ public sealed class BlendMenuItem
     public string Path { get; set; } = string.Empty;
 
     public int SortOrder { get; set; }
+    public ICollection<BlendMenuItemOperation> Operations { get; set; } = new List<BlendMenuItemOperation>();
 }

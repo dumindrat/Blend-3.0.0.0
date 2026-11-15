@@ -34,16 +34,22 @@ public sealed class RolesModel : PageModel
     [BindProperty]
     public MenuAssignmentInput MenuAssignment { get; set; } = new();
 
+    [BindProperty]
+    public OperationAssignmentInput OperationAssignment { get; set; } = new();
+
     [BindProperty(SupportsGet = true)]
     public string? CompanyId { get; set; }
 
     public IReadOnlyList<BlendCompany> Companies { get; private set; } = [];
     public IReadOnlyList<RoleRow> Roles { get; private set; } = [];
     public IReadOnlyList<MenuItemOption> MenuItems { get; private set; } = [];
+    public IReadOnlyList<OperationOption> Operations { get; private set; } = [];
     public IReadOnlyDictionary<string, IReadOnlySet<int>> AssignedMenuItemIds { get; private set; } = new Dictionary<string, IReadOnlySet<int>>();
+    public IReadOnlyDictionary<string, IReadOnlySet<int>> AssignedOperationIds { get; private set; } = new Dictionary<string, IReadOnlySet<int>>();
     public string? SuccessMessage { get; private set; }
     public bool ShowCreateDialog { get; private set; }
     public string? ShowEditRoleId { get; private set; }
+    public string? ShowOperationRoleId { get; private set; }
 
     public async Task OnGetAsync() => await LoadRolesAsync();
 
@@ -185,6 +191,57 @@ public sealed class RolesModel : PageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostAssignOperationsAsync()
+    {
+        ModelState.Clear();
+        var role = await _roleManager.FindByIdAsync(OperationAssignment.RoleId);
+        if (role is null)
+        {
+            ModelState.AddModelError(string.Empty, "The selected role no longer exists.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        if (!Guid.TryParse(CompanyId, out var companyId)
+            || role.CompanyId != companyId
+            || !await CanManageCompanyAsync(companyId))
+        {
+            ModelState.AddModelError(string.Empty, "The role does not belong to a company you are allowed to manage.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        ShowOperationRoleId = role.Id;
+        var selectedIds = (OperationAssignment.OperationIds ?? []).Distinct().ToArray();
+        var validIds = await _database.MenuItemOperations
+            .Where(operation => selectedIds.Contains(operation.Id) && operation.MenuItem.CompanyId == companyId)
+            .Select(operation => operation.Id)
+            .ToListAsync(HttpContext.RequestAborted);
+        if (validIds.Count != selectedIds.Length)
+        {
+            ModelState.AddModelError(string.Empty, "One or more selected operations are not part of this company.");
+            await LoadRolesAsync();
+            return Page();
+        }
+
+        var assignments = await _database.RoleOperations
+            .Where(assignment => assignment.RoleId == role.Id)
+            .ToListAsync(HttpContext.RequestAborted);
+        var selectedSet = selectedIds.ToHashSet();
+        _database.RoleOperations.RemoveRange(assignments.Where(assignment => !selectedSet.Contains(assignment.OperationId)));
+        var existingIds = assignments.Select(assignment => assignment.OperationId).ToHashSet();
+        foreach (var operationId in selectedIds.Where(operationId => !existingIds.Contains(operationId)))
+        {
+            _database.RoleOperations.Add(new BlendRoleOperation { RoleId = role.Id, OperationId = operationId });
+        }
+
+        await _database.SaveChangesAsync(HttpContext.RequestAborted);
+        SuccessMessage = $"Operation permissions for role '{role.DisplayName}' saved.";
+        ShowOperationRoleId = null;
+        await LoadRolesAsync();
+        return Page();
+    }
+
     public async Task<IActionResult> OnPostAssignMenuItemsAsync()
     {
         var role = await _roleManager.FindByIdAsync(MenuAssignment.RoleId);
@@ -267,14 +324,33 @@ public sealed class RolesModel : PageModel
             .ThenBy(item => item.Name)
             .Select(item => new MenuItemOption(item.Id, item.Name, item.GroupName))
             .ToListAsync(HttpContext.RequestAborted);
+        Operations = selectedCompanyId is null ? [] : await _database.MenuItemOperations
+            .AsNoTracking()
+            .Where(operation => operation.MenuItem.CompanyId == selectedCompanyId)
+            .OrderBy(operation => operation.MenuItem.SortOrder)
+            .ThenBy(operation => operation.MenuItem.Name)
+            .ThenBy(operation => operation.SortOrder)
+            .Select(operation => new OperationOption(operation.Id, operation.MenuItemId, operation.MenuItem.Name, operation.Name))
+            .ToListAsync(HttpContext.RequestAborted);
         var assignments = await _database.MenuItemRoles
             .AsNoTracking()
+            .Where(assignment => selectedCompanyId != null && assignment.Role.CompanyId == selectedCompanyId)
             .GroupBy(assignment => assignment.RoleId)
             .Select(group => new { RoleId = group.Key, MenuItemIds = group.Select(assignment => assignment.MenuItemId).ToList() })
             .ToListAsync(HttpContext.RequestAborted);
         AssignedMenuItemIds = assignments.ToDictionary(
             assignment => assignment.RoleId,
             assignment => (IReadOnlySet<int>)assignment.MenuItemIds.ToHashSet(),
+            StringComparer.Ordinal);
+        var operationAssignments = await _database.RoleOperations
+            .AsNoTracking()
+            .Where(assignment => selectedCompanyId != null && assignment.Role.CompanyId == selectedCompanyId)
+            .GroupBy(assignment => assignment.RoleId)
+            .Select(group => new { RoleId = group.Key, OperationIds = group.Select(assignment => assignment.OperationId).ToList() })
+            .ToListAsync(HttpContext.RequestAborted);
+        AssignedOperationIds = operationAssignments.ToDictionary(
+            assignment => assignment.RoleId,
+            assignment => (IReadOnlySet<int>)assignment.OperationIds.ToHashSet(),
             StringComparer.Ordinal);
 
         var rows = new List<RoleRow>();
@@ -356,7 +432,14 @@ public sealed class RolesModel : PageModel
         public List<int> MenuItemIds { get; set; } = [];
     }
 
+    public sealed class OperationAssignmentInput
+    {
+        public string RoleId { get; set; } = string.Empty;
+        public List<int> OperationIds { get; set; } = [];
+    }
+
     public sealed record MenuItemOption(int Id, string Name, string GroupName);
+    public sealed record OperationOption(int Id, int MenuItemId, string MenuItemName, string Name);
 
     public sealed class RoleInput
     {

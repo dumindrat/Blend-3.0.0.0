@@ -13,6 +13,8 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
     public DbSet<BlendCompany> Companies => Set<BlendCompany>();
     public DbSet<BlendMenuItem> MenuItems => Set<BlendMenuItem>();
     public DbSet<BlendMenuItemRole> MenuItemRoles => Set<BlendMenuItemRole>();
+    public DbSet<BlendMenuItemOperation> MenuItemOperations => Set<BlendMenuItemOperation>();
+    public DbSet<BlendRoleOperation> RoleOperations => Set<BlendRoleOperation>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -52,6 +54,29 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
                 .WithMany()
                 .HasForeignKey(assignment => assignment.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BlendMenuItemOperation>(entity =>
+        {
+            entity.HasIndex(operation => new { operation.MenuItemId, operation.Key }).IsUnique();
+            entity.HasOne(operation => operation.MenuItem)
+                .WithMany(menuItem => menuItem.Operations)
+                .HasForeignKey(operation => operation.MenuItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BlendRoleOperation>(entity =>
+        {
+            entity.HasKey(assignment => new { assignment.RoleId, assignment.OperationId });
+            entity.HasOne(assignment => assignment.Role)
+                .WithMany()
+                .HasForeignKey(assignment => assignment.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(assignment => assignment.Operation)
+                .WithMany()
+                .HasForeignKey(assignment => assignment.OperationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(assignment => assignment.OperationId);
         });
     }
 }
