@@ -1,19 +1,9 @@
 @page
 @model UsersModel
 @{
-    Layout = null;
+    Layout = "_Layout";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User administration · Blend Operations</title>
-    <link rel="stylesheet" href="~/app.css" />
-    <link rel="stylesheet" href="~/workspace.css" />
-</head>
-<body>
-    <main class="content-area">
+<main class="content-area">
         <section class="panel">
             <div class="panel-kicker">ADMINISTRATION</div>
             <h1>Users</h1>
@@ -156,5 +146,3 @@
             document.getElementById('edit-user-@Model.ShowEditUserId').showModal();
         </script>
     }
-</body>
-</html>

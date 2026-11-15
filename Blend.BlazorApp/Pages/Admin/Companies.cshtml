@@ -1,20 +1,10 @@
 @page
 @model CompaniesModel
 @{
-    Layout = null;
+    Layout = "_Layout";
     var today = DateOnly.FromDateTime(DateTime.UtcNow);
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Companies · Blend Operations</title>
-    <link rel="stylesheet" href="~/app.css" />
-    <link rel="stylesheet" href="~/workspace.css" />
-</head>
-<body>
-    <main class="content-area">
+<main class="content-area">
         <section class="panel">
             <div class="panel-kicker">PLATFORM ADMINISTRATION</div>
             <h1>Companies</h1>
@@ -131,5 +121,3 @@
             document.getElementById('create-company-dialog').showModal();
         </script>
     }
-</body>
-</html>

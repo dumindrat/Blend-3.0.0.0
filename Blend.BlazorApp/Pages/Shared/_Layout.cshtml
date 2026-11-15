@@ -1,0 +1,101 @@
+@using System.Security.Claims
+@using Blend.BlazorApp.Authentication
+@using Microsoft.EntityFrameworkCore
+@inject BlendIdentityDbContext Database
+@{
+    var currentPath = Context.Request.Path.Value ?? "/";
+    var isPlatformAdmin = User.IsInRole(BlendRoles.Admin);
+    var menuItems = new List<BlendMenuItem>();
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var menuQuery = Database.MenuItems.AsNoTracking();
+        if (!isPlatformAdmin)
+        {
+            if (Guid.TryParse(User.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+            {
+                var roleIds = User.FindAll(BlendClaims.RoleId).Select(claim => claim.Value).Distinct(StringComparer.Ordinal).ToArray();
+                menuQuery = menuQuery.Where(item => item.CompanyId == companyId
+                    && roleIds.Length > 0
+                    && Database.MenuItemRoles.Any(assignment => assignment.MenuItemId == item.Id
+                        && roleIds.Contains(assignment.RoleId)
+                        && assignment.Role.CompanyId == companyId));
+            }
+            else
+            {
+                menuQuery = menuQuery.Where(item => false);
+            }
+        }
+
+        menuItems = await menuQuery.OrderBy(item => item.SortOrder).ThenBy(item => item.Name).ToListAsync();
+    }
+
+    var menuGroups = menuItems.GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blend Operations</title>
+    <link rel="stylesheet" href="~/app.css" />
+    <link rel="stylesheet" href="~/workspace.css" />
+</head>
+<body>
+    <div class="app-frame">
+        <aside class="sidebar">
+            <a class="brand" href="/">
+                <span class="brand-mark">B</span>
+                <span><strong>blend</strong><small>Operations suite</small></span>
+            </a>
+            <div class="nav-caption">WORKSPACE</div>
+            <nav class="side-nav" aria-label="Main navigation">
+                <a class="nav-link @(currentPath == "/" ? "active" : null)" href="/"><span class="nav-icon">◫</span>Overview</a>
+                @foreach (var group in menuGroups)
+                {
+                    <div class="nav-caption menu-group-caption">@group.Key</div>
+                    @foreach (var item in group)
+                    {
+                        <a class="nav-link @(string.Equals(currentPath, item.Path, StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                    }
+                }
+                @if (isPlatformAdmin || User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers))
+                {
+                    <a class="nav-link @(currentPath.StartsWith("/Admin/Users", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a>
+                }
+                @if (isPlatformAdmin || User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageRoles))
+                {
+                    <a class="nav-link @(currentPath.StartsWith("/Admin/Roles", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a>
+                }
+                @if (isPlatformAdmin || User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageMenuItems))
+                {
+                    <a class="nav-link @(currentPath.StartsWith("/Admin/MenuItems", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a>
+                }
+                @if (isPlatformAdmin)
+                {
+                    <a class="nav-link @(currentPath.StartsWith("/Admin/Companies", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Admin/Companies"><span class="nav-icon">▦</span>Companies</a>
+                }
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="nav-caption">ACCOUNT</div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    var displayName = User.Identity.Name;
+                    var initials = string.IsNullOrWhiteSpace(displayName) ? "B" : displayName[..1].ToUpperInvariant();
+                    <div class="connection-state"><span class="status-dot"></span> Signed in</div>
+                    <div class="sidebar-user"><span class="avatar">@initials</span><span><strong>@displayName</strong><small>@string.Join(", ", User.FindAll(ClaimTypes.Role).Select(claim => claim.Value))</small></span></div>
+                    <a class="nav-link @(currentPath.StartsWith("/Account/ChangePassword", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Account/ChangePassword">Change password</a>
+                    <a class="nav-link" href="/Account/Logout">Sign out</a>
+                }
+                <div class="sidebar-version">Modern client · .NET 10</div>
+            </div>
+        </aside>
+        <div class="main-shell">
+            <header class="topbar">
+                <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
+                <div class="topbar-right"><span class="live-indicator"></span> Live operations</div>
+            </header>
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>
