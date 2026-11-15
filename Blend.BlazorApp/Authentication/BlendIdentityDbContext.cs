@@ -37,6 +37,10 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
             .IsUnique()
             .HasFilter("[CompanyId] IS NOT NULL");
 
+        builder.Entity<BlendCompany>()
+            .HasIndex(company => company.CompanyNumber)
+            .IsUnique();
+
         builder.Entity<BlendMenuItem>()
             .HasOne(item => item.Company)
             .WithMany()

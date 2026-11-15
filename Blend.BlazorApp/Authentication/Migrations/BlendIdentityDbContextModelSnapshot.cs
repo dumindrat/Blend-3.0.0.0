@@ -40,6 +40,9 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("CompanyNumber")
+                        .HasColumnType("int");
+
                     b.Property<string>("Country")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -67,6 +70,9 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .HasColumnType("date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyNumber")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });

@@ -36,9 +36,20 @@ public sealed class CompaniesModel : PageModel
         ValidateSubscriptionDates();
         if (ModelState.IsValid)
         {
+            await using var transaction = await _database.Database.BeginTransactionAsync(HttpContext.RequestAborted);
+            var companyNumber = await GenerateCompanyNumberAsync();
+            if (companyNumber is null)
+            {
+                await transaction.RollbackAsync(HttpContext.RequestAborted);
+                ModelState.AddModelError(string.Empty, "All four-digit company numbers are in use. No more than 9,000 companies can be assigned a number.");
+                await LoadCompaniesAsync();
+                return Page();
+            }
+
             var company = new BlendCompany
             {
                 Id = Guid.NewGuid(),
+                CompanyNumber = companyNumber.Value,
                 Name = Input.Name,
                 AddressLine1 = Input.AddressLine1,
                 AddressLine2 = Input.AddressLine2,
@@ -50,7 +61,6 @@ public sealed class CompaniesModel : PageModel
                 SubscriptionEndDate = Input.SubscriptionEndDate,
                 IsEnabled = Input.IsEnabled
             };
-            await using var transaction = await _database.Database.BeginTransactionAsync(HttpContext.RequestAborted);
             _database.Companies.Add(company);
             await _database.SaveChangesAsync(HttpContext.RequestAborted);
             var roleCreationErrors = await CreateDefaultRolesAsync(company);
@@ -65,7 +75,7 @@ public sealed class CompaniesModel : PageModel
             else
             {
                 await transaction.CommitAsync(HttpContext.RequestAborted);
-                SuccessMessage = $"Company '{company.Name}' created with Company Admin and User roles.";
+                SuccessMessage = $"Company '{company.Name}' created with company number {company.CompanyNumber}, Company Admin, and User roles.";
                 ShowCreateDialog = false;
                 Input = new CompanyInput { SubscriptionStartDate = DateOnly.FromDateTime(DateTime.UtcNow), SubscriptionEndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1)), IsEnabled = true };
             }
@@ -138,6 +148,23 @@ public sealed class CompaniesModel : PageModel
         }
 
         return errors;
+    }
+
+    private async Task<int?> GenerateCompanyNumberAsync()
+    {
+        var usedNumbers = await _database.Companies
+            .Select(company => company.CompanyNumber)
+            .ToHashSetAsync(HttpContext.RequestAborted);
+        var availableNumbers = Enumerable.Range(1_000, 9_000)
+            .Where(companyNumber => !usedNumbers.Contains(companyNumber))
+            .ToArray();
+        if (availableNumbers.Length == 0)
+        {
+            return null;
+        }
+
+        var index = System.Security.Cryptography.RandomNumberGenerator.GetInt32(availableNumbers.Length);
+        return availableNumbers[index];
     }
 
     private void NormalizeInput()

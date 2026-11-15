@@ -6,6 +6,8 @@ public sealed class BlendCompany
 {
     public Guid Id { get; set; }
 
+    public int CompanyNumber { get; set; }
+
     [Required]
     [StringLength(160)]
     public string Name { get; set; } = string.Empty;
