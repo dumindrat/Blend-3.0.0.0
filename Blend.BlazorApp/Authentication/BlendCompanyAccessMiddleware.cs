@@ -33,11 +33,17 @@ public sealed class BlendCompanyAccessMiddleware
             return;
         }
 
-        var company = await database.Companies
-            .AsNoTracking()
-            .Where(item => item.Id == companyId)
-            .Select(item => new { item.IsEnabled, item.SubscriptionStartDate, item.SubscriptionEndDate })
-            .SingleOrDefaultAsync(context.RequestAborted);
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var hasMembership = userId is not null && await database.UserCompanies.AsNoTracking().AnyAsync(
+            membership => membership.UserId == userId && membership.CompanyId == companyId,
+            context.RequestAborted);
+        var company = hasMembership
+            ? await database.Companies
+                .AsNoTracking()
+                .Where(item => item.Id == companyId)
+                .Select(item => new { item.IsEnabled, item.SubscriptionStartDate, item.SubscriptionEndDate })
+                .SingleOrDefaultAsync(context.RequestAborted)
+            : null;
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         var isActive = company is not null
             && company.IsEnabled
@@ -56,6 +62,7 @@ public sealed class BlendCompanyAccessMiddleware
     private static bool IsAllowedWhenCompanyInactive(PathString path) =>
         path.StartsWithSegments("/Account/Logout", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/Account/CompanyAccessUnavailable", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWithSegments("/Account/SwitchCompany", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/_framework", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/_content", StringComparison.OrdinalIgnoreCase);
 }

@@ -58,6 +58,14 @@
         <header class="topbar">
             <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
             <div class="topbar-right">
+                @if (Companies.Count > 0)
+                {
+                    <form method="post" action="/Account/SwitchCompany" class="company-switcher">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="returnUrl" value="/" />
+                        <label class="module-switcher"><span>COMPANY</span><select name="companyId" aria-label="Select company" onchange="this.form.submit()">@foreach (var company in Companies) { <option value="@company.Id" selected="@(company.Id.ToString("D") == ActiveCompanyId ? "selected" : null)">@company.Name</option> }</select></label>
+                    </form>
+                }
                 @if (Modules.Count > 0)
                 {
                     <label class="module-switcher"><span>MODULE</span><select aria-label="Select module" data-module-selector data-module-storage-key="@ModuleStorageKey">@foreach (var module in Modules) { <option value="@module.Id">@(module.Company is null ? module.Name : $"{module.Company.Name} · {module.Name}")</option> }</select></label>
@@ -91,6 +99,8 @@
 @code {
     private IReadOnlyList<MenuGroup> MenuGroups { get; set; } = [];
     private IReadOnlyList<BlendModule> Modules { get; set; } = [];
+    private IReadOnlyList<BlendCompany> Companies { get; set; } = [];
+    private string? ActiveCompanyId { get; set; }
     private string ModuleStorageKey { get; set; } = "blend-active-module-admin";
 
     protected override async Task OnInitializedAsync()
@@ -103,6 +113,20 @@
         }
 
         var isPlatformAdmin = user.IsInRole(BlendRoles.Admin);
+        ActiveCompanyId = user.FindFirst(BlendClaims.CompanyId)?.Value;
+        if (!isPlatformAdmin && user.FindFirst(ClaimTypes.NameIdentifier)?.Value is { } userId)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            Companies = await Database.UserCompanies.AsNoTracking()
+                .Where(membership => membership.UserId == userId
+                    && membership.Company.IsEnabled
+                    && today >= membership.Company.SubscriptionStartDate
+                    && today <= membership.Company.SubscriptionEndDate)
+                .Select(membership => membership.Company)
+                .OrderBy(company => company.Name)
+                .ToListAsync();
+        }
+
         if (isPlatformAdmin)
         {
             Modules = await Database.Modules.AsNoTracking().Include(module => module.Company)

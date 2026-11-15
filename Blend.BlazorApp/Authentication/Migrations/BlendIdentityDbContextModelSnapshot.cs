@@ -320,6 +320,21 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.ToTable("RoleOperations");
                 });
 
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendUserCompany", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "CompanyId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("UserCompanies");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -525,6 +540,25 @@ namespace Blend.BlazorApp.Authentication.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendUserCompany", b =>
+                {
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendCompany", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Blend.BlazorApp.Authentication.BlendIdentityUser", "User")
+                        .WithMany("CompanyMemberships")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Blend.BlazorApp.Authentication.BlendIdentityRole", null)
@@ -574,6 +608,11 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendIdentityUser", b =>
+                {
+                    b.Navigation("CompanyMemberships");
                 });
 
             modelBuilder.Entity("Blend.BlazorApp.Authentication.BlendMenuItem", b =>

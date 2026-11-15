@@ -8,4 +8,5 @@ public sealed class BlendIdentityUser : IdentityUser
     public bool MustChangePassword { get; set; }
     public Guid? CompanyId { get; set; }
     public BlendCompany? Company { get; set; }
+    public ICollection<BlendUserCompany> CompanyMemberships { get; set; } = new List<BlendUserCompany>();
 }
