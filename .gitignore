@@ -18,3 +18,8 @@
 /Blend.WebApp/bin
 /Blend.WebApp/obj/Debug
 /packages
+/Blend.BuisnessEntities/bin/Debug/Blend.BuisnessEntities.dll
+/Blend.BuisnessEntities/bin/Debug/Blend.BuisnessEntities.pdb
+/Blend.BuisnessEntities/obj/Debug/Blend.BuisnessEntities.csproj.AssemblyReference.cache
+/Blend.BuisnessEntities/obj/Debug/Blend.BuisnessEntities.dll
+/Blend.BuisnessEntities/obj/Debug/Blend.BuisnessEntities.pdb
