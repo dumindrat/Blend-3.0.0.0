@@ -7,22 +7,18 @@
     var isPlatformAdmin = User.IsInRole(BlendRoles.Admin);
     var companyIdValue = User.FindFirst(BlendClaims.CompanyId)?.Value;
     var moduleStorageKey = isPlatformAdmin ? "blend-active-module-admin" : $"blend-active-module-{companyIdValue ?? "none"}";
+    var isAdminPage = currentPath.StartsWith("/Admin/", StringComparison.OrdinalIgnoreCase);
     var modules = new List<BlendModule>();
     var menuItems = new List<BlendMenuItem>();
-    var companies = new List<BlendCompany>();
+    string? workingCompanyName = null;
     if (User.Identity?.IsAuthenticated == true)
     {
-        if (!isPlatformAdmin && User.FindFirst(ClaimTypes.NameIdentifier)?.Value is { } userId)
+        if (Guid.TryParse(companyIdValue, out var activeCompanyId))
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            companies = await Database.UserCompanies.AsNoTracking()
-                .Where(membership => membership.UserId == userId
-                    && membership.Company.IsEnabled
-                    && today >= membership.Company.SubscriptionStartDate
-                    && today <= membership.Company.SubscriptionEndDate)
-                .Select(membership => membership.Company)
-                .OrderBy(company => company.Name)
-                .ToListAsync();
+            workingCompanyName = await Database.Companies.AsNoTracking()
+                .Where(company => company.Id == activeCompanyId)
+                .Select(company => company.Name)
+                .SingleOrDefaultAsync();
         }
 
         var moduleQuery = Database.Modules.AsNoTracking();
@@ -119,6 +115,7 @@
                     var initials = string.IsNullOrWhiteSpace(displayName) ? "B" : displayName[..1].ToUpperInvariant();
                     <div class="connection-state"><span class="status-dot"></span> Signed in</div>
                     <div class="sidebar-user"><span class="avatar">@initials</span><span><strong>@displayName</strong><small>@string.Join(", ", User.FindAll(ClaimTypes.Role).Select(claim => claim.Value))</small></span></div>
+                    <a class="nav-link @(currentPath.StartsWith("/Account/WorkingCompany", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Account/WorkingCompany">Working company</a>
                     <a class="nav-link @(currentPath.StartsWith("/Account/ChangePassword", StringComparison.OrdinalIgnoreCase) ? "active" : null)" href="/Account/ChangePassword">Change password</a>
                     <a class="nav-link" href="/Account/Logout">Sign out</a>
                 }
@@ -129,12 +126,16 @@
             <header class="topbar">
                 <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
                 <div class="topbar-right">
-                    @if (companies.Count > 0)
+                    @if (!isAdminPage && !string.IsNullOrWhiteSpace(workingCompanyName))
                     {
-                        <form method="post" asp-page="/Account/SwitchCompany" class="company-switcher">
-                            <input type="hidden" name="returnUrl" value="@($"{currentPath}{Context.Request.QueryString}")" />
-                            <label class="module-switcher"><span>COMPANY</span><select name="companyId" aria-label="Select company" onchange="this.form.submit()">@foreach (var company in companies) { <option value="@company.Id" selected="@(company.Id.ToString("D") == companyIdValue ? "selected" : null)">@company.Name</option> }</select></label>
-                        </form>
+                        <div class="working-company-display">
+                            <span>WORKING COMPANY</span>
+                            <strong>@workingCompanyName</strong>
+                            @if (!currentPath.StartsWith("/Account/WorkingCompany", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a href="/Account/WorkingCompany">Change</a>
+                            }
+                        </div>
                     }
                     @if (modules.Count > 0)
                     {

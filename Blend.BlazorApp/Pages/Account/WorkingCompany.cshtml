@@ -1,0 +1,44 @@
+@page
+@model Blend.BlazorApp.Pages.Account.WorkingCompanyModel
+@{
+    Layout = "_Layout";
+}
+<main class="content-area">
+    <section class="panel working-company-page">
+        <div class="panel-kicker">ACCOUNT</div>
+        <h1>Working company</h1>
+        <p class="muted">Choose the company to use when you sign in. Your role and workspace will be based on this company.</p>
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success" role="status">@Model.SuccessMessage</div>
+        }
+        <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
+        @if (Model.Companies.Count == 0)
+        {
+            <p class="company-empty-state">Your account is not assigned to any companies. Contact an administrator.</p>
+        }
+        else
+        {
+            <form method="post" class="working-company-form">
+                @foreach (var company in Model.Companies)
+                {
+                    var isSelected = Model.SelectedCompanyId == company.Id;
+                    <label class="working-company-option @(isSelected ? "is-selected" : null) @(company.IsAvailable ? null : "is-unavailable")">
+                        <input type="radio" asp-for="SelectedCompanyId" value="@company.Id" disabled="@(!company.IsAvailable)" />
+                        <span class="working-company-details">
+                            <strong>@company.Name</strong>
+                            <small>@(company.IsWorkingCompany ? "Current working company" : company.IsAvailable ? "Available" : "Access unavailable - subscription inactive or company disabled")</small>
+                        </span>
+                        @if (company.IsWorkingCompany)
+                        {
+                            <span class="working-company-badge">CURRENT</span>
+                        }
+                    </label>
+                }
+                <div class="modal-actions working-company-actions">
+                    <button class="button button-primary" type="submit" disabled="@(Model.Companies.All(company => !company.IsAvailable))">Set working company</button>
+                </div>
+            </form>
+        }
+    </section>
+</main>

@@ -30,25 +30,35 @@ public sealed class BlendUserClaimsPrincipalFactory : UserClaimsPrincipalFactory
         var requestedCompany = pendingCompanyId?.ToString("D")
             ?? httpContext?.User.FindFirst(BlendClaims.CompanyId)?.Value;
         var companyId = Guid.TryParse(requestedCompany, out var selectedCompanyId)
-            && await HasMembershipAsync(user.Id, selectedCompanyId)
+            && await CanUseCompanyAsync(user, selectedCompanyId)
                 ? selectedCompanyId
-                : user.CompanyId;
+                : user.WorkingCompanyId is { } workingCompanyId
+                    && await CanUseCompanyAsync(user, workingCompanyId)
+                        ? workingCompanyId
+                        : user.CompanyId;
         return await GenerateClaimsAsync(user, companyId);
     }
 
     public async Task<ClaimsPrincipal> CreatePrincipalAsync(BlendIdentityUser user, Guid companyId)
     {
-        if (!await HasMembershipAsync(user.Id, companyId))
+        if (!await CanUseCompanyAsync(user, companyId))
         {
-            throw new InvalidOperationException("The user does not belong to the selected company.");
+            throw new InvalidOperationException("The user is not entitled to use the selected company.");
         }
 
         return new ClaimsPrincipal(await GenerateClaimsAsync(user, companyId));
     }
 
-    private async Task<bool> HasMembershipAsync(string userId, Guid companyId) =>
-        await _database.UserCompanies.AsNoTracking().AnyAsync(
-            membership => membership.UserId == userId && membership.CompanyId == companyId);
+    private async Task<bool> CanUseCompanyAsync(BlendIdentityUser user, Guid companyId)
+    {
+        if (await UserManager.IsInRoleAsync(user, BlendRoles.Admin))
+        {
+            return await _database.Companies.AsNoTracking().AnyAsync(company => company.Id == companyId);
+        }
+
+        return await _database.UserCompanies.AsNoTracking().AnyAsync(
+            membership => membership.UserId == user.Id && membership.CompanyId == companyId);
+    }
 
     private async Task<ClaimsIdentity> GenerateClaimsAsync(BlendIdentityUser user, Guid? companyId)
     {

@@ -302,9 +302,13 @@ public sealed class UsersModel : PageModel
         var fallbackCompanyId = selectedMemberships
             .FirstOrDefault(membership => membership.CompanyId == user.CompanyId)?.CompanyId
             ?? selectedMemberships[0].CompanyId;
-        if (user.CompanyId != fallbackCompanyId)
+        var fallbackWorkingCompanyId = selectedMemberships
+            .FirstOrDefault(membership => membership.CompanyId == user.WorkingCompanyId)?.CompanyId
+            ?? fallbackCompanyId;
+        if (user.CompanyId != fallbackCompanyId || user.WorkingCompanyId != fallbackWorkingCompanyId)
         {
             user.CompanyId = fallbackCompanyId;
+            user.WorkingCompanyId = fallbackWorkingCompanyId;
             var updateUserResult = await _userManager.UpdateAsync(user);
             if (!updateUserResult.Succeeded)
             {

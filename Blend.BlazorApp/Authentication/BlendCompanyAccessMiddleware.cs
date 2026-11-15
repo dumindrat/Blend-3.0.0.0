@@ -62,7 +62,7 @@ public sealed class BlendCompanyAccessMiddleware
     private static bool IsAllowedWhenCompanyInactive(PathString path) =>
         path.StartsWithSegments("/Account/Logout", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/Account/CompanyAccessUnavailable", StringComparison.OrdinalIgnoreCase)
-        || path.StartsWithSegments("/Account/SwitchCompany", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWithSegments("/Account/WorkingCompany", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/_framework", StringComparison.OrdinalIgnoreCase)
         || path.StartsWithSegments("/_content", StringComparison.OrdinalIgnoreCase);
 }

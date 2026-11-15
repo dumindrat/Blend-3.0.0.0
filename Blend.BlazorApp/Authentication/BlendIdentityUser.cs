@@ -7,6 +7,7 @@ public sealed class BlendIdentityUser : IdentityUser
     public string DisplayName { get; set; } = string.Empty;
     public bool MustChangePassword { get; set; }
     public Guid? CompanyId { get; set; }
+    public Guid? WorkingCompanyId { get; set; }
     public BlendCompany? Company { get; set; }
     public ICollection<BlendUserCompany> CompanyMemberships { get; set; } = new List<BlendUserCompany>();
 }

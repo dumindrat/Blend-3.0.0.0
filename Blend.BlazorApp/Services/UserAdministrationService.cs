@@ -60,19 +60,37 @@ public sealed class UserAdministrationService : IUserAdministrationService
                 return Failure("This user already has access to the selected company.");
             }
 
+            await using var transaction = await _database.Database.BeginTransactionAsync(cancellationToken);
             _database.UserCompanies.Add(new BlendUserCompany { UserId = user.Id, CompanyId = companyId });
             await _database.SaveChangesAsync(cancellationToken);
+
             var addExistingRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
             if (!addExistingRoleResult.Succeeded)
             {
-                _database.UserCompanies.Remove(new BlendUserCompany { UserId = user.Id, CompanyId = companyId });
-                await _database.SaveChangesAsync(cancellationToken);
+                await transaction.RollbackAsync(cancellationToken);
+                _database.ChangeTracker.Clear();
                 return new UserAdministrationResult
                 {
                     Errors = addExistingRoleResult.Errors.Select(error => error.Description).ToArray()
                 };
             }
 
+            if (user.WorkingCompanyId is null)
+            {
+                user.WorkingCompanyId = companyId;
+                var updateUserResult = await _userManager.UpdateAsync(user);
+                if (!updateUserResult.Succeeded)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    _database.ChangeTracker.Clear();
+                    return new UserAdministrationResult
+                    {
+                        Errors = updateUserResult.Errors.Select(error => error.Description).ToArray()
+                    };
+                }
+            }
+
+            await transaction.CommitAsync(cancellationToken);
             return new UserAdministrationResult { Succeeded = true, IsExistingUser = true };
         }
 
@@ -87,6 +105,7 @@ public sealed class UserAdministrationService : IUserAdministrationService
             Email = email,
             DisplayName = displayName,
             CompanyId = companyId,
+            WorkingCompanyId = companyId,
             MustChangePassword = true
         };
         var temporaryPassword = GenerateTemporaryPassword();

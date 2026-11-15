@@ -4,6 +4,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject BlendIdentityDbContext Database
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <div class="app-frame">
     <aside class="sidebar">
@@ -47,6 +48,7 @@
                 <Authorized Context="authState">
                     <div class="connection-state"><span class="status-dot"></span> Signed in</div>
                     <div class="sidebar-user"><span class="avatar">@Initials(authState.User.Identity?.Name)</span><span><strong>@authState.User.Identity?.Name</strong><small>@string.Join(", ", authState.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(claim => claim.Value))</small></span></div>
+                    <a class="nav-link @(IsWorkingCompanyPage ? "active" : null)" href="/Account/WorkingCompany">Working company</a>
                     <a class="nav-link" href="/Account/ChangePassword">Change password</a>
                     <a class="nav-link" href="/Account/Logout">Sign out</a>
                 </Authorized>
@@ -58,13 +60,13 @@
         <header class="topbar">
             <div><span class="breadcrumb-muted">Blend</span><span class="breadcrumb-divider">/</span><strong>Workspace</strong></div>
             <div class="topbar-right">
-                @if (Companies.Count > 0)
+                @if (!IsAdminPage && !string.IsNullOrWhiteSpace(ActiveCompanyName))
                 {
-                    <form method="post" action="/Account/SwitchCompany" class="company-switcher">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="returnUrl" value="/" />
-                        <label class="module-switcher"><span>COMPANY</span><select name="companyId" aria-label="Select company" onchange="this.form.submit()">@foreach (var company in Companies) { <option value="@company.Id" selected="@(company.Id.ToString("D") == ActiveCompanyId ? "selected" : null)">@company.Name</option> }</select></label>
-                    </form>
+                    <div class="working-company-display">
+                        <span>WORKING COMPANY</span>
+                        <strong>@ActiveCompanyName</strong>
+                        <a href="/Account/WorkingCompany">Change</a>
+                    </div>
                 }
                 @if (Modules.Count > 0)
                 {
@@ -99,9 +101,11 @@
 @code {
     private IReadOnlyList<MenuGroup> MenuGroups { get; set; } = [];
     private IReadOnlyList<BlendModule> Modules { get; set; } = [];
-    private IReadOnlyList<BlendCompany> Companies { get; set; } = [];
-    private string? ActiveCompanyId { get; set; }
+    private string? ActiveCompanyName { get; set; }
     private string ModuleStorageKey { get; set; } = "blend-active-module-admin";
+    private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', 2)[0];
+    private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
+    private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,18 +117,12 @@
         }
 
         var isPlatformAdmin = user.IsInRole(BlendRoles.Admin);
-        ActiveCompanyId = user.FindFirst(BlendClaims.CompanyId)?.Value;
-        if (!isPlatformAdmin && user.FindFirst(ClaimTypes.NameIdentifier)?.Value is { } userId)
+        if (Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var activeCompanyId))
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            Companies = await Database.UserCompanies.AsNoTracking()
-                .Where(membership => membership.UserId == userId
-                    && membership.Company.IsEnabled
-                    && today >= membership.Company.SubscriptionStartDate
-                    && today <= membership.Company.SubscriptionEndDate)
-                .Select(membership => membership.Company)
-                .OrderBy(company => company.Name)
-                .ToListAsync();
+            ActiveCompanyName = await Database.Companies.AsNoTracking()
+                .Where(company => company.Id == activeCompanyId)
+                .Select(company => company.Name)
+                .SingleOrDefaultAsync();
         }
 
         if (isPlatformAdmin)

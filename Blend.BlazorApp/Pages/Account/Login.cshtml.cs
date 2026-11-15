@@ -66,7 +66,8 @@ public sealed class LoginModel : PageModel
                     && membership.Company.IsEnabled
                     && today >= membership.Company.SubscriptionStartDate
                     && today <= membership.Company.SubscriptionEndDate)
-                .OrderBy(membership => membership.CompanyId == user.CompanyId ? 0 : 1)
+                .OrderBy(membership => membership.CompanyId == user.WorkingCompanyId ? 0 : 1)
+                .ThenBy(membership => membership.CompanyId == user.CompanyId ? 0 : 1)
                 .ThenBy(membership => membership.Company.Name)
                 .Select(membership => membership.Company)
                 .FirstOrDefaultAsync(HttpContext.RequestAborted);
@@ -74,6 +75,21 @@ public sealed class LoginModel : PageModel
             {
                 ModelState.AddModelError(string.Empty, "Company access is unavailable. Contact your administrator.");
                 return Page();
+            }
+
+            if (user.WorkingCompanyId != activeCompany.Id)
+            {
+                user.WorkingCompanyId = activeCompany.Id;
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var error in updateResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return Page();
+                }
             }
 
             HttpContext.Items[BlendClaims.PendingCompanyId] = activeCompany.Id;
