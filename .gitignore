@@ -36,3 +36,7 @@
 /Blend.BusinessService/obj
 /Blend.BusinessService.Tests/bin
 /Blend.BusinessService.Tests/obj
+/Blend.BlazorApp.Tests/bin/Debug/net10.0
+/Blend.BlazorApp.Tests/obj
+/Blend.BuisnessEntities/obj/Debug/Blend.BuisnessEntities.csproj.FileListAbsolute.txt
+/Blend.BuisnessEntities/obj/Debug/Blend.BuisnessEntities.csproj.CoreCompileInputs.cache

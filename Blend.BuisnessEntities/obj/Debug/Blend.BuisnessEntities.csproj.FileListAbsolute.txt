@@ -1,6 +1,0 @@
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\bin\Debug\Blend.BuisnessEntities.dll
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\bin\Debug\Blend.BuisnessEntities.pdb
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\obj\Debug\Blend.BuisnessEntities.csproj.AssemblyReference.cache
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\obj\Debug\Blend.BuisnessEntities.csproj.CoreCompileInputs.cache
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\obj\Debug\Blend.BuisnessEntities.dll
-C:\Users\dumin\source\repos\Blend-2.0.0x\Blend.BuisnessEntities\obj\Debug\Blend.BuisnessEntities.pdb

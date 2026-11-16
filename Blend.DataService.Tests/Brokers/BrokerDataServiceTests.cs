@@ -125,6 +125,41 @@ public sealed class BrokerDataServiceTests
     }
 
     [TestMethod]
+    public void GetBrokerById_WhenMapperReturnsNull_ReturnsNull()
+    {
+        var mapper = new RecordingStoredProcedureMapper();
+        var service = new BrokerDataService(mapper);
+
+        Assert.IsNull(service.GetBrokerById(999));
+        Assert.AreEqual("trn_BrokerGetById", mapper.ProcedureName);
+        Assert.AreEqual(999, Parameter<int>(mapper.Parameters, "BrokerId"));
+    }
+
+    [TestMethod]
+    public void GetAllBrokers_OnlyLowercaseAllIsConvertedToEmptySearch()
+    {
+        var mapper = new RecordingStoredProcedureMapper();
+        var service = new BrokerDataService(mapper);
+
+        service.GetAllBrokers("ALL", 3);
+
+        Assert.AreEqual("ALL", Parameter<string>(mapper.Parameters, "serachstring"));
+    }
+
+    [TestMethod]
+    public void Operations_PropagateMapperExceptions()
+    {
+        var expected = new InvalidOperationException("Database failure.");
+        var service = new BrokerDataService(new RecordingStoredProcedureMapper { Exception = expected });
+
+        Assert.AreSame(expected, Assert.ThrowsExactly<InvalidOperationException>(() => service.GetBrokerById(1)));
+        Assert.AreSame(expected, Assert.ThrowsExactly<InvalidOperationException>(() => service.GetAllBrokers("all", 2)));
+        Assert.AreSame(expected, Assert.ThrowsExactly<InvalidOperationException>(() => service.CreateBroker(new BrokerRecord())));
+        Assert.AreSame(expected, Assert.ThrowsExactly<InvalidOperationException>(() => service.UpdateBroker(new BrokerRecord())));
+        Assert.AreSame(expected, Assert.ThrowsExactly<InvalidOperationException>(() => service.DeleteBroker(1)));
+    }
+
+    [TestMethod]
     public void Constructor_RejectsNullMapper()
     {
         Assert.ThrowsExactly<ArgumentNullException>(() => new BrokerDataService(null!));
@@ -144,6 +179,7 @@ public sealed class BrokerDataServiceTests
         public object? Parameters { get; private set; }
         public BrokerRecord? SingleResult { get; init; }
         public IReadOnlyList<BrokerRecord> Rows { get; init; } = Array.Empty<BrokerRecord>();
+        public Exception? Exception { get; init; }
 
         public T? QuerySingleOrDefault<T>(string procedureName, object? parameters = null) where T : class
         {
@@ -165,6 +201,11 @@ public sealed class BrokerDataServiceTests
 
         private void Record(string procedureName, object? parameters)
         {
+            if (Exception is not null)
+            {
+                throw Exception;
+            }
+
             ProcedureName = procedureName;
             Parameters = parameters;
         }
