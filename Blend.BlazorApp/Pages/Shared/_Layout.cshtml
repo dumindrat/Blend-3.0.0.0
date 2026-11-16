@@ -133,6 +133,10 @@
                         <label class="module-switcher"><span>MODULE</span><select aria-label="Select module" data-module-selector data-module-storage-key="@moduleStorageKey">@foreach (var module in modules) { <option value="@module.Id">@(module.Company is null ? module.Name : $"{module.Company.Name} · {module.Name}")</option> }</select></label>
                     }
                     <span class="live-indicator"></span> Live operations
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="topbar-user"><span>Signed in as</span><strong>@User.Identity.Name</strong></div>
+                    }
                 </div>
             </header>
             @RenderBody()

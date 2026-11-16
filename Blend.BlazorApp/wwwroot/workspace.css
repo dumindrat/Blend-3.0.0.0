@@ -44,6 +44,9 @@ a { color: inherit; text-decoration: none; }
 .breadcrumb-muted { color: #949bad; }
 .breadcrumb-divider { padding: 0 12px; color: #bbc0cc; }
 .topbar-right { display: flex; align-items: center; gap: 12px; color: #6b7488; font-size: 11px; }
+.topbar-user { display: flex; min-width: 0; align-items: baseline; gap: 6px; padding-left: 12px; border-left: 1px solid #e8eaf0; }
+.topbar-user span { white-space: nowrap; }
+.topbar-user strong { max-width: 200px; overflow: hidden; color: #353e52; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .working-company-display { display: flex; align-items: baseline; gap: 9px; padding-right: 12px; border-right: 1px solid #e8eaf0; }
 .working-company-display span { color: #70798d; font-size: 9px; font-weight: 700; letter-spacing: .8px; }
 .working-company-display strong { color: #353e52; font-size: 12px; }
@@ -353,6 +356,11 @@ a { color: inherit; text-decoration: none; }
     .signin-story-footer { margin-top: 18px; }
 }
 @media (max-width: 760px) { .sidebar { position: static; width: auto; height: auto; padding: 13px 15px; } .brand { padding: 0; } .sidebar .nav-caption, .sidebar .side-nav, .sidebar-bottom { display: none; } .main-shell { margin: 0; } .topbar { height: 52px; padding: 0 18px; } .content-area { padding: 25px 16px; } .page-heading { align-items: flex-start; flex-direction: column; } .heading-actions { width: 100%; } .stat-grid { grid-template-columns: 1fr; } .stat-card { padding: 14px 17px; } .panel-header { align-items: flex-start; flex-direction: column; } .search-box { width: 100%; min-width: 0; } .welcome-layout { min-height: 0; grid-template-columns: 1fr; gap: 25px; padding: 40px 0; } .welcome-copy h1 { font-size: 34px; } .welcome-copy > p { font-size: 12px; } .login-card { width: 100%; } .company-page { margin: 30px auto; } .table-footer span { display: none; } }
+@media (max-width: 760px) {
+    .topbar { height: auto; min-height: 52px; flex-wrap: wrap; gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+    .topbar-right { flex-wrap: wrap; justify-content: flex-end; }
+    .topbar-user strong { max-width: 140px; }
+}
 @media (max-width: 520px) {
     .signin-page { width: min(100% - 28px, 440px); gap: 26px; padding: 14px 0 28px; }
     .signin-story { padding: 22px; border-radius: 18px; }

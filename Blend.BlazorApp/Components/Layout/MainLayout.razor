@@ -74,6 +74,11 @@
                     <label class="module-switcher"><span>MODULE</span><select aria-label="Select module" data-module-selector data-module-storage-key="@ModuleStorageKey">@foreach (var module in Modules) { <option value="@module.Id">@(module.Company is null ? module.Name : $"{module.Company.Name} · {module.Name}")</option> }</select></label>
                 }
                 <span class="live-indicator"></span> Live operations
+                <AuthorizeView>
+                    <Authorized Context="authState">
+                        <div class="topbar-user"><span>Signed in as</span><strong>@authState.User.Identity?.Name</strong></div>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </header>
         <main class="content-area">@Body</main>
