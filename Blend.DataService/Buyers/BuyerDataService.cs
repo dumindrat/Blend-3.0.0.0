@@ -16,7 +16,7 @@ namespace Blend.DataService.Buyers
         public IReadOnlyList<BuyerRecord> GetAllBuyers(string searchText, int companyId)
         {
             var searchBy = searchText == "all" ? string.Empty : searchText;
-            return _mapper.Query<BuyerRecord>("trn_BuyerGet", new { Name = searchBy, CompanyId = companyId });
+            return _mapper.Query<BuyerRecord>("trn_BuyerGet", new { serachstring = searchBy, CompanyId = companyId });
         }
 
         public bool CreateBuyer(BuyerRecord buyer)

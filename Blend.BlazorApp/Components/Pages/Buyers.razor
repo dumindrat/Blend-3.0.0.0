@@ -25,12 +25,9 @@
             <p class="muted">Manage buyers for @CompanyName.</p>
         }
     </div>
-    @if (CanCreate)
-    {
-        <div class="heading-actions">
-            <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@IsBusy">Add buyer</button>
-        </div>
-    }
+    <div class="heading-actions">
+        <button class="button button-primary @(!CanCreate ? "broker-permission-denied" : null)" type="button" @onclick="BeginCreate" disabled="@(IsLoading || PageMessage is not null || IsBusy || !CanCreate)">Add buyer</button>
+    </div>
 </div>
 
 @if (IsLoading)
@@ -160,10 +157,7 @@ else
                             <th scope="col">BUYER</th>
                             <th scope="col">EMAIL</th>
                             <th scope="col">ADDRESS</th>
-                            @if (CanEdit || CanDelete)
-                            {
-                                <th scope="col" class="actions-heading">ACTIONS</th>
-                            }
+                            <th scope="col" class="actions-heading">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -175,19 +169,10 @@ else
                                 <td>@(buyer.BuyerName ?? "-")</td>
                                 <td>@(buyer.Email ?? "-")</td>
                                 <td>@(buyer.Address ?? "-")</td>
-                                @if (CanEdit || CanDelete)
-                                {
-                                    <td class="row-actions">
-                                        @if (CanEdit)
-                                        {
-                                            <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(buyer)" disabled="@IsBusy">Edit</button>
-                                        }
-                                        @if (CanDelete)
-                                        {
-                                            <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(buyer)" disabled="@IsBusy">Delete</button>
-                                        }
-                                    </td>
-                                }
+                                <td class="row-actions">
+                                    <button class="button button-quiet button-small @(!CanEdit ? "broker-permission-denied" : null)" type="button" @onclick="() => BeginEdit(buyer)" disabled="@(IsBusy || !CanEdit)">Edit</button>
+                                    <button class="button button-danger-quiet button-small @(!CanDelete ? "broker-permission-denied" : null)" type="button" @onclick="() => BeginDelete(buyer)" disabled="@(IsBusy || !CanDelete)">Delete</button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -422,7 +407,7 @@ else
         {
             BuyerCode = buyer.BuyerCode ?? string.Empty,
             BuyerName = buyer.BuyerName ?? string.Empty,
-            Email = buyer.Email ?? string.Empty,
+            Email = string.IsNullOrWhiteSpace(buyer.Email) ? null : buyer.Email,
             Address = buyer.Address ?? string.Empty
         };
         IsEditorOpen = true;
@@ -635,7 +620,7 @@ else
             catch (SqlException exception) when (exception.Errors.Cast<SqlError>().Any(error => error.Number == 547))
             {
                 Logger.LogWarning(exception, "Buyer {BuyerId} could not be deleted due to a database constraint for mapping ID {CompanyMappingId}.", buyerToDelete.BuyerId, CompanyMappingId);
-                ErrorMessage = "This buyer cannot be deleted because it is referenced by other records, such as contracts. Remove or reassign those references before trying again.";
+                ErrorMessage = "This buyer cannot be deleted because it is referenced by other records. Remove or reassign those references before trying again.";
                 return;
             }
 
@@ -712,7 +697,7 @@ else
         _ => false
     };
 
-    private static string? Clean(string value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
 
@@ -728,9 +713,15 @@ else
         [Display(Name = "Buyer name")]
         public string BuyerName { get; set; } = string.Empty;
 
+        private string? _email;
+
         [StringLength(45)]
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public string? Email
+        {
+            get => _email;
+            set => _email = string.IsNullOrWhiteSpace(value) ? null : value;
+        }
 
         [StringLength(100)]
         public string Address { get; set; } = string.Empty;

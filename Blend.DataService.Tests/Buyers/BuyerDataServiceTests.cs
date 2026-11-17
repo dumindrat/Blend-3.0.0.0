@@ -8,7 +8,7 @@ namespace Blend.DataService.Tests.Buyers;
 public sealed class BuyerDataServiceTests
 {
     [TestMethod]
-    public void GetAllBuyers_AllSearchUsesEmptyNameAndCompanyId()
+    public void GetAllBuyers_AllSearchUsesEmptySearchParameterAndCompanyId()
     {
         var expected = new List<BuyerRecord> { new() { BuyerId = 4 } };
         var mapper = new RecordingMapper { Rows = expected };
@@ -17,7 +17,7 @@ public sealed class BuyerDataServiceTests
 
         Assert.AreSame(expected, actual);
         Assert.AreEqual("trn_BuyerGet", mapper.ProcedureName);
-        Assert.AreEqual(string.Empty, Parameter<string>(mapper.Parameters, "Name"));
+        Assert.AreEqual(string.Empty, Parameter<string>(mapper.Parameters, "serachstring"));
         Assert.AreEqual(2, Parameter<int>(mapper.Parameters, "CompanyId"));
     }
 
