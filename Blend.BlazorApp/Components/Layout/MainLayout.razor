@@ -14,18 +14,16 @@
         </a>
         <div class="nav-caption">WORKSPACE</div>
         <nav class="side-nav" aria-label="Main navigation">
-            <a class="nav-link active" href="/"><span class="nav-icon">◫</span>Overview</a>
+            <a class="nav-link @(string.IsNullOrEmpty(CurrentPath) ? "active" : null)" href="/"><span class="nav-icon">◫</span>Overview</a>
             <AuthorizeView>
                 <Authorized>
-                    <a class="nav-link @(IsBrokersPage ? "active" : null)" href="/Brokers"><span class="nav-icon">▤</span>Brokers</a>
-                    <a class="nav-link @(IsBuyersPage ? "active" : null)" href="/Buyers"><span class="nav-icon">▤</span>Buyers</a>
                     @foreach (var group in MenuGroups)
                     {
                         <div class="module-nav-group" data-module-group data-module-id="@group.ModuleId">
                             <div class="nav-caption menu-group-caption">@group.Name</div>
                             @foreach (var item in group.Items)
                             {
-                                <a class="nav-link" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                                <a class="nav-link @(IsMenuItemActive(item.Path) ? "active" : null)" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
                             }
                         </div>
                     }
@@ -135,8 +133,7 @@
     private string CurrentPath => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', 2)[0];
     private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
     private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
-    private bool IsBrokersPage => CurrentPath.Equals("Brokers", StringComparison.OrdinalIgnoreCase);
-    private bool IsBuyersPage => CurrentPath.Equals("Buyers", StringComparison.OrdinalIgnoreCase);
+    private bool IsMenuItemActive(string path) => string.Equals(CurrentPath.TrimEnd('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
