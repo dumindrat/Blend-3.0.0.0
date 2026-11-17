@@ -25,12 +25,9 @@
             <p class="muted">Manage brokers for @CompanyName.</p>
         }
     </div>
-    @if (CanCreate)
-    {
-        <div class="heading-actions">
-            <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@IsBusy">Add broker</button>
-        </div>
-    }
+    <div class="heading-actions">
+        <button class="button button-primary @(!CanCreate ? "broker-permission-denied" : null)" type="button" @onclick="BeginCreate" disabled="@(IsLoading || PageMessage is not null || IsBusy || !CanCreate)">Add broker</button>
+    </div>
 </div>
 
 @if (IsLoading)
@@ -172,10 +169,7 @@ else
                             <th scope="col">PHONE</th>
                             <th scope="col">EMAIL</th>
                             <th scope="col">ADDRESS</th>
-                            @if (CanEdit || CanDelete)
-                            {
-                                <th scope="col" class="actions-heading">ACTIONS</th>
-                            }
+                            <th scope="col" class="actions-heading">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -189,19 +183,10 @@ else
                                 <td>@(broker.Tel ?? "-")</td>
                                 <td>@(broker.Email ?? "-")</td>
                                 <td>@(broker.Address ?? "-")</td>
-                                @if (CanEdit || CanDelete)
-                                {
-                                    <td class="row-actions">
-                                        @if (CanEdit)
-                                        {
-                                            <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(broker)" disabled="@IsBusy">Edit</button>
-                                        }
-                                        @if (CanDelete)
-                                        {
-                                            <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(broker)" disabled="@IsBusy">Delete</button>
-                                        }
-                                    </td>
-                                }
+                                <td class="row-actions">
+                                    <button class="button button-quiet button-small @(!CanEdit ? "broker-permission-denied" : null)" type="button" @onclick="() => BeginEdit(broker)" disabled="@(IsBusy || !CanEdit)">Edit</button>
+                                    <button class="button button-danger-quiet button-small @(!CanDelete ? "broker-permission-denied" : null)" type="button" @onclick="() => BeginDelete(broker)" disabled="@(IsBusy || !CanDelete)">Delete</button>
+                                </td>
                             </tr>
                         }
                     </tbody>

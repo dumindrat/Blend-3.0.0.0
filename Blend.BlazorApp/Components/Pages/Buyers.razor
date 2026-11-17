@@ -1,0 +1,738 @@
+@page "/Buyers"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Microsoft.Data.SqlClient
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Buyers
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IBuyerService BuyerService
+@inject ILogger<Buyers> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Buyers</PageTitle>
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">BUSINESS DIRECTORY</span>
+        <h1>Buyers</h1>
+        @if (CompanyName is not null)
+        {
+            <p class="muted">Manage buyers for @CompanyName.</p>
+        }
+    </div>
+    @if (CanCreate)
+    {
+        <div class="heading-actions">
+            <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@IsBusy">Add buyer</button>
+        </div>
+    }
+</div>
+
+@if (IsLoading)
+{
+    <section class="panel loading-state"><span class="spinner"></span>Loading buyers...</section>
+}
+else if (PageMessage is not null)
+{
+    <section class="panel empty-state">
+        <div class="empty-icon" aria-hidden="true">!</div>
+        <strong>@PageMessage</strong>
+        <p>Select an active working company to view its buyer records.</p>
+        <a class="button button-quiet" href="/Account/WorkingCompany">Choose working company</a>
+    </section>
+}
+else
+{
+    @if (ErrorMessage is not null && !IsEditorOpen && PendingDeleteBuyer is null)
+    {
+        <div class="alert alert-error" role="alert">@ErrorMessage</div>
+    }
+    @if (SuccessMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@SuccessMessage</div>
+    }
+    @if (!CanCreate && !CanEdit && !CanDelete)
+    {
+        <div class="alert alert-info" role="status">Your role has no buyer write operations assigned. Ask an administrator to grant Create, Edit, or Delete on the Buyers menu item.</div>
+    }
+
+    <dialog @ref="EditorDialog" class="modal-card modal-wide broker-editor" aria-labelledby="buyer-editor-heading">
+        @if (IsEditorOpen)
+        {
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">BUYER RECORD</div>
+                    <h2 id="buyer-editor-heading">@(EditingBuyer is null ? "Add buyer" : $"Edit {EditingBuyer.BuyerName}")</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelEditAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <EditForm Model="@Form" OnValidSubmit="SaveBuyerAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <fieldset class="broker-form-grid" disabled="@IsBusy">
+                    <div>
+                        <label for="buyer-code">Buyer code</label>
+                        <InputText id="buyer-code" class="form-control" @bind-Value="Form.BuyerCode" maxlength="10" />
+                        <ValidationMessage For="@(() => Form.BuyerCode)" />
+                    </div>
+                    <div>
+                        <label for="buyer-name">Buyer name</label>
+                        <InputText id="buyer-name" class="form-control" @bind-Value="Form.BuyerName" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.BuyerName)" />
+                    </div>
+                    <div>
+                        <label for="buyer-email">Email</label>
+                        <InputText id="buyer-email" type="email" class="form-control" @bind-Value="Form.Email" maxlength="45" />
+                        <ValidationMessage For="@(() => Form.Email)" />
+                    </div>
+                    <div class="broker-address-field">
+                        <label for="buyer-address">Address</label>
+                        <InputTextArea id="buyer-address" class="form-control" @bind-Value="Form.Address" maxlength="100" />
+                        <ValidationMessage For="@(() => Form.Address)" />
+                    </div>
+                </fieldset>
+                <div class="modal-actions">
+                    <button class="button button-quiet" type="button" @onclick="CancelEditAsync" disabled="@IsBusy">Cancel</button>
+                    <button class="button button-primary" type="submit" disabled="@IsBusy">@(IsSaving ? "Saving..." : "Save buyer")</button>
+                </div>
+            </EditForm>
+        }
+    </dialog>
+
+    <dialog @ref="DeleteDialog" class="modal-card module-confirmation-dialog broker-delete-dialog" aria-labelledby="delete-buyer-heading" aria-describedby="delete-buyer-copy">
+        @if (PendingDeleteBuyer is not null)
+        {
+            <div class="broker-delete-icon" aria-hidden="true">!</div>
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">DELETE BUYER</div>
+                    <h2 id="delete-buyer-heading">Delete buyer?</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelDeleteAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            <p id="delete-buyer-copy" class="module-confirmation-copy">Are you sure you want to delete <strong>@PendingDeleteBuyer.BuyerName</strong> (@PendingDeleteBuyer.BuyerCode)? This action cannot be undone.</p>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" @onclick="CancelDeleteAsync" disabled="@IsBusy" autofocus>Cancel</button>
+                <button class="button button-danger" type="button" @onclick="DeleteBuyerAsync" disabled="@IsBusy">@(IsDeleting ? "Deleting..." : "Delete buyer")</button>
+            </div>
+        }
+    </dialog>
+
+    <section class="panel notes-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-kicker">COMPANY MAPPING @CompanyMappingId</div>
+                <h2>Buyer directory <span class="count-pill">@BuyerRecords.Count</span></h2>
+            </div>
+            <div class="broker-toolbar">
+                <input class="form-control broker-search" aria-label="Search buyers" placeholder="Search buyers" maxlength="50" @bind="SearchText" @bind:event="oninput" @onkeydown="HandleSearchKeyDown" disabled="@IsBusy" />
+                <button class="button button-quiet button-small" type="button" @onclick="SearchBuyersAsync" disabled="@IsBusy">Search</button>
+            </div>
+        </div>
+        @if (BuyerRecords.Count == 0)
+        {
+            <div class="empty-state compact-empty">
+                <strong>No buyers found</strong>
+                <p>There are no buyer records matching this search for the working company.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">CODE</th>
+                            <th scope="col">BUYER</th>
+                            <th scope="col">EMAIL</th>
+                            <th scope="col">ADDRESS</th>
+                            @if (CanEdit || CanDelete)
+                            {
+                                <th scope="col" class="actions-heading">ACTIONS</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var buyer in BuyerRecords)
+                        {
+                            <tr @key="buyer.BuyerId">
+                                <td>@buyer.BuyerId</td>
+                                <td>@(buyer.BuyerCode ?? "-")</td>
+                                <td>@(buyer.BuyerName ?? "-")</td>
+                                <td>@(buyer.Email ?? "-")</td>
+                                <td>@(buyer.Address ?? "-")</td>
+                                @if (CanEdit || CanDelete)
+                                {
+                                    <td class="row-actions">
+                                        @if (CanEdit)
+                                        {
+                                            <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(buyer)" disabled="@IsBusy">Edit</button>
+                                        }
+                                        @if (CanDelete)
+                                        {
+                                            <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(buyer)" disabled="@IsBusy">Delete</button>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span>Working company: @CompanyName (mapping @CompanyMappingId)</span>
+                <span>@BuyerRecords.Count buyer@(BuyerRecords.Count == 1 ? "" : "s")</span>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private const string BuyersPath = "/Buyers";
+    private IReadOnlyList<Buyer> BuyerRecords { get; set; } = [];
+    private BuyerFormInput Form { get; set; } = new();
+    private Buyer? EditingBuyer { get; set; }
+    private Buyer? PendingDeleteBuyer { get; set; }
+    private ElementReference EditorDialog;
+    private ElementReference DeleteDialog;
+    private IJSObjectReference? DialogModule;
+    private DotNetObjectReference<Buyers>? DialogCallback;
+    private bool OpenEditorAfterRender;
+    private bool OpenDeleteAfterRender;
+    private string? CompanyName { get; set; }
+    private Guid? CompanyId { get; set; }
+    private int? CompanyMappingId { get; set; }
+    private string? PageMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? SuccessMessage { get; set; }
+    private string SearchText { get; set; } = string.Empty;
+    private bool CanCreate { get; set; }
+    private bool CanEdit { get; set; }
+    private bool CanDelete { get; set; }
+    private bool IsEditorOpen { get; set; }
+    private bool IsSaving { get; set; }
+    private bool IsDeleting { get; set; }
+    private bool IsSearching { get; set; }
+    private bool IsBusy => IsSaving || IsDeleting || IsSearching;
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null)
+            {
+                PageMessage = "The selected working company is unavailable or you are not entitled to access it.";
+                return;
+            }
+
+            CompanyName = company.Name;
+            CompanyId = company.Id;
+            CompanyMappingId = company.MappingId;
+            await LoadOperationPermissionsAsync(authenticationState.User, company);
+            try
+            {
+                LoadBuyerRecords(company.MappingId);
+            }
+            catch (SqlException exception)
+            {
+                Logger.LogError(exception, "Buyers could not be loaded for mapping ID {CompanyMappingId}.", company.MappingId);
+                ErrorMessage = "The buyer list could not be loaded. Try the search again.";
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (OpenEditorAfterRender)
+        {
+            OpenEditorAfterRender = false;
+            DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
+            DialogCallback ??= DotNetObjectReference.Create(this);
+            await DialogModule.InvokeVoidAsync("show", EditorDialog, DialogCallback, nameof(CancelEditorFromDialogAsync));
+        }
+        if (OpenDeleteAfterRender)
+        {
+            OpenDeleteAfterRender = false;
+            DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
+            DialogCallback ??= DotNetObjectReference.Create(this);
+            await DialogModule.InvokeVoidAsync("show", DeleteDialog, DialogCallback, nameof(CancelDeleteFromDialogAsync));
+        }
+    }
+
+    [JSInvokable]
+    public Task CancelEditorFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelEditAsync();
+        StateHasChanged();
+    });
+
+    [JSInvokable]
+    public Task CancelDeleteFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelDeleteAsync();
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        DialogCallback?.Dispose();
+        if (DialogModule is not null)
+        {
+            try
+            {
+                await DialogModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+
+    private async Task<WorkingCompany?> GetWorkingCompanyAsync(ClaimsPrincipal user)
+    {
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+        {
+            return null;
+        }
+
+        var company = await Database.Companies.AsNoTracking()
+            .Where(item => item.Id == companyId)
+            .Select(item => new
+            {
+                item.Id,
+                item.Name,
+                item.CompanyNumber,
+                item.IsEnabled,
+                item.SubscriptionStartDate,
+                item.SubscriptionEndDate
+            })
+            .SingleOrDefaultAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (company is null
+            || !company.IsEnabled
+            || today < company.SubscriptionStartDate
+            || today > company.SubscriptionEndDate)
+        {
+            return null;
+        }
+
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hasMembership = userId is not null && await Database.UserCompanies.AsNoTracking()
+                .AnyAsync(membership => membership.UserId == userId && membership.CompanyId == companyId);
+            if (!hasMembership)
+            {
+                return null;
+            }
+        }
+
+        return new WorkingCompany(company.Id, company.Name, company.CompanyNumber);
+    }
+
+    private async Task LoadOperationPermissionsAsync(ClaimsPrincipal user, WorkingCompany company)
+    {
+        if (user.IsInRole(BlendRoles.Admin))
+        {
+            CanCreate = CanEdit = CanDelete = true;
+            return;
+        }
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roleIds = user.FindAll(BlendClaims.RoleId)
+            .Select(claim => claim.Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+        if (userId is null || roleIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var companyMenuItems = await Database.MenuItems.AsNoTracking()
+            .Where(item => item.CompanyId == company.Id)
+            .Select(item => new { item.Id, item.Path })
+            .ToListAsync();
+        var menuItemIds = companyMenuItems
+            .Where(item => string.Equals(item.Path.TrimEnd('/'), BuyersPath, StringComparison.OrdinalIgnoreCase))
+            .Select(item => item.Id)
+            .ToArray();
+        if (menuItemIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var operationKeys = await Database.RoleOperations.AsNoTracking()
+            .Where(assignment => roleIds.Contains(assignment.RoleId)
+                && assignment.Role.CompanyId == company.Id
+                && Database.UserRoles.Any(userRole => userRole.UserId == userId && userRole.RoleId == assignment.RoleId)
+                && menuItemIds.Contains(assignment.Operation.MenuItemId)
+                && Database.MenuItemRoles.Any(menuAssignment =>
+                    menuAssignment.MenuItemId == assignment.Operation.MenuItemId
+                    && menuAssignment.RoleId == assignment.RoleId))
+            .Select(assignment => assignment.Operation.Key)
+            .ToListAsync();
+        CanCreate = operationKeys.Contains("create", StringComparer.OrdinalIgnoreCase);
+        CanEdit = operationKeys.Contains("edit", StringComparer.OrdinalIgnoreCase);
+        CanDelete = operationKeys.Contains("delete", StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void LoadBuyerRecords(int mappingId)
+    {
+        var search = string.IsNullOrWhiteSpace(SearchText) ? "all" : SearchText.Trim();
+        BuyerRecords = BuyerService.GetAllBuyers(search, mappingId);
+    }
+
+    private void BeginCreate()
+    {
+        EditingBuyer = null;
+        Form = new BuyerFormInput();
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private void BeginEdit(Buyer buyer)
+    {
+        EditingBuyer = buyer;
+        Form = new BuyerFormInput
+        {
+            BuyerCode = buyer.BuyerCode ?? string.Empty,
+            BuyerName = buyer.BuyerName ?? string.Empty,
+            Email = buyer.Email ?? string.Empty,
+            Address = buyer.Address ?? string.Empty
+        };
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private async Task CancelEditAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        await CloseEditorAsync();
+        ErrorMessage = null;
+    }
+
+    private async Task CloseEditorAsync()
+    {
+        if (DialogModule is not null)
+        {
+            await DialogModule.InvokeVoidAsync("close", EditorDialog);
+        }
+        IsEditorOpen = false;
+        EditingBuyer = null;
+        Form = new BuyerFormInput();
+    }
+
+    private void BeginDelete(Buyer buyer)
+    {
+        PendingDeleteBuyer = buyer;
+        OpenDeleteAfterRender = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private async Task CancelDeleteAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        await CloseDeleteAsync();
+        ErrorMessage = null;
+    }
+
+    private async Task CloseDeleteAsync()
+    {
+        if (DialogModule is not null)
+        {
+            await DialogModule.InvokeVoidAsync("close", DeleteDialog);
+        }
+        PendingDeleteBuyer = null;
+    }
+
+    private async Task SaveBuyerAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsSaving = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before saving.";
+                return;
+            }
+
+            var operationKey = EditingBuyer is null ? "create" : "edit";
+            await LoadOperationPermissionsAsync(user, company);
+            if (!HasOperationPermission(operationKey))
+            {
+                ErrorMessage = $"Your role is not permitted to {operationKey} buyers for this company.";
+                return;
+            }
+
+            var userName = user.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length > 45)
+            {
+                ErrorMessage = "Your account name cannot be recorded by the buyer database. Contact an administrator.";
+                return;
+            }
+
+            var buyer = new Buyer
+            {
+                BuyerId = EditingBuyer?.BuyerId ?? 0,
+                CompanyId = company.MappingId,
+                BuyerCode = Clean(Form.BuyerCode),
+                BuyerName = Clean(Form.BuyerName),
+                Email = Clean(Form.Email),
+                Address = Clean(Form.Address),
+                User = userName
+            };
+
+            if (EditingBuyer is null)
+            {
+                var result = BuyerService.CreateBuyer(buyer);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+                SuccessMessage = "Buyer created.";
+            }
+            else
+            {
+                if (EditingBuyer.RowVersion is null)
+                {
+                    ErrorMessage = "The buyer has no version information. Refresh the list before editing.";
+                    return;
+                }
+
+                var currentBuyer = BuyerService.GetAllBuyers("all", company.MappingId)
+                    .FirstOrDefault(item => item.BuyerId == buyer.BuyerId);
+                if (currentBuyer is null)
+                {
+                    ErrorMessage = "This buyer is no longer available for the selected company. Refresh the list and try again.";
+                    return;
+                }
+
+                buyer.RowVersion = EditingBuyer.RowVersion;
+                var result = BuyerService.UpdateBuyer(buyer);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+                SuccessMessage = "Buyer updated.";
+            }
+
+            await CloseEditorAsync();
+            CompanyName = company.Name;
+            CompanyMappingId = company.MappingId;
+            TryRefreshBuyerRecords(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "A buyer could not be saved for mapping ID {CompanyMappingId}.", CompanyMappingId);
+            ErrorMessage = "The buyer could not be saved. It may have changed; refresh the list and try again.";
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task DeleteBuyerAsync()
+    {
+        var buyerToDelete = PendingDeleteBuyer;
+        if (buyerToDelete is null || IsBusy)
+        {
+            return;
+        }
+
+        IsDeleting = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before deleting.";
+                return;
+            }
+
+            await LoadOperationPermissionsAsync(user, company);
+            if (!CanDelete)
+            {
+                ErrorMessage = "Your role is not permitted to delete buyers for this company.";
+                return;
+            }
+
+            if (buyerToDelete.RowVersion is null)
+            {
+                ErrorMessage = "The buyer has no version information. Refresh the list before deleting.";
+                return;
+            }
+
+            var currentBuyer = BuyerService.GetAllBuyers("all", company.MappingId)
+                .FirstOrDefault(item => item.BuyerId == buyerToDelete.BuyerId);
+            if (currentBuyer?.RowVersion is null || !currentBuyer.RowVersion.SequenceEqual(buyerToDelete.RowVersion))
+            {
+                ErrorMessage = "The buyer was changed, deleted, or no longer belongs to this company. Refresh the list and try again.";
+                return;
+            }
+
+            try
+            {
+                var result = BuyerService.DeleteBuyer(buyerToDelete.BuyerId);
+                if (!result.Succeeded)
+                {
+                    ErrorMessage = result.ErrorMessage;
+                    return;
+                }
+            }
+            catch (SqlException exception) when (exception.Errors.Cast<SqlError>().Any(error => error.Number == 547))
+            {
+                Logger.LogWarning(exception, "Buyer {BuyerId} could not be deleted due to a database constraint for mapping ID {CompanyMappingId}.", buyerToDelete.BuyerId, CompanyMappingId);
+                ErrorMessage = "This buyer cannot be deleted because it is referenced by other records, such as contracts. Remove or reassign those references before trying again.";
+                return;
+            }
+
+            await CloseDeleteAsync();
+            SuccessMessage = "Buyer deleted.";
+            CompanyName = company.Name;
+            CompanyMappingId = company.MappingId;
+            TryRefreshBuyerRecords(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Buyer {BuyerId} could not be deleted for mapping ID {CompanyMappingId}.", buyerToDelete.BuyerId, CompanyMappingId);
+            ErrorMessage = "The buyer could not be deleted. Please try again or contact an administrator.";
+        }
+        finally
+        {
+            IsDeleting = false;
+        }
+    }
+
+    private async Task SearchBuyersAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsSearching = true;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before searching.";
+                return;
+            }
+
+            ErrorMessage = null;
+            TryRefreshBuyerRecords(company.MappingId);
+        }
+        finally
+        {
+            IsSearching = false;
+        }
+    }
+
+    private void TryRefreshBuyerRecords(int mappingId)
+    {
+        try
+        {
+            LoadBuyerRecords(mappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Buyer list refresh failed for mapping ID {CompanyMappingId}.", mappingId);
+            ErrorMessage = "The buyer list could not be refreshed. Try the search again.";
+        }
+    }
+
+    private async Task HandleSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await SearchBuyersAsync();
+        }
+    }
+
+    private bool HasOperationPermission(string key) => key switch
+    {
+        "create" => CanCreate,
+        "edit" => CanEdit,
+        "delete" => CanDelete,
+        _ => false
+    };
+
+    private static string? Clean(string value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+
+    private sealed class BuyerFormInput
+    {
+        [Required]
+        [StringLength(10)]
+        [Display(Name = "Buyer code")]
+        public string BuyerCode { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(45)]
+        [Display(Name = "Buyer name")]
+        public string BuyerName { get; set; } = string.Empty;
+
+        [StringLength(45)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        public string Address { get; set; } = string.Empty;
+    }
+}

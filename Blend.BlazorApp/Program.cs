@@ -3,7 +3,9 @@ using Blend.BlazorApp.Authentication;
 using Blend.BlazorApp.Components;
 using Blend.BlazorApp.Services;
 using Blend.BusinessService.Brokers;
+using Blend.BusinessService.Buyers;
 using Blend.DataService.Brokers;
+using Blend.DataService.Buyers;
 using Blend.DataService.Mapping;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -69,6 +71,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IUserAdministrationService, UserAdministrationService>();
 builder.Services.AddScoped<IBrokerService, BrokerService>();
 builder.Services.AddScoped<IBrokerDataService, BrokerDataService>();
+builder.Services.AddScoped<IBuyerService, BuyerService>();
+builder.Services.AddScoped<IBuyerDataService, BuyerDataService>();
 builder.Services.AddScoped<IStoredProcedureMapper>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");

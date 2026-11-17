@@ -13,6 +13,7 @@ body { margin: 0; min-width: 320px; background: #f6f7fb; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { opacity: .58; cursor: wait; }
+button.broker-permission-denied:disabled { cursor: not-allowed; }
 a { color: inherit; text-decoration: none; }
 .app-frame { min-height: 100vh; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 5; display: flex; width: 248px; flex-direction: column; padding: 27px 18px 20px; background: #171b2b; color: #c5c9d6; }

@@ -18,6 +18,7 @@
             <AuthorizeView>
                 <Authorized>
                     <a class="nav-link @(IsBrokersPage ? "active" : null)" href="/Brokers"><span class="nav-icon">▤</span>Brokers</a>
+                    <a class="nav-link @(IsBuyersPage ? "active" : null)" href="/Buyers"><span class="nav-icon">▤</span>Buyers</a>
                     @foreach (var group in MenuGroups)
                     {
                         <div class="module-nav-group" data-module-group data-module-id="@group.ModuleId">
@@ -135,6 +136,7 @@
     private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
     private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
     private bool IsBrokersPage => CurrentPath.Equals("Brokers", StringComparison.OrdinalIgnoreCase);
+    private bool IsBuyersPage => CurrentPath.Equals("Buyers", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
