@@ -9,4 +9,5 @@ public static class BlendPermissions
     public const string ManageRolesPolicy = "ManageRoles";
     public const string ManageMenuItems = "menu-items.manage";
     public const string ManageMenuItemsPolicy = "ManageMenuItems";
+    public const string ManageAdministrationPolicy = "ManageAdministration";
 }

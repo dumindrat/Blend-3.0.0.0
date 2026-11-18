@@ -31,6 +31,13 @@ a { color: inherit; text-decoration: none; }
 .nav-link.active { background: #282b40; color: white; }
 .nav-link.disabled { cursor: default; opacity: .64; }
 .nav-icon { width: 18px; color: #989fff; font-size: 17px; text-align: center; }
+.sidebar-menu-summary { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 8px; color: #c5c9d6; font-size: 13px; font-weight: 600; cursor: pointer; list-style: none; }
+.sidebar-menu-summary::-webkit-details-marker { display: none; }
+.sidebar-menu-summary:hover, .sidebar-menu-summary:focus-visible { background: #282b40; color: white; }
+.sidebar-menu-summary:focus-visible { outline: 2px solid #989fff; outline-offset: -2px; }
+.sidebar-menu-chevron { margin-left: auto; color: #989fff; font-size: 20px; line-height: 1; transition: transform .15s ease; }
+.sidebar-menu-group[open] .sidebar-menu-chevron { transform: rotate(90deg); }
+.sidebar-menu-children { padding-left: 12px; }
 .sidebar-bottom { margin-top: auto; }
 .connection-state { display: flex; align-items: center; gap: 9px; padding: 10px 13px; color: #d0d4df; font-size: 12px; }
 .status-dot, .live-indicator { width: 7px; height: 7px; border-radius: 50%; background: #32be91; }

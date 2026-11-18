@@ -20,26 +20,50 @@
                     @foreach (var group in MenuGroups)
                     {
                         <div class="module-nav-group" data-module-group data-module-id="@group.ModuleId">
-                            <div class="nav-caption menu-group-caption">@group.Name</div>
-                            @foreach (var item in group.Items)
+                            @if (group.IsCollapsible)
                             {
-                                <a class="nav-link @(IsMenuItemActive(item.Path) ? "active" : null)" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                                <details class="sidebar-menu-group" open="@group.Items.Any(item => IsMenuItemActive(item.Path))">
+                                    <summary class="sidebar-menu-summary"><span class="nav-icon" aria-hidden="true">☷</span><span>@group.Name</span><span class="sidebar-menu-chevron" aria-hidden="true">›</span></summary>
+                                    <div class="sidebar-menu-children">
+                                        @foreach (var item in group.Items)
+                                        {
+                                            <a class="nav-link @(IsMenuItemActive(item.Path) ? "active" : null)" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                                        }
+                                    </div>
+                                </details>
+                            }
+                            else
+                            {
+                                <div class="nav-caption menu-group-caption">@group.Name</div>
+                                @foreach (var item in group.Items)
+                                {
+                                    <a class="nav-link @(IsMenuItemActive(item.Path) ? "active" : null)" data-module-id="@group.ModuleId" href="@item.Path"><span class="nav-icon">•</span>@item.Name</a>
+                                }
                             }
                         </div>
                     }
                 </Authorized>
             </AuthorizeView>
-            <AuthorizeView Policy="ManageUsers">
-                <Authorized><a class="nav-link" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
-            </AuthorizeView>
-            <AuthorizeView Policy="ManageRoles">
-                <Authorized><a class="nav-link" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a></Authorized>
-            </AuthorizeView>
-            <AuthorizeView Policy="ManageMenuItems">
-                <Authorized><a class="nav-link" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a></Authorized>
-            </AuthorizeView>
-            <AuthorizeView Roles="Admin">
-                <Authorized><a class="nav-link" href="/Admin/Companies"><span class="nav-icon">▦</span>Companies</a></Authorized>
+            <AuthorizeView Policy="@BlendPermissions.ManageAdministrationPolicy">
+                <Authorized>
+                    <details class="sidebar-menu-group administration-menu-group" open="@IsAdminPage">
+                        <summary class="sidebar-menu-summary"><span class="nav-icon" aria-hidden="true">⚙</span><span>Administration</span><span class="sidebar-menu-chevron" aria-hidden="true">›</span></summary>
+                        <div class="sidebar-menu-children">
+                            <AuthorizeView Policy="ManageUsers" Context="userAuthorization">
+                                <Authorized><a class="nav-link @(IsMenuItemActive("/Admin/Users") ? "active" : null)" href="/Admin/Users"><span class="nav-icon">▤</span>User administration</a></Authorized>
+                            </AuthorizeView>
+                            <AuthorizeView Policy="ManageRoles" Context="roleAuthorization">
+                                <Authorized><a class="nav-link @(IsMenuItemActive("/Admin/Roles") ? "active" : null)" href="/Admin/Roles"><span class="nav-icon">⚙</span>Role management</a></Authorized>
+                            </AuthorizeView>
+                            <AuthorizeView Policy="ManageMenuItems" Context="menuAuthorization">
+                                <Authorized><a class="nav-link @(IsMenuItemActive("/Admin/MenuItems") ? "active" : null)" href="/Admin/MenuItems"><span class="nav-icon">☷</span>Menu items</a></Authorized>
+                            </AuthorizeView>
+                            <AuthorizeView Roles="Admin" Context="companyAuthorization">
+                                <Authorized><a class="nav-link @(IsMenuItemActive("/Admin/Companies") ? "active" : null)" href="/Admin/Companies"><span class="nav-icon">▦</span>Companies</a></Authorized>
+                            </AuthorizeView>
+                        </div>
+                    </details>
+                </Authorized>
             </AuthorizeView>
         </nav>
         <div class="sidebar-bottom">
@@ -134,6 +158,14 @@
     private bool IsAdminPage => CurrentPath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase);
     private bool IsWorkingCompanyPage => CurrentPath.StartsWith("Account/WorkingCompany", StringComparison.OrdinalIgnoreCase);
     private bool IsMenuItemActive(string path) => string.Equals(CurrentPath.TrimEnd('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase);
+    private static bool IsMasterDataItem(string path) => path.Trim('/') switch
+    {
+        var name when name.Equals("Brokers", StringComparison.OrdinalIgnoreCase)
+            || name.Equals("Buyers", StringComparison.OrdinalIgnoreCase)
+            || name.Equals("TeaStandards", StringComparison.OrdinalIgnoreCase)
+            || name.Equals("DocumentNumbers", StringComparison.OrdinalIgnoreCase) => true,
+        _ => false
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,12 +221,14 @@
         MenuGroups = menuItems
             .GroupBy(item => item.ModuleId)
             .SelectMany(moduleGroup => moduleGroup
-                .GroupBy(item => item.GroupName, StringComparer.OrdinalIgnoreCase)
-                .Select(group => new MenuGroup(moduleGroup.Key, group.Key, group.ToArray())))
+                .GroupBy(item => IsMasterDataItem(item.Path)
+                    ? (IsCollapsible: true, Name: string.Empty)
+                    : (IsCollapsible: false, Name: item.GroupName.ToUpperInvariant()))
+                .Select(group => new MenuGroup(moduleGroup.Key, group.Key.IsCollapsible ? "Master data" : group.First().GroupName, group.Key.IsCollapsible, group.ToArray())))
             .ToArray();
     }
 
     private static string Initials(string? name) => string.IsNullOrWhiteSpace(name) ? "B" : name[..1].ToUpperInvariant();
 
-    private sealed record MenuGroup(int ModuleId, string Name, IReadOnlyList<BlendMenuItem> Items);
+    private sealed record MenuGroup(int ModuleId, string Name, bool IsCollapsible, IReadOnlyList<BlendMenuItem> Items);
 }

@@ -69,6 +69,12 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAssertion(context =>
             context.User.IsInRole(BlendRoles.Admin)
             || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageMenuItems)));
+    options.AddPolicy(BlendPermissions.ManageAdministrationPolicy, policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole(BlendRoles.Admin)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageUsers)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageRoles)
+            || context.User.HasClaim(BlendPermissions.ClaimType, BlendPermissions.ManageMenuItems)));
 });
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorPages();
