@@ -1,0 +1,445 @@
+@page "/DocumentNumbers"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Documents
+@using Microsoft.Data.SqlClient
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IDocumentService DocumentService
+@inject ILogger<DocumentNumbers> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Document Numbers</PageTitle>
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">SETTINGS</span>
+        <h1>Document Numbers</h1>
+        @if (CompanyName is not null)
+        {
+            <p class="muted">Manage document numbers for @CompanyName@(ModuleName is null ? null : $" · {ModuleName}").</p>
+        }
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <section class="panel loading-state"><span class="spinner"></span>Loading document numbers...</section>
+}
+else if (PageMessage is not null)
+{
+    <section class="panel empty-state">
+        <strong>@PageMessage</strong>
+        <p>Select an active working company to view its document numbers.</p>
+        <a class="button button-quiet" href="/Account/WorkingCompany">Choose working company</a>
+    </section>
+}
+else
+{
+    @if (ErrorMessage is not null && EditingDocument is null)
+    {
+        <div class="alert alert-error" role="alert">@ErrorMessage</div>
+    }
+    @if (SuccessMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@SuccessMessage</div>
+    }
+    @if (!CanEdit)
+    {
+        <div class="alert alert-info" role="status">Your role cannot reset document numbers. Ask an administrator to grant Edit on the Document Numbers menu item.</div>
+    }
+    <dialog @ref="EditorDialog" class="modal-card broker-editor" aria-labelledby="document-reset-heading">
+        @if (EditingDocument is not null)
+        {
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">DOCUMENT NUMBERS</div>
+                    <h2 id="document-reset-heading">Reset @(EditingDocument.Description ?? EditingDocument.DocType.ToString())</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelResetAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            @if (ErrorMessage is not null && !IsConfirming)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <EditForm Model="@Form" OnValidSubmit="ConfirmReset">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <fieldset class="broker-form-grid" disabled="@(IsBusy || IsConfirming)">
+                    <div>
+                        <label for="document-number">Current document number</label>
+                        <InputNumber id="document-number" class="form-control" @bind-Value="Form.DocNo" />
+                        <ValidationMessage For="@(() => Form.DocNo)" />
+                    </div>
+                    <div>
+                        <label for="document-prefix">Prefix</label>
+                        <InputText id="document-prefix" class="form-control" maxlength="5" @bind-Value="Form.Prefix" />
+                        <ValidationMessage For="@(() => Form.Prefix)" />
+                    </div>
+                    <div>
+                        <label for="document-format">Format</label>
+                        <InputText id="document-format" class="form-control" maxlength="10" @bind-Value="Form.DocFormat" />
+                        <ValidationMessage For="@(() => Form.DocFormat)" />
+                    </div>
+                </fieldset>
+                <div class="modal-actions">
+                    <button class="button button-quiet" type="button" @onclick="CancelResetAsync" disabled="@IsBusy">Cancel</button>
+                    <button class="button button-primary" type="submit" disabled="@(IsBusy || IsConfirming)">Review reset</button>
+                </div>
+            </EditForm>
+        }
+    </dialog>
+
+    <dialog @ref="ConfirmationDialog" class="modal-card module-confirmation-dialog broker-delete-dialog" aria-labelledby="document-confirm-heading" aria-describedby="document-confirm-copy">
+        @if (ConfirmedReset is not null && EditingDocument is not null)
+        {
+            <div class="broker-delete-icon" aria-hidden="true">!</div>
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">CONFIRM RESET</div>
+                    <h2 id="document-confirm-heading">Reset document number?</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close confirmation" @onclick="CancelConfirmationAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            <p id="document-confirm-copy" class="module-confirmation-copy">Reset <strong>@(EditingDocument.Description ?? EditingDocument.DocType.ToString())</strong> to number <strong>@ConfirmedReset.DocNo</strong>, prefix <strong>@ConfirmedReset.Prefix</strong>, and format <strong>@ConfirmedReset.DocFormat</strong>? This may affect future generated numbers.</p>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" @onclick="CancelConfirmationAsync" disabled="@IsBusy" autofocus>Back</button>
+                <button class="button button-danger" type="button" @onclick="ResetAsync" disabled="@IsBusy">@(IsBusy ? "Resetting..." : "Confirm reset")</button>
+            </div>
+        }
+    </dialog>
+    <section class="panel notes-panel">
+        <div class="panel-header"><h2>Document numbers <span class="count-pill">@Documents.Count</span></h2></div>
+        @if (Documents.Count == 0)
+        {
+            <div class="empty-state compact-empty"><strong>No document numbers found</strong></div>
+        }
+        else
+        {
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead><tr><th>Document type</th><th>Current number</th><th>Prefix</th><th>Format</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        @foreach (var document in Documents)
+                        {
+                            <tr @key="document.Id">
+                                <td>@(document.Description ?? document.DocType.ToString())</td>
+                                <td>@document.DocNo</td><td>@document.Prefix</td><td>@document.DocFormat</td>
+                                <td><button class="button button-quiet button-small" type="button" @onclick="() => BeginReset(document)" disabled="@(IsBusy || !CanEdit)">Reset</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private const string PagePath = "/DocumentNumbers";
+    private IReadOnlyList<DocumentNo> Documents = [];
+    private DocumentNo? EditingDocument;
+    private ResetInput Form = new();
+    private ResetValues? ConfirmedReset;
+    private ElementReference EditorDialog;
+    private ElementReference ConfirmationDialog;
+    private IJSObjectReference? DialogModule;
+    private DotNetObjectReference<DocumentNumbers>? DialogCallback;
+    private bool OpenEditorAfterRender;
+    private bool OpenConfirmationAfterRender;
+    private Guid? CompanyId;
+    private int? CompanyMappingId;
+    private int? DocumentModuleId;
+    private string? ModuleName;
+    private string? CompanyName;
+    private string? PageMessage;
+    private string? ErrorMessage;
+    private string? SuccessMessage;
+    private bool CanEdit;
+    private bool IsLoading = true;
+    private bool IsBusy;
+    private bool IsConfirming => ConfirmedReset is not null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null)
+            {
+                PageMessage = "The selected working company is unavailable or you are not entitled to access it.";
+                return;
+            }
+            CompanyId = company.Id;
+            CompanyMappingId = company.MappingId;
+            CompanyName = company.Name;
+            CanEdit = await CanEditAsync(user, company.Id);
+        }
+        catch
+        {
+            IsLoading = false;
+            throw;
+        }
+        if (PageMessage is not null) IsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            if (OpenEditorAfterRender || OpenConfirmationAfterRender)
+            {
+                DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
+                DialogCallback ??= DotNetObjectReference.Create(this);
+                if (OpenEditorAfterRender)
+                {
+                    OpenEditorAfterRender = false;
+                    await DialogModule.InvokeVoidAsync("show", EditorDialog, DialogCallback, nameof(CancelEditorFromDialogAsync));
+                }
+                if (OpenConfirmationAfterRender)
+                {
+                    OpenConfirmationAfterRender = false;
+                    await DialogModule.InvokeVoidAsync("show", ConfirmationDialog, DialogCallback, nameof(CancelConfirmationFromDialogAsync));
+                }
+            }
+            return;
+        }
+        if (CompanyId is null || CompanyMappingId is null) return;
+        try
+        {
+            var companyId = CompanyId.Value;
+            string? savedModuleId = null;
+            try
+            {
+                savedModuleId = await JS.InvokeAsync<string?>("localStorage.getItem", $"blend-active-module-{companyId:D}");
+            }
+            catch (JSException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            var modules = await Database.Modules.AsNoTracking().Where(module => module.CompanyId == companyId)
+                .OrderBy(module => module.Name).Select(module => new { module.Id, module.Name }).ToListAsync();
+            var selected = modules.FirstOrDefault(module => module.Id.ToString() == savedModuleId) ?? modules.FirstOrDefault();
+            if (selected is null)
+            {
+                ErrorMessage = "No module is available for the working company.";
+            }
+            else
+            {
+                ModuleName = selected.Name;
+                // Stores workspace modules use legacy module 2; all other modules use Tea (1).
+                DocumentModuleId = string.Equals(selected.Name.Trim(), "Stores", StringComparison.OrdinalIgnoreCase) ? 2 : 1;
+                LoadDocuments(CompanyMappingId.Value);
+            }
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Document numbers could not be loaded for company {CompanyId}.", CompanyId);
+            ErrorMessage = "Document numbers could not be loaded. Reload the page and try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public Task CancelEditorFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelResetAsync();
+        StateHasChanged();
+    });
+
+    [JSInvokable]
+    public Task CancelConfirmationFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelConfirmationAsync();
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        DialogCallback?.Dispose();
+        if (DialogModule is not null)
+        {
+            try
+            {
+                await DialogModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+
+    private async Task<WorkingCompany?> GetWorkingCompanyAsync(ClaimsPrincipal user)
+    {
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId)) return null;
+        var company = await Database.Companies.AsNoTracking().Where(item => item.Id == companyId)
+            .Select(item => new { item.Id, item.Name, item.CompanyNumber, item.IsEnabled, item.SubscriptionStartDate, item.SubscriptionEndDate })
+            .SingleOrDefaultAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate) return null;
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null || !await Database.UserCompanies.AsNoTracking().AnyAsync(item => item.UserId == userId && item.CompanyId == companyId)) return null;
+        }
+        return new WorkingCompany(company.Id, company.Name, company.CompanyNumber);
+    }
+
+    private async Task<bool> CanEditAsync(ClaimsPrincipal user, Guid companyId)
+    {
+        if (user.IsInRole(BlendRoles.Admin)) return true;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roleIds = user.FindAll(BlendClaims.RoleId).Select(claim => claim.Value).Distinct(StringComparer.Ordinal).ToArray();
+        if (userId is null || roleIds.Length == 0) return false;
+        var items = await Database.MenuItems.AsNoTracking().Where(item => item.CompanyId == companyId)
+            .Select(item => new { item.Id, item.Path }).ToListAsync();
+        var ids = items.Where(item => string.Equals(item.Path.TrimEnd('/'), PagePath, StringComparison.OrdinalIgnoreCase)).Select(item => item.Id).ToArray();
+        return await Database.RoleOperations.AsNoTracking().AnyAsync(assignment => roleIds.Contains(assignment.RoleId)
+            && assignment.Role.CompanyId == companyId
+            && Database.UserRoles.Any(role => role.UserId == userId && role.RoleId == assignment.RoleId)
+            && ids.Contains(assignment.Operation.MenuItemId) && assignment.Operation.Key == "edit"
+            && Database.MenuItemRoles.Any(menu => menu.MenuItemId == assignment.Operation.MenuItemId && menu.RoleId == assignment.RoleId));
+    }
+
+    private void LoadDocuments(int mappingId) =>
+        Documents = DocumentService.GetDocumentDataByModule(DocumentModuleId!.Value, mappingId)
+            .Where(item => item.CompanyId == mappingId && item.ModuleId == DocumentModuleId).ToArray();
+
+    private void BeginReset(DocumentNo document)
+    {
+        EditingDocument = document;
+        Form = new ResetInput { DocNo = document.DocNo, Prefix = document.Prefix ?? string.Empty, DocFormat = document.DocFormat ?? string.Empty };
+        ConfirmedReset = null;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        OpenEditorAfterRender = true;
+    }
+
+    private async Task CancelResetAsync()
+    {
+        if (IsBusy || IsConfirming) return;
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", EditorDialog);
+        EditingDocument = null;
+        ErrorMessage = null;
+    }
+
+    private void ConfirmReset()
+    {
+        ConfirmedReset = new ResetValues(Form.DocNo!.Value, Form.Prefix, Form.DocFormat);
+        ErrorMessage = null;
+        OpenConfirmationAfterRender = true;
+    }
+
+    private async Task CancelConfirmationAsync()
+    {
+        if (IsBusy) return;
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", ConfirmationDialog);
+        ConfirmedReset = null;
+        ErrorMessage = null;
+    }
+
+    private async Task ResetAsync()
+    {
+        var original = EditingDocument;
+        var confirmed = ConfirmedReset;
+        if (original is null || confirmed is null || IsBusy) return;
+        IsBusy = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before resetting.";
+                return;
+            }
+            CanEdit = await CanEditAsync(user, company.Id);
+            if (!CanEdit)
+            {
+                ErrorMessage = "Your role is not permitted to reset document numbers for this company.";
+                return;
+            }
+            var userName = user.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length > 45)
+            {
+                ErrorMessage = "Your account name cannot be recorded by the document database. Contact an administrator.";
+                return;
+            }
+            var current = DocumentService.GetDocumentDataByModule(DocumentModuleId!.Value, company.MappingId)
+                .Where(item => item.CompanyId == company.MappingId && item.ModuleId == DocumentModuleId && item.DocType == original.DocType).ToArray();
+            if (current.Length != 1 || current[0].Id != original.Id || current[0].DocNo != original.DocNo || current[0].Prefix != original.Prefix || current[0].DocFormat != original.DocFormat)
+            {
+                ErrorMessage = "The document number changed or is no longer available. Reload the page and try again.";
+                return;
+            }
+            var result = DocumentService.ResetDocumentNo(new DocumentNo
+            {
+                DocType = original.DocType, CompanyId = company.MappingId, DocNo = confirmed.DocNo,
+                Prefix = confirmed.Prefix, DocFormat = confirmed.DocFormat, User = userName
+            });
+            if (!result.Succeeded)
+            {
+                ErrorMessage = result.ErrorMessage;
+                return;
+            }
+            if (DialogModule is not null)
+            {
+                await DialogModule.InvokeVoidAsync("close", ConfirmationDialog);
+                await DialogModule.InvokeVoidAsync("close", EditorDialog);
+            }
+            EditingDocument = null;
+            ConfirmedReset = null;
+            SuccessMessage = "Document number reset.";
+            try
+            {
+                LoadDocuments(company.MappingId);
+            }
+            catch (SqlException exception)
+            {
+                Logger.LogError(exception, "Document numbers could not be refreshed for company {CompanyId}.", company.Id);
+                ErrorMessage = "The document number was reset, but the list could not be refreshed. Reload the page.";
+            }
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Document number {DocType} could not be reset for company {CompanyId}.", original.DocType, CompanyId);
+            ErrorMessage = "The document number could not be reset. Please try again or contact an administrator.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private sealed record ResetValues(int DocNo, string Prefix, string DocFormat);
+
+    private sealed class ResetInput
+    {
+        [Required, Range(0, int.MaxValue)]
+        [Display(Name = "Document number")]
+        public int? DocNo { get; set; }
+        [Required, StringLength(5)]
+        public string Prefix { get; set; } = string.Empty;
+        [Required, StringLength(10)]
+        [Display(Name = "Format")]
+        public string DocFormat { get; set; } = string.Empty;
+    }
+}
