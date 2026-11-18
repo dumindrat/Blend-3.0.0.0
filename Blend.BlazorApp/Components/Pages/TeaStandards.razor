@@ -1,0 +1,600 @@
+@page "/TeaStandards"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService
+@using Blend.BusinessService.TeaStandards
+@using Microsoft.Data.SqlClient
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject ITeaStandardService TeaStandardService
+@inject ILogger<TeaStandards> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Tea Standards</PageTitle>
+
+<div class="page-heading">
+    <div>
+        <span class="eyebrow">BUSINESS DIRECTORY</span>
+        <h1>Tea Standards</h1>
+        @if (CompanyName is not null)
+        {
+            <p class="muted">Manage tea standards for @CompanyName.</p>
+        }
+    </div>
+    <div class="heading-actions">
+        <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@(IsLoading || PageMessage is not null || IsBusy || !CanCreate)">Add standard</button>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <section class="panel loading-state"><span class="spinner"></span>Loading tea standards...</section>
+}
+else if (PageMessage is not null)
+{
+    <section class="panel empty-state">
+        <div class="empty-icon" aria-hidden="true">!</div>
+        <strong>@PageMessage</strong>
+        <p>Select an active working company to view tea standards.</p>
+        <a class="button button-quiet" href="/Account/WorkingCompany">Choose working company</a>
+    </section>
+}
+else
+{
+    @if (ErrorMessage is not null && !IsEditorOpen && PendingDeleteStandard is null)
+    {
+        <div class="alert alert-error" role="alert">@ErrorMessage</div>
+    }
+    @if (SuccessMessage is not null)
+    {
+        <div class="alert alert-success" role="status">@SuccessMessage</div>
+    }
+    @if (!CanCreate && !CanEdit && !CanDelete)
+    {
+        <div class="alert alert-info" role="status">Your role has no tea-standard write operations assigned. Ask an administrator to grant Create, Edit, or Delete on the Tea Standards menu item.</div>
+    }
+
+    <dialog @ref="EditorDialog" class="modal-card broker-editor" aria-labelledby="standard-editor-heading">
+        @if (IsEditorOpen)
+        {
+            <div class="modal-heading">
+                <div>
+                    <div class="panel-kicker">TEA STANDARD</div>
+                    <h2 id="standard-editor-heading">@(EditingStandard is null ? "Add standard" : $"Edit {EditingStandard.StandardName}")</h2>
+                </div>
+                <button class="icon-button" type="button" aria-label="Close" @onclick="CancelEditAsync" disabled="@IsBusy">&times;</button>
+            </div>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <EditForm Model="@Form" OnValidSubmit="SaveStandardAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <fieldset class="broker-form-grid" disabled="@IsBusy">
+                    <div>
+                        <label for="standard-name">Standard name</label>
+                        <InputText id="standard-name" class="form-control" @bind-Value="Form.StandardName" maxlength="50" />
+                        <ValidationMessage For="@(() => Form.StandardName)" />
+                    </div>
+                </fieldset>
+                <div class="modal-actions">
+                    <button class="button button-quiet" type="button" @onclick="CancelEditAsync" disabled="@IsBusy">Cancel</button>
+                    <button class="button button-primary" type="submit" disabled="@IsBusy">@(IsSaving ? "Saving..." : "Save standard")</button>
+                </div>
+            </EditForm>
+        }
+    </dialog>
+
+    @if (PendingDeleteStandard is not null)
+    {
+        <section class="panel" role="alertdialog" aria-labelledby="delete-standard-heading">
+            <div class="panel-kicker">DELETE TEA STANDARD</div>
+            <h2 id="delete-standard-heading">Delete @PendingDeleteStandard.StandardName?</h2>
+            @if (ErrorMessage is not null)
+            {
+                <div class="alert alert-error" role="alert">@ErrorMessage</div>
+            }
+            <div class="modal-actions">
+                <button class="button button-quiet" type="button" @onclick="CancelDelete" disabled="@IsBusy">Cancel</button>
+                <button class="button button-danger" type="button" @onclick="DeleteStandardAsync" disabled="@IsBusy">@(IsDeleting ? "Deleting..." : "Delete standard")</button>
+            </div>
+        </section>
+    }
+
+    <section class="panel notes-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-kicker">TEA STANDARDS</div>
+                <h2>Tea standard directory <span class="count-pill">@Standards.Count</span></h2>
+            </div>
+            <div class="broker-toolbar">
+                <input class="form-control broker-search" aria-label="Search tea standards" placeholder="Search tea standards" maxlength="45" @bind="SearchText" @bind:event="oninput" @onkeydown="HandleSearchKeyDown" disabled="@IsBusy" />
+                <button class="button button-quiet button-small" type="button" @onclick="SearchStandardsAsync" disabled="@IsBusy">Search</button>
+            </div>
+        </div>
+        @if (Standards.Count == 0)
+        {
+            <div class="empty-state compact-empty">
+                <strong>No tea standards found</strong>
+                <p>There are no standards matching this search.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">STANDARD</th>
+                            <th scope="col" class="actions-heading">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var standard in Standards)
+                        {
+                            <tr @key="standard.StandardId">
+                                <td>@standard.StandardId</td>
+                                <td>@(standard.StandardName ?? "-")</td>
+                                <td class="row-actions">
+                                    <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(standard)" disabled="@(IsBusy || !CanEdit)">Edit</button>
+                                    <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(standard)" disabled="@(IsBusy || !CanDelete)">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span>Working company: @CompanyName</span>
+                <span>@Standards.Count standard@(Standards.Count == 1 ? "" : "s")</span>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private const string TeaStandardsPath = "/TeaStandards";
+    private IReadOnlyList<TeaStandard> Standards { get; set; } = [];
+    private StandardFormInput Form { get; set; } = new();
+    private TeaStandard? EditingStandard { get; set; }
+    private TeaStandard? PendingDeleteStandard { get; set; }
+    private ElementReference EditorDialog;
+    private IJSObjectReference? DialogModule;
+    private DotNetObjectReference<TeaStandards>? DialogCallback;
+    private bool OpenEditorAfterRender;
+    private Guid? CompanyId { get; set; }
+    private int? CompanyMappingId { get; set; }
+    private string? CompanyName { get; set; }
+    private string? PageMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+    private string? SuccessMessage { get; set; }
+    private string SearchText { get; set; } = string.Empty;
+    private bool CanCreate { get; set; }
+    private bool CanEdit { get; set; }
+    private bool CanDelete { get; set; }
+    private bool IsEditorOpen { get; set; }
+    private bool IsSaving { get; set; }
+    private bool IsDeleting { get; set; }
+    private bool IsSearching { get; set; }
+    private bool IsBusy => IsSaving || IsDeleting || IsSearching;
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null)
+            {
+                PageMessage = "The selected working company is unavailable or you are not entitled to access it.";
+                return;
+            }
+
+            CompanyId = company.Id;
+            CompanyMappingId = company.MappingId;
+            CompanyName = company.Name;
+            await LoadOperationPermissionsAsync(authenticationState.User, company);
+            try
+            {
+                LoadStandards(company.MappingId);
+            }
+            catch (SqlException exception)
+            {
+                Logger.LogError(exception, "Tea standards could not be loaded for company {CompanyId}.", company.Id);
+                ErrorMessage = "The tea-standard list could not be loaded. Try the search again.";
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (OpenEditorAfterRender)
+        {
+            OpenEditorAfterRender = false;
+            DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
+            DialogCallback ??= DotNetObjectReference.Create(this);
+            await DialogModule.InvokeVoidAsync("show", EditorDialog, DialogCallback, nameof(CancelEditorFromDialogAsync));
+        }
+    }
+
+    [JSInvokable]
+    public Task CancelEditorFromDialogAsync() => InvokeAsync(async () =>
+    {
+        await CancelEditAsync();
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        DialogCallback?.Dispose();
+        if (DialogModule is not null)
+        {
+            try
+            {
+                await DialogModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+
+    private async Task<WorkingCompany?> GetWorkingCompanyAsync(ClaimsPrincipal user)
+    {
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var companyId))
+        {
+            return null;
+        }
+
+        var company = await Database.Companies.AsNoTracking()
+            .Where(item => item.Id == companyId)
+            .Select(item => new
+            {
+                item.Id,
+                item.Name,
+                item.CompanyNumber,
+                item.IsEnabled,
+                item.SubscriptionStartDate,
+                item.SubscriptionEndDate
+            })
+            .SingleOrDefaultAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate)
+        {
+            return null;
+        }
+
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hasMembership = userId is not null && await Database.UserCompanies.AsNoTracking()
+                .AnyAsync(membership => membership.UserId == userId && membership.CompanyId == companyId);
+            if (!hasMembership)
+            {
+                return null;
+            }
+        }
+
+        return new WorkingCompany(company.Id, company.Name, company.CompanyNumber);
+    }
+
+    private async Task LoadOperationPermissionsAsync(ClaimsPrincipal user, WorkingCompany company)
+    {
+        if (user.IsInRole(BlendRoles.Admin))
+        {
+            CanCreate = CanEdit = CanDelete = true;
+            return;
+        }
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roleIds = user.FindAll(BlendClaims.RoleId).Select(claim => claim.Value).Distinct(StringComparer.Ordinal).ToArray();
+        if (userId is null || roleIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var companyMenuItems = await Database.MenuItems.AsNoTracking()
+            .Where(item => item.CompanyId == company.Id)
+            .Select(item => new { item.Id, item.Path })
+            .ToListAsync();
+        var menuItemIds = companyMenuItems
+            .Where(item => string.Equals(item.Path.TrimEnd('/'), TeaStandardsPath, StringComparison.OrdinalIgnoreCase))
+            .Select(item => item.Id)
+            .ToArray();
+        if (menuItemIds.Length == 0)
+        {
+            CanCreate = CanEdit = CanDelete = false;
+            return;
+        }
+
+        var operationKeys = await Database.RoleOperations.AsNoTracking()
+            .Where(assignment => roleIds.Contains(assignment.RoleId)
+                && assignment.Role.CompanyId == company.Id
+                && Database.UserRoles.Any(userRole => userRole.UserId == userId && userRole.RoleId == assignment.RoleId)
+                && menuItemIds.Contains(assignment.Operation.MenuItemId)
+                && Database.MenuItemRoles.Any(menuAssignment =>
+                    menuAssignment.MenuItemId == assignment.Operation.MenuItemId
+                    && menuAssignment.RoleId == assignment.RoleId))
+            .Select(assignment => assignment.Operation.Key)
+            .ToListAsync();
+        CanCreate = operationKeys.Contains("create", StringComparer.OrdinalIgnoreCase);
+        CanEdit = operationKeys.Contains("edit", StringComparer.OrdinalIgnoreCase);
+        CanDelete = operationKeys.Contains("delete", StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void LoadStandards(int mappingId)
+    {
+        var search = string.IsNullOrWhiteSpace(SearchText) ? "all" : SearchText.Trim();
+        Standards = TeaStandardService.GetAllStandards(search, mappingId);
+    }
+
+    private void BeginCreate()
+    {
+        EditingStandard = null;
+        Form = new StandardFormInput();
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        PendingDeleteStandard = null;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private void BeginEdit(TeaStandard standard)
+    {
+        EditingStandard = standard;
+        Form = new StandardFormInput { StandardName = standard.StandardName ?? string.Empty };
+        IsEditorOpen = true;
+        OpenEditorAfterRender = true;
+        PendingDeleteStandard = null;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private async Task CancelEditAsync()
+    {
+        if (IsBusy) return;
+        await CloseEditorAsync();
+        ErrorMessage = null;
+    }
+
+    private async Task CloseEditorAsync()
+    {
+        if (DialogModule is not null)
+        {
+            await DialogModule.InvokeVoidAsync("close", EditorDialog);
+        }
+        IsEditorOpen = false;
+        EditingStandard = null;
+        Form = new StandardFormInput();
+    }
+
+    private async Task SaveStandardAsync()
+    {
+        if (IsBusy) return;
+
+        IsSaving = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before saving.";
+                return;
+            }
+
+            var operationKey = EditingStandard is null ? "create" : "edit";
+            await LoadOperationPermissionsAsync(user, company);
+            if (!HasOperationPermission(operationKey))
+            {
+                ErrorMessage = $"Your role is not permitted to {operationKey} tea standards for this company.";
+                return;
+            }
+
+            var userName = user.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length > 45)
+            {
+                ErrorMessage = "Your account name cannot be recorded by the tea-standard database. Contact an administrator.";
+                return;
+            }
+
+            var standard = new TeaStandard
+            {
+                StandardId = EditingStandard?.StandardId ?? 0,
+                StandardName = Form.StandardName.Trim(),
+                User = userName,
+                RowVersion = EditingStandard?.RowVersion
+            };
+            BusinessOperationResult result;
+            if (EditingStandard is null)
+            {
+                result = TeaStandardService.CreateStandard(standard, company.MappingId);
+            }
+            else
+            {
+                if (EditingStandard.RowVersion is null)
+                {
+                    ErrorMessage = "This standard has no version information. Refresh the list before editing.";
+                    return;
+                }
+
+                var currentStandard = TeaStandardService.GetAllStandards("all", company.MappingId)
+                    .FirstOrDefault(item => item.StandardId == EditingStandard.StandardId);
+                if (currentStandard?.RowVersion is null || !currentStandard.RowVersion.SequenceEqual(EditingStandard.RowVersion))
+                {
+                    ErrorMessage = "This standard was changed or deleted. Refresh the list and try again.";
+                    return;
+                }
+
+                result = TeaStandardService.UpdateStandard(standard);
+            }
+
+            if (!result.Succeeded)
+            {
+                ErrorMessage = result.ErrorMessage;
+                return;
+            }
+
+            await CloseEditorAsync();
+            SuccessMessage = operationKey == "create" ? "Tea standard created." : "Tea standard updated.";
+            TryRefreshStandards(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Tea standard could not be saved for company {CompanyId}.", CompanyId);
+            ErrorMessage = "The tea standard could not be saved. It may have changed; refresh the list and try again.";
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void BeginDelete(TeaStandard standard)
+    {
+        PendingDeleteStandard = standard;
+        IsEditorOpen = false;
+        ErrorMessage = null;
+        SuccessMessage = null;
+    }
+
+    private void CancelDelete()
+    {
+        if (IsBusy) return;
+        PendingDeleteStandard = null;
+        ErrorMessage = null;
+    }
+
+    private async Task DeleteStandardAsync()
+    {
+        var standardToDelete = PendingDeleteStandard;
+        if (standardToDelete is null || IsBusy) return;
+
+        IsDeleting = true;
+        ErrorMessage = null;
+        SuccessMessage = null;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authenticationState.User;
+            var company = await GetWorkingCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before deleting.";
+                return;
+            }
+
+            await LoadOperationPermissionsAsync(user, company);
+            if (!CanDelete)
+            {
+                ErrorMessage = "Your role is not permitted to delete tea standards for this company.";
+                return;
+            }
+
+            var currentStandard = TeaStandardService.GetAllStandards("all", company.MappingId)
+                .FirstOrDefault(item => item.StandardId == standardToDelete.StandardId);
+            if (standardToDelete.RowVersion is null || currentStandard?.RowVersion is null
+                || !currentStandard.RowVersion.SequenceEqual(standardToDelete.RowVersion))
+            {
+                ErrorMessage = "This standard was changed or deleted. Refresh the list and try again.";
+                return;
+            }
+
+            var result = TeaStandardService.DeleteStandard(standardToDelete.StandardId);
+            if (!result.Succeeded)
+            {
+                ErrorMessage = result.ErrorMessage;
+                return;
+            }
+
+            PendingDeleteStandard = null;
+            SuccessMessage = "Tea standard deleted.";
+            TryRefreshStandards(company.MappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Tea standard {StandardId} could not be deleted for company {CompanyId}.", standardToDelete.StandardId, CompanyId);
+            ErrorMessage = "The tea standard could not be deleted. It may be referenced by existing contracts.";
+        }
+        finally
+        {
+            IsDeleting = false;
+        }
+    }
+
+    private async Task SearchStandardsAsync()
+    {
+        if (IsBusy) return;
+
+        IsSearching = true;
+        try
+        {
+            var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var company = await GetWorkingCompanyAsync(authenticationState.User);
+            if (company is null || company.Id != CompanyId || company.MappingId != CompanyMappingId)
+            {
+                ErrorMessage = "The working company changed or is unavailable. Reload the page before searching.";
+                return;
+            }
+
+            ErrorMessage = null;
+            TryRefreshStandards(company.MappingId);
+        }
+        finally
+        {
+            IsSearching = false;
+        }
+    }
+
+    private void TryRefreshStandards(int mappingId)
+    {
+        try
+        {
+            LoadStandards(mappingId);
+        }
+        catch (SqlException exception)
+        {
+            Logger.LogError(exception, "Tea-standard list refresh failed for company {CompanyId}.", CompanyId);
+            ErrorMessage = "The tea-standard list could not be refreshed. Try the search again.";
+        }
+    }
+
+    private async Task HandleSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter") await SearchStandardsAsync();
+    }
+
+    private bool HasOperationPermission(string key) => key switch
+    {
+        "create" => CanCreate,
+        "edit" => CanEdit,
+        "delete" => CanDelete,
+        _ => false
+    };
+
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+
+    private sealed class StandardFormInput
+    {
+        [Required]
+        [StringLength(50)]
+        [Display(Name = "Standard name")]
+        public string StandardName { get; set; } = string.Empty;
+    }
+}

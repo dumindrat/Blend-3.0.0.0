@@ -4,9 +4,11 @@ using Blend.BlazorApp.Components;
 using Blend.BlazorApp.Services;
 using Blend.BusinessService.Brokers;
 using Blend.BusinessService.Buyers;
+using Blend.BusinessService.TeaStandards;
 using Blend.DataService.Brokers;
 using Blend.DataService.Buyers;
 using Blend.DataService.Mapping;
+using Blend.DataService.TeaStandards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -73,12 +75,14 @@ builder.Services.AddScoped<IBrokerService, BrokerService>();
 builder.Services.AddScoped<IBrokerDataService, BrokerDataService>();
 builder.Services.AddScoped<IBuyerService, BuyerService>();
 builder.Services.AddScoped<IBuyerDataService, BuyerDataService>();
+builder.Services.AddScoped<ITeaStandardService, TeaStandardService>();
+builder.Services.AddScoped<ITeaStandardDataService, TeaStandardDataService>();
 builder.Services.AddScoped<IStoredProcedureMapper>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");
     if (string.IsNullOrWhiteSpace(connectionString))
     {
-        throw new InvalidOperationException("Configure ConnectionStrings:BlendData before using broker data services.");
+        throw new InvalidOperationException("Configure ConnectionStrings:BlendData before using business data services.");
     }
 
     return new DapperStoredProcedureMapper(() => new SqlConnection(connectionString));
