@@ -1,0 +1,350 @@
+@page "/BuyerContracts"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using System.Security.Claims
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Buyers
+@using Blend.BusinessService.Contracts
+@using Microsoft.Data.SqlClient
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IContractService Contracts
+@inject IBuyerService Buyers
+@inject ILogger<BuyerContracts> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Buyer Contracts</PageTitle>
+<div class="page-heading">
+    <div><span class="eyebrow">TEA OPERATIONS</span><h1>Buyer Contracts</h1>@if (CompanyName is not null) { <p class="muted">Manage buyer contracts for @CompanyName.</p> }</div>
+    <div class="heading-actions"><button class="button button-primary" type="button" @onclick="BeginCreateAsync" disabled="@(Loading || Busy || PageError is not null || CompanyId is null || !CanCreate)">Add contract</button></div>
+</div>
+@if (Loading)
+{
+    <section class="panel loading-state"><span class="spinner"></span>Loading buyer contracts...</section>
+}
+else if (PageError is not null)
+{
+    <section class="panel empty-state" role="alert"><strong>@PageError</strong></section>
+}
+else if (CompanyId is null)
+{
+    <section class="panel empty-state"><strong>The selected working company is unavailable or you are not entitled to access it.</strong><p>Select an active working company.</p><a class="button button-quiet" href="/Account/WorkingCompany">Choose working company</a></section>
+}
+else if (!CanView)
+{
+    <section class="panel empty-state"><strong>Your role does not have access to Buyer Contracts.</strong></section>
+}
+else
+{
+    @if (Error is not null && Dialog == DialogKind.None) { <div class="alert alert-error" role="alert">@Error</div> }
+    @if (Success is not null) { <div class="alert alert-success" role="status">@Success</div> }
+    @if (!CanCreate && !CanEdit && !CanDelete) { <div class="alert alert-info">Your role has no Buyer Contracts write operations assigned.</div> }
+    <section class="panel notes-panel">
+        <div class="panel-header"><h2>Buyer contracts <span class="count-pill">@Items.Count</span></h2>
+            <div class="broker-toolbar"><input class="form-control broker-search" aria-label="Search contracts" maxlength="45" @bind="Search" @bind:event="oninput" /><button class="button button-quiet button-small" type="button" @onclick="SearchAsync" disabled="@Busy">Search</button></div>
+        </div>
+        @if (Items.Count == 0) { <div class="empty-state compact-empty"><strong>No contracts found</strong></div> }
+        else
+        {
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Contract</th><th>Buyer</th><th>Completion</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+            @foreach (var item in Items)
+            {
+                <tr @key="item.ContractId"><td>@item.ContractName</td><td>@item.BuyerCode @item.BuyerName</td><td>@item.CompletionDate</td><td>@item.CloseStatus</td><td class="row-actions">
+                    <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(item)" disabled="@(Busy || !CanEdit)">Edit</button>
+                    <button class="button button-quiet button-small" type="button" @onclick="() => OpenDetailsAsync(item)" disabled="@Busy">Standards</button>
+                    <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(item)" disabled="@(Busy || !CanDelete)">Delete</button>
+                </td></tr>
+            }
+            </tbody></table></div>
+        }
+    </section>
+    <dialog @ref="DialogElement" class="modal-card modal-wide broker-editor" aria-labelledby="contract-dialog-heading">
+        @if (Dialog != DialogKind.None)
+        {
+            <div class="modal-heading"><div><div class="panel-kicker">BUYER CONTRACTS</div><h2 id="contract-dialog-heading">@DialogTitle</h2></div><button class="icon-button" type="button" aria-label="Close" @onclick="CloseDialogAsync" disabled="@Busy">&times;</button></div>
+            @if (Error is not null) { <div class="alert alert-error" role="alert">@Error</div> }
+            @if (Dialog == DialogKind.Editor)
+            {
+                <EditForm Model="@Form" OnValidSubmit="SaveAsync"><DataAnnotationsValidator /><ValidationSummary />
+                    <fieldset class="broker-form-grid" disabled="@Busy">
+                        <div><label for="contract-name">Contract name</label><InputText id="contract-name" class="form-control" @bind-Value="Form.Name" maxlength="50" /><ValidationMessage For="@(() => Form.Name)" /></div>
+                        <div><label for="contract-buyer">Buyer</label><InputSelect id="contract-buyer" class="form-control" @bind-Value="Form.BuyerId" disabled="@(Selected is not null)"><option value="">Select buyer</option>@foreach (var buyer in BuyerItems) { <option value="@buyer.BuyerId">@buyer.BuyerCode - @buyer.BuyerName</option> }</InputSelect><ValidationMessage For="@(() => Form.BuyerId)" /></div>
+                        <div><label for="contract-date">Completion date</label><InputDate id="contract-date" class="form-control" @bind-Value="Form.CompletionDate" /><ValidationMessage For="@(() => Form.CompletionDate)" /></div>
+                    </fieldset><div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button class="button button-primary" type="submit" disabled="@Busy">Save contract</button></div>
+                </EditForm>
+            }
+            else if (Dialog == DialogKind.Delete && Selected is not null)
+            {
+                <p class="module-confirmation-copy">Delete <strong>@Selected.ContractName</strong>? This action cannot be undone.</p>
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy" autofocus>Cancel</button><button class="button button-danger" type="button" @onclick="DeleteAsync" disabled="@Busy">Delete contract</button></div>
+            }
+            else if (Dialog == DialogKind.Details && Selected is not null)
+            {
+                @if (CanEdit)
+                {
+                    <h3>@(EditingDetail is null ? "Add standard" : $"Update {EditingDetail.StandardName}")</h3>
+                    <EditForm Model="@DetailForm" OnValidSubmit="SaveDetailAsync"><DataAnnotationsValidator /><ValidationSummary />
+                        <fieldset class="broker-form-grid" disabled="@Busy">
+                            @if (EditingDetail is null) { <div><label for="contract-standard">Available standard</label><InputSelect id="contract-standard" class="form-control" @bind-Value="DetailForm.StandardId"><option value="">Select standard</option>@foreach (var standard in Available) { <option value="@standard.StandardId">@standard.StandardName</option> }</InputSelect><ValidationMessage For="@(() => DetailForm.StandardId)" /></div> }
+                            <div><label for="contract-quantity">Order quantity</label><InputNumber id="contract-quantity" class="form-control" min="0" step="0.01" @bind-Value="DetailForm.Quantity" /><ValidationMessage For="@(() => DetailForm.Quantity)" /></div>
+                        </fieldset><div class="modal-actions">@if (EditingDetail is not null) { <button class="button button-quiet" type="button" @onclick="CancelDetailEdit" disabled="@Busy">Cancel update</button> }<button class="button button-primary" type="submit" disabled="@Busy">@(EditingDetail is null ? "Add standard" : "Update quantity")</button></div>
+                    </EditForm>
+                }
+                <h3>Added standards</h3>
+                @if (CanEdit && EditingDetail is null)
+                {
+                    <div class="broker-toolbar"><input class="form-control broker-search" aria-label="Search available standards" placeholder="Search available standards" maxlength="10" @bind="StandardSearch" @bind:event="oninput" /><button class="button button-quiet button-small" type="button" @onclick="SearchStandardsAsync" disabled="@Busy">Search standards</button></div>
+                }
+                @if (Details.Count == 0) { <p class="muted">No standards added.</p> }
+                else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Standard</th><th>Order quantity</th><th>Actions</th></tr></thead><tbody>
+                    @foreach (var detail in Details) { <tr><td>@detail.StandardName</td><td>@detail.OrderQty</td><td><button class="button button-quiet button-small" type="button" @onclick="() => EditDetail(detail)" disabled="@(Busy || !CanEdit)">Update</button></td></tr> }
+                </tbody></table></div> }
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Close</button></div>
+            }
+        }
+    </dialog>
+}
+
+@code {
+    private const string PagePath = "/BuyerContracts";
+    private IReadOnlyList<BuyerContract> Items = [];
+    private IReadOnlyList<Buyer> BuyerItems = [];
+    private IReadOnlyList<BuyerContractDetail> Details = [];
+    private IReadOnlyList<TeaStandardForContract> Available = [];
+    private BuyerContract? Selected;
+    private BuyerContractDetail? EditingDetail;
+    private ContractInput Form = new();
+    private DetailInput DetailForm = new();
+    private Guid? CompanyId;
+    private int? MappingId;
+    private string? CompanyName;
+    private string Search = "";
+    private string StandardSearch = "";
+    private string? Error;
+    private string? PageError;
+    private string? Success;
+    private bool Loading = true, Busy, CanView, CanCreate, CanEdit, CanDelete, OpenAfterRender;
+    private DialogKind Dialog;
+    private ElementReference DialogElement;
+    private IJSObjectReference? DialogModule;
+    private DotNetObjectReference<BuyerContracts>? DialogCallback;
+    private string DialogTitle => Dialog switch { DialogKind.Editor => Selected is null ? "Add contract" : "Edit contract", DialogKind.Delete => "Delete contract?", DialogKind.Details => $"Standards: {Selected?.ContractName}", _ => "Buyer contracts" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            var company = await GetCompanyAsync(user);
+            if (company is null) return;
+            CompanyId = company.Id; MappingId = company.MappingId; CompanyName = company.Name;
+            await LoadPermissionsAsync(user, company.Id);
+            if (CanView) Items = Contracts.GetContractList("all", company.MappingId);
+        }
+        catch (SqlException exception) { Logger.LogError(exception, "Unable to load contracts for {CompanyId}", CompanyId); PageError = "Contracts could not be loaded. Reload the page and try again."; }
+        finally { Loading = false; }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!OpenAfterRender) return;
+        OpenAfterRender = false;
+        DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
+        DialogCallback ??= DotNetObjectReference.Create(this);
+        await DialogModule.InvokeVoidAsync("show", DialogElement, DialogCallback, nameof(CancelFromDialogAsync));
+    }
+
+    [JSInvokable]
+    public Task CancelFromDialogAsync() => InvokeAsync(async () => { await CloseDialogAsync(); StateHasChanged(); });
+    public async ValueTask DisposeAsync()
+    {
+        DialogCallback?.Dispose();
+        if (DialogModule is not null) { try { await DialogModule.DisposeAsync(); } catch (JSDisconnectedException) { } }
+    }
+
+    private async Task<WorkingCompany?> GetCompanyAsync(ClaimsPrincipal user)
+    {
+        if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var id)) return null;
+        var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id).Select(c => new { c.Id, c.Name, c.CompanyNumber, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate) return null;
+        if (!user.IsInRole(BlendRoles.Admin))
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null || !await Database.UserCompanies.AsNoTracking().AnyAsync(m => m.CompanyId == id && m.UserId == userId)) return null;
+        }
+        return new(company.Id, company.Name, company.CompanyNumber);
+    }
+
+    private async Task LoadPermissionsAsync(ClaimsPrincipal user, Guid companyId)
+    {
+        if (user.IsInRole(BlendRoles.Admin)) { CanView = CanCreate = CanEdit = CanDelete = true; return; }
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var roleIds = user.FindAll(BlendClaims.RoleId).Select(c => c.Value).Distinct(StringComparer.Ordinal).ToArray();
+        var menuItems = await Database.MenuItems.AsNoTracking().Where(m => m.CompanyId == companyId).Select(m => new { m.Id, m.Path }).ToListAsync();
+        var ids = menuItems.Where(m => string.Equals(m.Path.TrimEnd('/'), PagePath, StringComparison.OrdinalIgnoreCase)).Select(m => m.Id).ToArray();
+        CanView = userId is not null && await Database.MenuItemRoles.AsNoTracking().AnyAsync(m => ids.Contains(m.MenuItemId) && roleIds.Contains(m.RoleId)
+            && m.Role.CompanyId == companyId && Database.UserRoles.Any(r => r.UserId == userId && r.RoleId == m.RoleId));
+        var keys = await Database.RoleOperations.AsNoTracking().Where(a => userId != null && roleIds.Contains(a.RoleId) && a.Role.CompanyId == companyId
+            && Database.UserRoles.Any(r => r.UserId == userId && r.RoleId == a.RoleId) && ids.Contains(a.Operation.MenuItemId)
+            && Database.MenuItemRoles.Any(m => m.MenuItemId == a.Operation.MenuItemId && m.RoleId == a.RoleId)).Select(a => a.Operation.Key).ToListAsync();
+        CanCreate = keys.Contains("create", StringComparer.OrdinalIgnoreCase); CanEdit = keys.Contains("edit", StringComparer.OrdinalIgnoreCase); CanDelete = keys.Contains("delete", StringComparer.OrdinalIgnoreCase);
+    }
+
+    private async Task<WorkingCompany?> CheckContextAsync(string? operation = null)
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var company = await GetCompanyAsync(user);
+        if (company is null || company.Id != CompanyId || company.MappingId != MappingId) { Error = "The working company changed or is unavailable. Reload the page."; return null; }
+        await LoadPermissionsAsync(user, company.Id);
+        if (!CanView) { Error = "Your role no longer has access to Buyer Contracts."; return null; }
+        if (operation is not null && !(operation switch { "create" => CanCreate, "edit" => CanEdit, "delete" => CanDelete, _ => false })) { Error = "Your role is not permitted to perform this operation."; return null; }
+        return company;
+    }
+
+    private BuyerContract? CurrentContract(BuyerContract selected, int mappingId) =>
+        Contracts.GetContractList(selected.ContractName ?? "all", mappingId).FirstOrDefault(c => c.ContractId == selected.ContractId);
+    private static bool SameVersion(BuyerContract original, BuyerContract? current) => original.RowVersion is not null && current?.RowVersion is not null && original.RowVersion.SequenceEqual(current.RowVersion);
+    private void OpenDialog(DialogKind kind) { Error = null; Success = null; Dialog = kind; OpenAfterRender = true; }
+    private async Task CloseDialogAsync()
+    {
+        if (Busy) return;
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", DialogElement);
+        Dialog = DialogKind.None; Selected = null; EditingDetail = null; Error = null;
+    }
+    private async Task BeginCreateAsync()
+    {
+        if (Busy || !CanCreate) return;
+        try
+        {
+            var company = await CheckContextAsync("create"); if (company is null) return;
+            BuyerItems = Buyers.GetAllBuyers("all", company.MappingId); Selected = null; Form = new(); OpenDialog(DialogKind.Editor);
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Could not load buyers for {CompanyId}", CompanyId); Error = "Buyers could not be loaded."; }
+    }
+    private void BeginEdit(BuyerContract item)
+    {
+        if (Busy || !CanEdit) return;
+        if (!DateTime.TryParseExact(item.CompletionDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)) { Error = "The contract has an invalid completion date; it cannot be edited."; return; }
+        Selected = item; BuyerItems = [new Buyer { BuyerId = item.BuyerId, BuyerCode = item.BuyerCode, BuyerName = item.BuyerName }];
+        Form = new() { Name = item.ContractName ?? "", BuyerId = item.BuyerId, CompletionDate = date }; OpenDialog(DialogKind.Editor);
+    }
+    private void BeginDelete(BuyerContract item) { if (Busy || !CanDelete) return; Selected = item; OpenDialog(DialogKind.Delete); }
+    private async Task OpenDetailsAsync(BuyerContract item)
+    {
+        if (Busy) return;
+        try
+        {
+            var company = await CheckContextAsync(); if (company is null) return;
+            if (!SameVersion(item, CurrentContract(item, company.MappingId))) { Error = "The contract changed or is no longer available. Refresh the list."; return; }
+            Selected = item; EditingDetail = null; DetailForm = new(); StandardSearch = ""; LoadDetails(company.MappingId); OpenDialog(DialogKind.Details);
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to load contract details for {ContractId}", item.ContractId); Error = "Contract standards could not be loaded."; }
+    }
+    private void LoadDetails(int mappingId)
+    {
+        Details = Contracts.GetBuyerContractDetailById(Selected!.ContractId);
+        Available = Contracts.GetAvailableStandardsByIdAndSearchStr(Selected.ContractId, StandardSearchText, mappingId);
+    }
+    private string StandardSearchText => string.IsNullOrWhiteSpace(StandardSearch) ? "all" : StandardSearch.Trim();
+    private async Task SearchStandardsAsync()
+    {
+        if (Busy || Selected is null) return;
+        try
+        {
+            var company = await CheckContextAsync("edit"); if (company is null) return;
+            if (!SameVersion(Selected, CurrentContract(Selected, company.MappingId))) { Error = "The contract changed or is no longer available. Refresh the list."; return; }
+            Available = Contracts.GetAvailableStandardsByIdAndSearchStr(Selected.ContractId, StandardSearchText, company.MappingId);
+            DetailForm.StandardId = null; Error = null;
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to search contract standards for {CompanyId}", CompanyId); Error = "Available standards could not be loaded."; }
+    }
+    private void EditDetail(BuyerContractDetail detail) { if (Busy || !CanEdit) return; EditingDetail = detail; DetailForm = new() { StandardId = detail.StandardId, Quantity = detail.OrderQty }; Error = null; }
+    private void CancelDetailEdit() { EditingDetail = null; DetailForm = new(); Error = null; }
+    private async Task SearchAsync()
+    {
+        if (Busy) return;
+        try { var company = await CheckContextAsync(); if (company is null) return; Error = null; Items = Contracts.GetContractList(string.IsNullOrWhiteSpace(Search) ? "all" : Search.Trim(), company.MappingId); }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to search contracts for {CompanyId}", CompanyId); Error = "Contracts could not be loaded."; }
+    }
+    private async Task SaveAsync()
+    {
+        if (Busy || Dialog != DialogKind.Editor) return;
+        Busy = true; Error = null;
+        try
+        {
+            var company = await CheckContextAsync(Selected is null ? "create" : "edit"); if (company is null) return;
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(user) || user.Length > 50) { Error = "Your account name cannot be recorded by the contract database."; return; }
+            if (Selected is null && !Buyers.GetAllBuyers("all", company.MappingId).Any(b => b.BuyerId == Form.BuyerId)) { Error = "The selected buyer is no longer available for this company."; return; }
+            if (Selected is not null && !SameVersion(Selected, CurrentContract(Selected, company.MappingId))) { Error = "The contract changed or is no longer available. Refresh the list."; return; }
+            var contract = new BuyerContract { ContractId = Selected?.ContractId ?? 0, CompanyId = company.MappingId, BuyerId = Form.BuyerId!.Value, ContractName = Form.Name.Trim(), CompletionDate = Form.CompletionDate!.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), RowVersion = Selected?.RowVersion, User = user };
+            var result = Selected is null ? Contracts.CreateContract(contract) : Contracts.UpdateContract(contract);
+            if (!result.Succeeded) { Error = result.ErrorMessage; return; }
+            await FinishWriteAsync(company.MappingId, "Contract saved.");
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to save contract for {CompanyId}", CompanyId); Error = "The contract could not be saved. It may have changed; refresh and try again."; }
+        finally { Busy = false; }
+    }
+    private async Task DeleteAsync()
+    {
+        if (Busy || Dialog != DialogKind.Delete || Selected is null) return;
+        Busy = true; Error = null;
+        try
+        {
+            var company = await CheckContextAsync("delete"); if (company is null) return;
+            if (!SameVersion(Selected, CurrentContract(Selected, company.MappingId))) { Error = "The contract changed or is no longer available. Refresh the list."; return; }
+            var result = Contracts.DeleteContract(Selected); if (!result.Succeeded) { Error = result.ErrorMessage; return; }
+            await FinishWriteAsync(company.MappingId, "Contract deleted.");
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to delete contract for {CompanyId}", CompanyId); Error = "The contract could not be deleted. It may be referenced by other records."; }
+        finally { Busy = false; }
+    }
+    private async Task FinishWriteAsync(int mappingId, string message)
+    {
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", DialogElement);
+        Dialog = DialogKind.None; Selected = null; Success = message;
+        try { Items = Contracts.GetContractList(string.IsNullOrWhiteSpace(Search) ? "all" : Search.Trim(), mappingId); }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to refresh contracts for {CompanyId}", CompanyId); Error = "The change was saved, but contracts could not be refreshed."; }
+    }
+    private async Task SaveDetailAsync()
+    {
+        if (Busy || Dialog != DialogKind.Details || Selected is null) return;
+        Busy = true; Error = null;
+        try
+        {
+            var company = await CheckContextAsync("edit"); if (company is null) return;
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(user) || user.Length > 50) { Error = "Your account name cannot be recorded by the contract database."; return; }
+            if (!SameVersion(Selected, CurrentContract(Selected, company.MappingId))) { Error = "The contract changed or is no longer available. Refresh the list."; return; }
+            if (DetailForm.Quantity != decimal.Round(DetailForm.Quantity!.Value, 2)) { Error = "Order quantity can have at most two decimal places."; return; }
+            if (EditingDetail is null && !Contracts.GetAvailableStandardsByIdAndSearchStr(Selected.ContractId, StandardSearchText, company.MappingId).Any(s => s.StandardId == DetailForm.StandardId)) { Error = "The selected standard is no longer available."; return; }
+            if (EditingDetail is not null && EditingDetail.RowVersion is null) { Error = "The standard has no version information. Reopen this contract."; return; }
+            var detail = new BuyerContractDetail { ContractId = Selected.ContractId, StandardId = DetailForm.StandardId!.Value, OrderQty = DetailForm.Quantity!.Value, RowVersion = EditingDetail?.RowVersion, User = user };
+            var result = EditingDetail is null ? Contracts.CreateBuyerContractDetail(detail) : Contracts.UpdateBuyerContractDetail(detail);
+            if (!result.Succeeded) { Error = result.ErrorMessage; return; }
+            EditingDetail = null; DetailForm = new();
+            try { LoadDetails(company.MappingId); }
+            catch (SqlException ex) { Details = []; Available = []; Logger.LogError(ex, "Unable to refresh contract standards for {ContractId}", Selected.ContractId); Error = "The standard was saved, but the list could not be refreshed. Close and reopen the contract."; }
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to save contract standard for {CompanyId}", CompanyId); Error = "The standard could not be saved. It may have changed; reopen the contract and try again."; }
+        finally { Busy = false; }
+    }
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private enum DialogKind { None, Editor, Delete, Details }
+    private sealed class ContractInput
+    {
+        [Required, StringLength(50)] public string Name { get; set; } = "";
+        [Required, Range(1, int.MaxValue)] public int? BuyerId { get; set; }
+        [Required] public DateTime? CompletionDate { get; set; } = DateTime.Today;
+    }
+    private sealed class DetailInput
+    {
+        [Required, Range(1, int.MaxValue)] public int? StandardId { get; set; }
+        [Required, Range(typeof(decimal), "0", "9999999999999999.99")] public decimal? Quantity { get; set; }
+    }
+}
