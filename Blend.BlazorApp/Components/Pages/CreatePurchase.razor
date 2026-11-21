@@ -1,0 +1,119 @@
+@page "/Operations/Purchase"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using System.Security.Claims
+@using System.Text.Json
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Brokers
+@using Blend.BusinessService.GardenMarks
+@using Blend.BusinessService.Grades
+@using Blend.BusinessService.Purchases
+@using Blend.DataService.Purchases
+@using Microsoft.Data.SqlClient
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IPurchaseService Purchases
+@inject IBrokerService Brokers
+@inject IGardenMarkService GardenMarks
+@inject IGradeService Grades
+@inject IPurchaseUploadLogService UploadLog
+@inject ILogger<CreatePurchase> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Create Purchase</PageTitle>
+<div class="page-heading"><div><span class="eyebrow">TEA OPERATIONS</span><h1>Create Purchase</h1>@if (CompanyName is not null) { <p class="muted">Auction sales for @CompanyName</p> }</div>
+    <button class="button button-primary" type="button" @onclick="BeginCreate" disabled="@(Loading || Busy || !CanCreate || !CanView)">Create sale</button></div>
+@if (Loading) { <section class="panel loading-state"><span class="spinner"></span>Loading sales...</section> }
+else if (PageError is not null) { <section class="panel empty-state" role="alert">@PageError</section> }
+else if (CompanyId is null) { <section class="panel empty-state">Select an active working company. <a href="/Account/WorkingCompany">Choose working company</a></section> }
+else if (!CanView) { <section class="panel empty-state">Your role does not have access to Create Purchase.</section> }
+else
+{
+    @if (Error is not null && Dialog == DialogKind.None) { <div class="alert alert-error" role="alert">@Error</div> }
+    @if (Success is not null) { <div class="alert alert-success" role="status">@Success</div> }
+    <section class="panel notes-panel"><div class="panel-header"><h2>Auction sales <span class="count-pill">@Sales.Count</span></h2>
+        <div class="broker-toolbar"><input class="form-control broker-search" aria-label="Search sale date" maxlength="45" @bind="Search" @bind:event="oninput" /><button class="button button-quiet button-small" type="button" @onclick="SearchAsync" disabled="@Busy">Search</button></div></div>
+        @if (Sales.Count == 0) { <div class="empty-state compact-empty">No sales found.</div> }
+        else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Sale date</th><th>Status</th><th>Last modified</th><th class="purchase-sale-actions">Actions</th></tr></thead><tbody>
+            @foreach (var sale in Sales) { <tr @key="sale.SaleId"><td>@sale.SaleDate</td><td>@sale.SaleStatus</td><td>@sale.ModifiedDate @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
+                <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(sale)" disabled="@(Busy || !CanEdit || sale.IsClosed)">Edit</button>
+                <button class="button button-quiet button-small purchase-lines-button" type="button" @onclick="() => OpenLinesAsync(sale)" disabled="@Busy" aria-busy="@(LoadingLinesSaleId == sale.SaleId ? "true" : "false")">@if (LoadingLinesSaleId == sale.SaleId) { <span class="spinner button-spinner" aria-hidden="true"></span><span role="status">Loading lines...</span> } else { <span>Lines</span> }</button>
+                <button class="button button-quiet button-small" type="button" @onclick="() => BeginStatus(sale)" disabled="@(Busy || !CanEdit)">@(sale.IsClosed ? "Open sale" : "Close sale")</button>
+            </td></tr> }
+        </tbody></table></div> }
+    </section>
+    <dialog @ref="DialogElement" class="modal-card modal-wide broker-editor @(Dialog == DialogKind.Lines ? "purchase-lines-dialog" : Dialog == DialogKind.Sale ? "purchase-sale-dialog" : null)" aria-labelledby="purchase-dialog-title">
+        @if (Dialog != DialogKind.None)
+        {
+            <div class="modal-heading"><h2 id="purchase-dialog-title">@DialogTitle</h2><button class="icon-button" type="button" aria-label="Close" @onclick="CloseDialogAsync" disabled="@Busy">&times;</button></div>
+            @if (Error is not null) { <div class="alert alert-error" role="alert">@Error</div> }
+            @if (Success is not null) { <div class="alert alert-success" role="status">@Success</div> }
+            @if (Dialog == DialogKind.Sale)
+            {
+                <EditForm Model="@SaleForm" OnValidSubmit="SaveSaleAsync"><DataAnnotationsValidator /><ValidationSummary />
+                    <label for="sale-date">Sale date</label><InputDate id="sale-date" class="form-control" @bind-Value="SaleForm.Date" />
+                    <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button class="button button-primary" type="submit" disabled="@Busy">Save sale</button></div>
+                </EditForm>
+            }
+            else if (Dialog == DialogKind.Status && SelectedSale is not null)
+            {
+                <p>@(SelectedSale.IsClosed ? "Open" : "Close") the sale dated <strong>@SelectedSale.SaleDate</strong>?</p>
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button class="button button-primary" type="button" @onclick="ChangeStatusAsync" disabled="@Busy">Confirm</button></div>
+            }
+            else if (Dialog == DialogKind.Lines && SelectedSale is not null)
+            {
+                <p>Sale date: @SelectedSale.SaleDate — @(SelectedSale.IsClosed ? "Closed" : "Open")</p>
+                <div class="heading-actions"><button class="button button-primary button-small" type="button" @onclick="BeginAddLineAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)">Add line</button>
+                    <button class="button button-quiet button-small" type="button" @onclick="BeginUploadAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)">Upload CSV</button></div>
+                @if (Lines.Count == 0) { <p class="muted">No straight lines added.</p> }
+                else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Box</th><th>Type</th><th>Invoice</th><th>Lot</th><th>Broker</th><th>Grade</th><th>Garden mark</th><th>Net</th><th>Packs</th><th>Reduction</th><th>Weight</th><th>Rate</th><th>Value</th><th>Actions</th></tr></thead><tbody>
+                    @foreach (var line in Lines) { <tr @key="line.Id"><td>@line.BoxNo</td><td>@line.SaleType @line.SaleCode</td><td>@line.Invoice</td><td>@line.LotNo</td><td>@line.BrokerCode</td><td>@line.Grade</td><td>@line.GardenMark</td><td>@FormatGridAmount(line.NetWeight)</td><td>@FormatGridAmount(line.Packs)</td><td>@FormatGridAmount(line.ReducedQty)</td><td>@FormatGridAmount(line.VirtualWeight)</td><td>@FormatGridAmount(line.Rate)</td><td>@FormatGridAmount(line.VirtualValue)</td><td class="row-actions">
+                        @if (!line.IsRepeated) { <button class="button button-quiet button-small" type="button" @onclick="() => BeginEditLineAsync(line)" disabled="@(Busy || !CanEdit || SelectedSale.IsClosed)">Edit line</button> }
+                        <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDeleteLine(line)" disabled="@(Busy || !CanDelete || SelectedSale.IsClosed)">Delete line</button></td></tr> }
+                </tbody></table></div> }
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync">Close</button></div>
+            }
+            else if (Dialog == DialogKind.Line)
+            {
+                <EditForm Model="@LineForm" OnValidSubmit="SaveLineAsync"><DataAnnotationsValidator /><ValidationSummary /><fieldset class="broker-form-grid" disabled="@Busy">
+                    <div><label for="line-type">Sale type</label><InputSelect id="line-type" class="form-control" @bind-Value="LineForm.SaleType"><option value="">Select</option><option>MS</option><option>PS</option><option>OL</option></InputSelect></div>
+                    <div><label for="line-code">Sale code</label><InputText id="line-code" class="form-control" maxlength="3" @bind-Value="LineForm.SaleCode" /></div>
+                    <div><label for="line-lot">Lot</label><InputText id="line-lot" class="form-control" maxlength="10" @bind-Value="LineForm.LotNo" /></div>
+                    <div><label for="line-invoice">Invoice</label><InputText id="line-invoice" class="form-control" maxlength="10" @bind-Value="LineForm.Invoice" /></div>
+                    <div><label for="line-broker">Broker</label><InputSelect id="line-broker" class="form-control" @bind-Value="LineForm.BrokerId"><option value="">Select broker</option>@foreach (var broker in BrokerItems) { <option value="@broker.BrokerId">@broker.BrokerCode - @broker.BrokerName</option> }</InputSelect></div>
+                    <div><label for="line-mark">Garden mark</label><InputText id="line-mark" class="form-control" list="purchase-marks" maxlength="45" @bind-Value="LineForm.GardenMark" /><datalist id="purchase-marks">@foreach (var mark in Marks) { <option value="@mark"></option> }</datalist></div>
+                    <div><label for="line-grade">Grade</label><InputText id="line-grade" class="form-control" list="purchase-grades" maxlength="45" @bind-Value="LineForm.Grade" /><datalist id="purchase-grades">@foreach (var grade in GradeItems) { <option value="@grade"></option> }</datalist></div>
+                    <div><label for="line-standard">Standard</label><InputText id="line-standard" class="form-control" maxlength="45" @bind-Value="LineForm.Standard" /></div>
+                    <div><label for="line-packs1">Packs</label><InputNumber id="line-packs1" class="form-control" step="0.01" @bind-Value="LineForm.Pack1" /></div><div><label for="line-net1">Net</label><InputNumber id="line-net1" class="form-control" step="0.01" @bind-Value="LineForm.Net1" /></div>
+                    <div><label for="line-packs2">Repeated packs</label><InputNumber id="line-packs2" class="form-control" step="0.01" @bind-Value="LineForm.Pack2" /></div><div><label for="line-net2">Repeated net</label><InputNumber id="line-net2" class="form-control" step="0.01" @bind-Value="LineForm.Net2" /></div>
+                    <div><label for="line-reduction">Reduced quantity</label><InputNumber id="line-reduction" class="form-control" step="0.01" @bind-Value="LineForm.ReducedQty" /></div><div><label for="line-rate">Rate</label><InputNumber id="line-rate" class="form-control" step="0.01" @bind-Value="LineForm.Rate" /></div>
+                </fieldset><p>Weight: @(PreviewWeight?.ToString("0.00") ?? "Invalid") &nbsp; Value: @(PreviewValue?.ToString("0.00") ?? "Invalid")</p>
+                <fieldset><legend>Certifications</legend>@foreach (var certificate in Certificates) { <label><input type="checkbox" checked="@SelectedCertificates.Contains(certificate)" @onchange="e => SetCertificate(certificate, e.Value is true)" /> @certificate</label> }</fieldset>
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="BackToLines" disabled="@Busy">Cancel</button><button class="button button-primary" type="submit" disabled="@Busy">Save line</button></div></EditForm>
+            }
+            else if (Dialog == DialogKind.Delete && SelectedLine is not null)
+            {
+                <p>Delete this purchase line? This will remove its available stock.</p><div class="modal-actions"><button class="button button-quiet" type="button" @onclick="BackToLines" disabled="@Busy">Cancel</button><button class="button button-danger" type="button" @onclick="DeleteLineAsync" disabled="@Busy">Delete line</button></div>
+            }
+            else if (Dialog == DialogKind.Upload)
+            {
+                <p>Choose a legacy 14-column CSV file, validate it, then confirm the import. Each line is saved separately.</p>
+                <fieldset class="broker-form-grid" disabled="@(Busy || UploadAttempted)"><div><label for="upload-broker">Broker</label><select id="upload-broker" class="form-control" @bind="UploadBroker"><option value="">Select broker</option>@foreach (var broker in BrokerItems) { <option value="@broker.BrokerId">@broker.BrokerCode - @broker.BrokerName</option> }</select></div>
+                    <div><label for="upload-type">Sale type</label><select id="upload-type" class="form-control" @bind="UploadType"><option value="">Select</option><option>MS</option><option>PS</option><option>OL</option></select></div>
+                    <div><label for="upload-code">Sale code</label><input id="upload-code" class="form-control" maxlength="3" @bind="UploadCode" /></div>
+                    <div><label for="upload-file">CSV file (maximum 5 MB)</label><InputFile id="upload-file" OnChange="ReadFileAsync" accept=".csv" /></div></fieldset>
+                @if (UploadRows.Count > 0) { <p>@UploadRows.Count validated rows</p><div class="table-scroll"><table class="data-table"><thead><tr><th>Row</th><th>Lot</th><th>Garden mark</th><th>Invoice</th><th>Grade</th><th>Packs</th><th>Net</th><th>Reduction</th><th>Weight</th><th>Rate</th></tr></thead><tbody>@foreach (var row in UploadRows) { <tr><td>@row.RowNumber</td><td>@row.Lot</td><td>@row.Mark</td><td>@row.Invoice</td><td>@row.Grade</td><td>@FormatGridAmount(row.Packs)</td><td>@FormatGridAmount(row.Net)</td><td>@FormatGridAmount(row.Reduction)</td><td>@FormatGridAmount(row.Quantity)</td><td>@FormatGridAmount(row.Rate)</td></tr> }</tbody></table></div> }
+                @if (UploadResults.Count > 0) { <h3>Import results</h3><ul>@foreach (var result in UploadResults) { <li>Row @result.RowNumber (@result.Lot): @result.Status</li> }</ul> }
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="BackToLines" disabled="@Busy">Back to lines</button><button class="button button-primary" type="button" @onclick="ConfirmUpload" disabled="@(Busy || UploadRows.Count == 0 || UploadAttempted)">Review import</button></div>
+            }
+            else if (Dialog == DialogKind.UploadConfirm)
+            {
+                <p>Import @UploadRows.Count rows for the selected broker? Successfully imported rows cannot be automatically undone.</p><div class="modal-actions"><button class="button button-quiet" type="button" @onclick="() => Dialog = DialogKind.Upload" disabled="@Busy">Cancel</button><button class="button button-primary" type="button" @onclick="UploadAsync" disabled="@Busy">Confirm import</button></div>
+            }
+        }
+    </dialog>
+}

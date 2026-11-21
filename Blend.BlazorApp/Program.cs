@@ -102,6 +102,7 @@ builder.Services.AddScoped<IGradeDataService, GradeDataService>();
 builder.Services.AddScoped<ITeaStandardService, TeaStandardService>();
 builder.Services.AddScoped<ITeaStandardDataService, TeaStandardDataService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IPurchaseUploadLogService, PurchaseUploadLogService>();
 builder.Services.AddScoped<IPurchaseDataService>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");
