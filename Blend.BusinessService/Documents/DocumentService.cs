@@ -15,14 +15,19 @@ public sealed class DocumentService : IDocumentService
     {
         var record = _dataService.GetDocumentNumbers(docType).Single(item => item.CompanyId == companyId);
         var document = ToDocument(record);
-        if (document.DocFormat is null)
+        document.FormattedDocNo = FormatDocumentNumber(record);
+        return document;
+    }
+
+    internal static string FormatDocumentNumber(DocumentRecord record)
+    {
+        if (record.DocFormat is null)
         {
             throw new InvalidOperationException("The document number has no format.");
         }
 
-        var paddedNumber = document.DocFormat + document.DocNo;
-        document.FormattedDocNo = paddedNumber.Substring(paddedNumber.Length - document.DocFormat.Length) + document.Prefix;
-        return document;
+        var paddedNumber = record.DocFormat + record.DocNo;
+        return paddedNumber.Substring(paddedNumber.Length - record.DocFormat.Length) + record.Prefix;
     }
 
     public IReadOnlyList<DocumentNo> GetDocumentData() =>

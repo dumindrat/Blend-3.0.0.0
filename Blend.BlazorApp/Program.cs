@@ -8,6 +8,7 @@ using Blend.BusinessService.Contracts;
 using Blend.BusinessService.Documents;
 using Blend.BusinessService.GardenMarks;
 using Blend.BusinessService.Grades;
+using Blend.BusinessService.Purchases;
 using Blend.BusinessService.TeaStandards;
 using Blend.DataService.Brokers;
 using Blend.DataService.Buyers;
@@ -16,6 +17,7 @@ using Blend.DataService.Documents;
 using Blend.DataService.GardenMarks;
 using Blend.DataService.Grades;
 using Blend.DataService.Mapping;
+using Blend.DataService.Purchases;
 using Blend.DataService.TeaStandards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -99,6 +101,16 @@ builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IGradeDataService, GradeDataService>();
 builder.Services.AddScoped<ITeaStandardService, TeaStandardService>();
 builder.Services.AddScoped<ITeaStandardDataService, TeaStandardDataService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IPurchaseDataService>(services =>
+{
+    var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("Configure ConnectionStrings:BlendData before using business data services.");
+    }
+    return new PurchaseDataService(services.GetRequiredService<IStoredProcedureMapper>(), () => new SqlConnection(connectionString));
+});
 builder.Services.AddScoped<IStoredProcedureMapper>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");
