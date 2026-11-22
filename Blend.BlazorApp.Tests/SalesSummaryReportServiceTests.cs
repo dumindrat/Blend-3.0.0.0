@@ -22,8 +22,12 @@ public sealed class SalesSummaryReportServiceTests
         var connection = new SalesSummaryTestConnection();
         purchases.OnQuery = () => { Assert.IsNotNull(connection.Transaction); Assert.IsFalse(connection.Transaction.Disposed); Assert.IsFalse(connection.Transaction.Committed); };
         var service = CreateService(purchases, Environments.Development, connection);
-        using var document = PdfDocument.Open(service.Generate(123, "Test Company", 2));
+        var before = DateTimeOffset.UtcNow;
+        using var document = PdfDocument.Open(service.Generate(123, "Test Company", 2, "report-user"));
+        var after = DateTimeOffset.UtcNow;
         var text = string.Join("\n", document.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
+        StringAssert.Contains(text, "Printed by: report-user");
+        Assert.IsTrue(Enumerable.Range(0, (int)(after - before).TotalSeconds + 2).Any(i => text.Contains(before.AddSeconds(i).ToString("yyyy-MM-dd HH:mm:ss") + " UTC", StringComparison.Ordinal)));
         Assert.AreEqual(123, purchases.SaleId);
         Assert.AreEqual(123, connection.Arguments["SaleId"]);
         Assert.AreEqual(2, connection.Arguments["CompanyId"]);
@@ -39,20 +43,20 @@ public sealed class SalesSummaryReportServiceTests
     {
         var purchases = new FakePurchaseReports();
         var service = CreateService(purchases, Environments.Development);
-        var noData = Assert.ThrowsExactly<EmptySalesSummaryException>(() => service.Generate(7, "Company", 2));
+        var noData = Assert.ThrowsExactly<EmptySalesSummaryException>(() => service.Generate(7, "Company", 2, "user"));
         StringAssert.Contains(noData.Message, "No sales summary data");
         Assert.AreEqual(7, purchases.SaleId);
         var failure = new InvalidOperationException("Query failed");
         purchases.Failure = failure;
-        Assert.AreSame(failure, Assert.ThrowsExactly<InvalidOperationException>(() => service.Generate(8, "Company", 2)));
+        Assert.AreSame(failure, Assert.ThrowsExactly<InvalidOperationException>(() => service.Generate(8, "Company", 2, "user")));
     }
 
     [TestMethod]
     public void RejectsInvalidSaleAndProductionBeforeQuery()
     {
         var purchases = new FakePurchaseReports();
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => CreateService(purchases, Environments.Development).Generate(0, "Company", 2));
-        Assert.ThrowsExactly<InvalidOperationException>(() => CreateService(purchases, Environments.Production).Generate(123, "Company", 2));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => CreateService(purchases, Environments.Development).Generate(0, "Company", 2, "user"));
+        Assert.ThrowsExactly<InvalidOperationException>(() => CreateService(purchases, Environments.Production).Generate(123, "Company", 2, "user"));
         Assert.IsNull(purchases.SaleId);
     }
 
@@ -62,12 +66,13 @@ public sealed class SalesSummaryReportServiceTests
         var purchases = new FakePurchaseReports();
         var connection = new SalesSummaryTestConnection { OwnsSale = false };
         var service = CreateService(purchases, Environments.Development, connection);
-        var invalidSale = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => service.Generate(0, "Company", 1));
-        var invalidCompany = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => service.Generate(1, "Company", 0));
+        var invalidSale = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => service.Generate(0, "Company", 1, "user"));
+        var invalidCompany = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => service.Generate(1, "Company", 0, "user"));
+        Assert.ThrowsExactly<ArgumentException>(() => service.Generate(1, "Company", 2, " "));
         Assert.AreEqual("saleId", invalidSale.ParamName);
         Assert.AreEqual("companyId", invalidCompany.ParamName);
         Assert.IsNull(connection.Transaction);
-        Assert.ThrowsExactly<SaleNotInCompanyException>(() => service.Generate(123, "Company", 2));
+        Assert.ThrowsExactly<SaleNotInCompanyException>(() => service.Generate(123, "Company", 2, "user"));
         Assert.IsNull(purchases.SaleId);
         Assert.IsFalse(connection.Transaction!.Committed);
     }

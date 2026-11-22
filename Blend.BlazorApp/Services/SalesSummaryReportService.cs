@@ -6,7 +6,7 @@ namespace Blend.BlazorApp.Services;
 
 public interface ISalesSummaryReportService
 {
-    byte[] Generate(int saleId, string? companyName, int companyId);
+    byte[] Generate(int saleId, string? companyName, int companyId, string printedBy);
 }
 
 public sealed class SaleNotInCompanyException() : Exception("The selected sale is no longer available for the working company.");
@@ -18,12 +18,13 @@ public sealed class SalesSummaryReportService(
     IHostEnvironment environment,
     Func<IDbConnection> connectionFactory) : ISalesSummaryReportService
 {
-    public byte[] Generate(int saleId, string? companyName, int companyId)
+    public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy)
     {
         if (!environment.IsDevelopment())
             throw new InvalidOperationException("The QuestPDF evaluation report is available only in Development.");
         if (saleId <= 0) throw new ArgumentOutOfRangeException(nameof(saleId));
         if (companyId <= 0) throw new ArgumentOutOfRangeException(nameof(companyId));
+        ArgumentException.ThrowIfNullOrWhiteSpace(printedBy);
 
         using var connection = connectionFactory();
         connection.Open();
@@ -35,7 +36,7 @@ public sealed class SalesSummaryReportService(
 
         var rows = purchaseReports.GetSaleSummary(saleId);
         if (rows.Count == 0) throw new EmptySalesSummaryException();
-        var result = pdf.Generate(companyName, rows);
+        var result = pdf.Generate(companyName, rows, printedBy, DateTimeOffset.UtcNow);
         transaction.Commit();
         return result;
     }

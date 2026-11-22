@@ -8,10 +8,11 @@ namespace Blend.BlazorApp.Services;
 
 public sealed class SalesSummaryPdfService(IHostEnvironment environment)
 {
-    public byte[] Generate(string? companyName, IReadOnlyList<SaleSummary> rows)
+    public byte[] Generate(string? companyName, IReadOnlyList<SaleSummary> rows, string printedBy, DateTimeOffset printedAt)
     {
         if (!environment.IsDevelopment())
             throw new InvalidOperationException("The QuestPDF evaluation report is available only in Development.");
+        ArgumentException.ThrowIfNullOrWhiteSpace(printedBy);
         ArgumentNullException.ThrowIfNull(rows);
         if (rows.Count == 0)
             throw new ArgumentException("The sales summary contains no data.", nameof(rows));
@@ -46,8 +47,10 @@ public sealed class SalesSummaryPdfService(IHostEnvironment environment)
                 });
                 table.Header(header =>
                 {
-                    foreach (var title in new[] { "Broker", "ID", "Type", "Lots", "Weight", "Value", "90%", "10%", "100%" })
+                    foreach (var title in new[] { "Broker", "ID", "Type", "Lots" })
                         header.Cell().Element(HeaderCell).Text(title).Bold();
+                    foreach (var title in new[] { "Weight", "Value", "90%", "10%", "100%" })
+                        header.Cell().Element(HeaderCell).AlignRight().Text(title).Bold();
                 });
                 foreach (var row in rows)
                 {
@@ -65,7 +68,11 @@ public sealed class SalesSummaryPdfService(IHostEnvironment environment)
                 foreach (var value in new[] { totals.Weight, totals.Value, totals.NinetyPercent, totals.TenPercent, totals.HundredPercent })
                     table.Cell().Element(HeaderCell).AlignRight().Text(FormatNumber(value)).Bold();
             });
-            page.Footer().AlignRight().Text(text => { text.Span("Page "); text.CurrentPageNumber(); });
+            page.Footer().Row(footer =>
+            {
+                footer.RelativeItem().Text($"Printed by: {printedBy} | Printed at: {printedAt.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} UTC");
+                footer.ConstantItem(60).AlignRight().Text(text => { text.Span("Page "); text.CurrentPageNumber(); });
+            });
         })).GeneratePdf();
     }
 

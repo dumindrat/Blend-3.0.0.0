@@ -26,7 +26,7 @@ public partial class PurchaseReports
     private DateTime FromDate = DateTime.Today, ToDate = DateTime.Today;
     private string Grade = "", Standard = "", SaleType = "MS", BrokerCode = "", Output = "print";
     private bool WithValues;
-    private ElementReference DialogElement;
+    private ElementReference DialogElement, GenerateButton;
     private IJSObjectReference? DialogModule, ReportModule;
     private DotNetObjectReference<PurchaseReports>? DialogCallback;
     private string? PermissionReason => CanPrint ? null : "Your role does not have the Purchase Reports Print permission.";
@@ -60,6 +60,11 @@ public partial class PurchaseReports
         OpenAfterRender = false;
         DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
         DialogCallback ??= DotNetObjectReference.Create(this);
+        if (Dialog == DialogKind.Summary && Environment.IsDevelopment())
+        {
+            ReportModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/PurchaseReports.razor.js");
+            await ReportModule.InvokeVoidAsync("bindGenerate", GenerateButton, DialogCallback, nameof(GenerateSummaryAsync), nameof(ReportPopupBlockedAsync));
+        }
         await DialogModule.InvokeVoidAsync("show", DialogElement, DialogCallback, nameof(CancelFromDialogAsync));
     }
 
@@ -127,11 +132,20 @@ public partial class PurchaseReports
         finally { LoadingBrokers = false; Busy = false; }
     }
 
-    private async Task GenerateSummaryAsync()
+    [JSInvokable]
+    public Task ReportPopupBlockedAsync() => InvokeAsync(() =>
+    {
+        DialogError = "The report tab was blocked. Allow pop-ups for this site and try again.";
+        StateHasChanged();
+    });
+
+    [JSInvokable]
+    public Task GenerateSummaryAsync(int tabId) => InvokeAsync(async () =>
     {
         if (Busy || Dialog != DialogKind.Summary || SelectedSale is null) return;
         Busy = true;
         DialogError = null;
+        StateHasChanged();
         try
         {
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -158,10 +172,17 @@ public partial class PurchaseReports
                 DialogError = "Sale Summary PDF is available only in Development.";
                 return;
             }
+            var printedBy = user.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(printedBy))
+            {
+                Logger.LogWarning("Cannot generate sale summary without an authenticated user name for {CompanyId}", CompanyId);
+                DialogError = "Your user name is unavailable. Sign in again and retry.";
+                return;
+            }
             var saleId = SelectedSale.SaleId;
-            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId));
-            ReportModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/PurchaseReports.razor.js");
-            await ReportModule.InvokeVoidAsync("downloadPdf", saleId, document);
+            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy));
+            if (ReportModule is null) throw new InvalidOperationException("The report viewer is not initialized.");
+            await ReportModule.InvokeVoidAsync("showPdf", tabId, document);
         }
         catch (SqlException ex)
         {
@@ -188,8 +209,8 @@ public partial class PurchaseReports
             Logger.LogError(ex, "Unable to display sale summary for {CompanyId}", CompanyId);
             DialogError = "The report could not be displayed. Please try again.";
         }
-        finally { Busy = false; }
-    }
+        finally { Busy = false; StateHasChanged(); }
+    });
 
     private async Task SearchAsync()
     {
