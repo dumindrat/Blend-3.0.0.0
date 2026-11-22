@@ -18,7 +18,7 @@ public sealed class PurchaseReportDataServiceTests
         var summaries = new[] { new SaleSummaryRecord { NoOfLots = 3 } };
         mapper.Result = summaries;
         Assert.AreSame(summaries, service.GetSaleSummary(17));
-        Check<SaleSummaryRecord>(mapper, "rpt_SalesSummary", ("SaleId", 17));
+        Check<SaleSummaryRecord>(mapper, "rpt_SalesSummary", ("saleno", 17));
 
         var sheets = new[] { new PurchaseSheetRecord { BoxNo = "B01" } };
         mapper.Result = sheets;

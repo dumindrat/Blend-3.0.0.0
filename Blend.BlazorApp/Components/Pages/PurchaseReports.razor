@@ -3,12 +3,15 @@
 @implements IAsyncDisposable
 @attribute [Authorize(Policy = "PasswordChangeComplete")]
 @using Blend.BlazorApp.Authentication
+@using Blend.BlazorApp.Services
 @using Blend.BusinessService.Brokers
 @using Blend.BusinessService.Purchases
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlendIdentityDbContext Database
 @inject IPurchaseService Purchases
 @inject IBrokerService Brokers
+@inject ISalesSummaryReportService Summaries
+@inject IHostEnvironment Environment
 @inject ILogger<PurchaseReports> Logger
 @inject IJSRuntime JS
 
@@ -22,7 +25,7 @@ else if (!CanView && Error is null) { <section class="panel empty-state">Your ro
 else if (!CanView) { <section class="panel empty-state" role="alert">@Error</section> }
 else
 {
-    <div class="alert alert-info" role="status">Report generation is not available yet. @if (!CanPrint) { <span>Your role also requires the Purchase Reports Print permission.</span> }</div>
+    <div class="alert alert-info" role="status">@(Environment.IsDevelopment() ? "Sale Summary PDF is available in Development." : "Sale Summary PDF is available only in Development.") Other report generation is not available yet. @if (!CanPrint) { <span>Your role also requires the Purchase Reports Print permission.</span> }</div>
     @if (Error is not null) { <div class="alert alert-error" role="alert">@Error</div> }
     <section class="panel notes-panel">
         <div class="panel-header">
@@ -75,10 +78,15 @@ else
                     }
                 </div>
             }
-            @if (Dialog != DialogKind.Broker) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
-            <label for="report-output">Output</label><select id="report-output" class="form-control" @bind="Output"><option value="print">Printable browser report</option><option value="csv">CSV download</option></select>
-            <p class="muted">Report generation is not available yet. These options are not saved.</p>
-            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync">Cancel</button><button class="button button-primary" type="button" disabled title="Report generation is not available yet">Generate report</button></div>
+            @if (Dialog != DialogKind.Summary)
+            {
+                @if (Dialog != DialogKind.Broker) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
+                <label for="report-output">Output</label><select id="report-output" class="form-control" @bind="Output"><option value="print">Printable browser report</option><option value="csv">CSV download</option></select>
+                <p class="muted">Report generation is not available yet. These options are not saved.</p>
+            }
+            else { <p class="muted">@(Environment.IsDevelopment() ? "Download the sale summary PDF with values." : "Sale Summary PDF is available only in Development.")</p> }
+            @if (DialogError is not null) { <div class="alert alert-error" role="alert">@DialogError</div> }
+            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button class="button button-primary" type="button" @onclick="GenerateSummaryAsync" disabled="@(Busy || !CanPrint || Dialog != DialogKind.Summary || !Environment.IsDevelopment())" title="@(PermissionReason ?? (Dialog != DialogKind.Summary ? "Report generation is not available yet" : !Environment.IsDevelopment() ? "Sale Summary PDF is available only in Development." : null))">@(Busy ? "Generating..." : "Generate report")</button></div>
         }
     </dialog>
 }

@@ -107,6 +107,17 @@ builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IPurchaseUploadLogService, PurchaseUploadLogService>();
 builder.Services.AddScoped<IPurchaseReportService, PurchaseReportService>();
 builder.Services.AddScoped<IPurchaseReportDataService, PurchaseReportDataService>();
+builder.Services.AddSingleton<SalesSummaryPdfService>();
+builder.Services.AddScoped<SalesSummaryReportService>(services =>
+{
+    var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");
+    if (string.IsNullOrWhiteSpace(connectionString))
+        throw new InvalidOperationException("Configure ConnectionStrings:BlendData before using business data services.");
+    return new SalesSummaryReportService(services.GetRequiredService<IPurchaseReportService>(),
+        services.GetRequiredService<SalesSummaryPdfService>(), services.GetRequiredService<IHostEnvironment>(),
+        () => new SqlConnection(connectionString));
+});
+builder.Services.AddScoped<ISalesSummaryReportService>(services => services.GetRequiredService<SalesSummaryReportService>());
 builder.Services.AddScoped<IPurchaseDataService>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");

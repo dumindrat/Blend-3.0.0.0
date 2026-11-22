@@ -14,7 +14,7 @@ public sealed class PurchaseReportDataService : IPurchaseReportDataService
     }
 
     public IReadOnlyList<SaleSummaryRecord> GetSaleSummary(int saleId) =>
-        _mapper.Query<SaleSummaryRecord>("rpt_SalesSummary", new { SaleId = saleId });
+        _mapper.Query<SaleSummaryRecord>("rpt_SalesSummary", new { saleno = saleId });
 
     public IReadOnlyList<PurchaseSheetRecord> GetPurchaseSheet(int saleId) =>
         _mapper.Query<PurchaseSheetRecord>("rpt_PurchaseSheetBySaleId", new { SaleId = saleId });

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Blend.BlazorApp.Authentication;
+using Blend.BlazorApp.Services;
 using Blend.BusinessService.Brokers;
 using Blend.BusinessService.Purchases;
 using Microsoft.AspNetCore.Components;
@@ -15,7 +16,7 @@ public partial class PurchaseReports
     private IReadOnlyList<PurchaseSale> Sales = [];
     private Guid? CompanyId;
     private int? MappingId;
-    private string? CompanyName, Error;
+    private string? CompanyName, Error, DialogError;
     private string Search = "";
     private bool Loading = true, Busy, CanView, CanPrint, LoadingBrokers, OpenAfterRender;
     private DialogKind Dialog;
@@ -26,7 +27,7 @@ public partial class PurchaseReports
     private string Grade = "", Standard = "", SaleType = "MS", BrokerCode = "", Output = "print";
     private bool WithValues;
     private ElementReference DialogElement;
-    private IJSObjectReference? DialogModule;
+    private IJSObjectReference? DialogModule, ReportModule;
     private DotNetObjectReference<PurchaseReports>? DialogCallback;
     private string? PermissionReason => CanPrint ? null : "Your role does not have the Purchase Reports Print permission.";
     private string ReportActionReason => CanPrint ? "Report generation is not available yet." : PermissionReason!;
@@ -69,14 +70,17 @@ public partial class PurchaseReports
     {
         DialogCallback?.Dispose();
         if (DialogModule is not null) { try { await DialogModule.DisposeAsync(); } catch (JSDisconnectedException) { } }
+        if (ReportModule is not null) { try { await ReportModule.DisposeAsync(); } catch (JSDisconnectedException) { } }
     }
 
     private async Task CloseDialogAsync()
     {
+        if (Busy) return;
         if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", DialogElement);
         Dialog = DialogKind.None;
         SelectedSale = null;
         BrokerItems = [];
+        DialogError = null;
     }
 
     private async Task OpenOptionsAsync(DialogKind kind, PurchaseSale? sale = null)
@@ -121,6 +125,70 @@ public partial class PurchaseReports
             Error = "Report options could not be loaded. Please try again.";
         }
         finally { LoadingBrokers = false; Busy = false; }
+    }
+
+    private async Task GenerateSummaryAsync()
+    {
+        if (Busy || Dialog != DialogKind.Summary || SelectedSale is null) return;
+        Busy = true;
+        DialogError = null;
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            var company = await GetCompanyAsync(user);
+            if (company is null || company.Id != CompanyId || company.MappingId != MappingId)
+            {
+                CanView = CanPrint = false;
+                Error = "The working company changed or is unavailable. Reload the page.";
+                return;
+            }
+            await LoadPermissionsAsync(user, company.Id);
+            if (!CanView)
+            {
+                Error = "Your role no longer has access to Purchase Reports.";
+                return;
+            }
+            if (!CanPrint)
+            {
+                DialogError = "Your role no longer has access to print Purchase Reports.";
+                return;
+            }
+            if (!Environment.IsDevelopment())
+            {
+                DialogError = "Sale Summary PDF is available only in Development.";
+                return;
+            }
+            var saleId = SelectedSale.SaleId;
+            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId));
+            ReportModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/PurchaseReports.razor.js");
+            await ReportModule.InvokeVoidAsync("downloadPdf", saleId, document);
+        }
+        catch (SqlException ex)
+        {
+            Logger.LogError(ex, "Unable to generate sale summary for {CompanyId}", CompanyId);
+            DialogError = "The report could not be generated. Please try again.";
+        }
+        catch (SaleNotInCompanyException ex)
+        {
+            Logger.LogWarning(ex, "Unable to generate sale summary for {CompanyId}", CompanyId);
+            DialogError = "The selected sale is no longer available for the working company.";
+        }
+        catch (EmptySalesSummaryException ex)
+        {
+            Logger.LogInformation(ex, "No sale summary data for {CompanyId}", CompanyId);
+            DialogError = ex.Message;
+        }
+        catch (ArgumentException ex)
+        {
+            Logger.LogError(ex, "Invalid sale summary data for {CompanyId}", CompanyId);
+            DialogError = "The report contains invalid or inconsistent data.";
+        }
+        catch (JSException ex)
+        {
+            Logger.LogError(ex, "Unable to display sale summary for {CompanyId}", CompanyId);
+            DialogError = "The report could not be displayed. Please try again.";
+        }
+        finally { Busy = false; }
     }
 
     private async Task SearchAsync()

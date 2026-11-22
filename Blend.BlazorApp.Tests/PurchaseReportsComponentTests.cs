@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Blend.BlazorApp.Authentication;
 using Blend.BlazorApp.Components.Pages;
+using Blend.BlazorApp.Services;
 using Blend.BusinessService;
 using Blend.BusinessService.Brokers;
 using Blend.BusinessService.Purchases;
@@ -8,6 +9,8 @@ using Bunit;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace Blend.BlazorApp.Tests;
 
@@ -25,7 +28,7 @@ public sealed class PurchaseReportsComponentTests
         StringAssert.Contains(page.Markup, "2026-11-19");
         StringAssert.Contains(page.Markup, "Closed");
         StringAssert.Contains(page.Markup, "operator");
-        StringAssert.Contains(page.Markup, "Report generation is not available yet");
+        StringAssert.Contains(page.Markup, "Other report generation is not available yet");
         foreach (var label in new[] { "Advanced filter options", "Broker-wise purchases", "Sale Summary", "Purchase Sheet", "Canister Sheet" })
         {
             var buttons = page.FindAll("button").Where(b => b.TextContent.Trim() == label).ToArray();
@@ -48,7 +51,7 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").Single(b => b.TextContent.Trim() == "Search").Click();
         page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("button[title='Report generation is not available yet.']").Count));
         Assert.IsTrue(page.FindAll("button[title='Report generation is not available yet.']").All(b => b.HasAttribute("disabled")));
-        Assert.IsFalse(page.FindAll("button").Single(b => b.TextContent.Trim() == "Advanced filter options").HasAttribute("disabled"));
+        page.WaitForAssertion(() => Assert.IsFalse(page.FindAll("button").Single(b => b.TextContent.Trim() == "Advanced filter options").HasAttribute("disabled")));
         Assert.IsFalse(page.Markup.Contains("also requires", StringComparison.Ordinal));
 
         fixture.RevokePrint();
@@ -77,9 +80,10 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
         StringAssert.Contains(page.Find("dialog").TextContent, "2026-11-18");
-        Assert.IsTrue(page.Find("dialog input[type=checkbox]").HasAttribute("checked"));
-        Assert.IsTrue(page.Find("dialog button[title='Report generation is not available yet']").HasAttribute("disabled"));
-        Assert.AreEqual(2, page.FindAll("#report-output option").Count);
+        StringAssert.Contains(page.Find("dialog").TextContent, "Download the sale summary PDF with values");
+        Assert.IsFalse(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
+        Assert.AreEqual(0, page.FindAll("#report-output").Count);
+        Assert.AreEqual(0, page.FindAll("dialog input[type=checkbox]").Count);
         page.Find("dialog button[aria-label='Close']").Click();
 
         page.FindAll("button").Last(b => b.TextContent.Trim() == "Purchase Sheet").Click();
@@ -107,6 +111,26 @@ public sealed class PurchaseReportsComponentTests
         Assert.IsTrue(page.Find("dialog button[title='Report generation is not available yet']").HasAttribute("disabled"));
         page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Cancel").Click();
         Assert.AreEqual(0, page.FindAll("#report-dialog-title").Count);
+    }
+
+    [TestMethod]
+    public void GenerateShowsRefreshedPrintPermission()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => Assert.IsFalse(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled")));
+
+        fixture.RevokePrint();
+        page.FindAll("button").Single(b => b.TextContent.Trim() == "Search").Click();
+        page.WaitForAssertion(() =>
+        {
+            var button = page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report");
+            Assert.IsTrue(button.HasAttribute("disabled"));
+            StringAssert.Contains(button.GetAttribute("title")!, "Print permission");
+        });
     }
 
     [TestMethod]
@@ -232,6 +256,73 @@ public sealed class PurchaseReportsComponentTests
     }
 
     [TestMethod]
+    public void SummaryGenerationCallsGenerateAndRechecksAuthorization()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
+        page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").Click();
+        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2), fixture.Summaries.Calls.Single()));
+        page.WaitForAssertion(() => Assert.AreEqual(1, fixture.ReportModule.Invocations.Count(call => call.Identifier == "downloadPdf")));
+        var invocation = fixture.ReportModule.Invocations.Single(call => call.Identifier == "downloadPdf");
+        Assert.AreEqual(17, invocation.Arguments[0]);
+        CollectionAssert.AreEqual(fixture.Summaries.Document, (byte[])invocation.Arguments[1]!);
+
+        fixture.RevokePrint();
+        page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "no longer has access"));
+        Assert.AreEqual(1, fixture.Summaries.Calls.Count);
+    }
+
+    [TestMethod]
+    public void SummaryPdfIsDisabledOutsideDevelopment()
+    {
+        using var fixture = new Fixture(development: false);
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "only in Development"));
+        Assert.IsTrue(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
+        Assert.AreEqual(0, fixture.Summaries.Calls.Count);
+    }
+
+    [TestMethod]
+    public void SummaryGenerationRejectsChangedCompanyBeforeReading()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
+        fixture.ChangeCompanyMapping();
+        page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Markup, "working company changed"));
+        Assert.AreEqual(0, fixture.Summaries.Calls.Count);
+    }
+
+    [TestMethod]
+    public void SummaryGenerationHandlesUnavailableSaleAndEmptyResults()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
+        fixture.Summaries.Failure = new SaleNotInCompanyException();
+        page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "no longer available for the working company"));
+        fixture.Summaries.Failure = new EmptySalesSummaryException();
+        page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "No sales summary data"));
+    }
+
+    [TestMethod]
     public void LoadingAndEmptyStatesAreVisible()
     {
         using var fixture = new Fixture();
@@ -251,8 +342,10 @@ public sealed class PurchaseReportsComponentTests
         public Bunit.TestContext Context { get; } = new();
         public FakePurchases Purchases { get; } = new();
         public FakeBrokers Brokers { get; } = new();
+        public FakeSummaries Summaries { get; } = new();
+        public BunitJSModuleInterop ReportModule { get; }
 
-        public Fixture(bool admin = false, bool secondRole = false)
+        public Fixture(bool admin = false, bool secondRole = false, bool development = true)
         {
             var company = TestData.Company(2);
             var role = new BlendIdentityRole("role", "Role", company.Id) { Id = "role-1" };
@@ -273,9 +366,13 @@ public sealed class PurchaseReportsComponentTests
             _database.SaveChanges();
             Context.JSInterop.Mode = JSRuntimeMode.Loose;
             Context.JSInterop.SetupModule("./Components/Pages/Buyers.razor.js").Mode = JSRuntimeMode.Loose;
+            ReportModule = Context.JSInterop.SetupModule("./Components/Pages/PurchaseReports.razor.js");
+            ReportModule.Mode = JSRuntimeMode.Loose;
+            Context.Services.AddSingleton<IHostEnvironment>(new TestHostEnvironment { EnvironmentName = development ? Environments.Development : Environments.Production });
             Context.Services.AddSingleton(_database);
             Context.Services.AddSingleton<IPurchaseService>(Purchases);
             Context.Services.AddSingleton<IBrokerService>(Brokers);
+            Context.Services.AddSingleton<ISalesSummaryReportService>(Summaries);
             var principal = TestData.Principal(company.Id, admin, role.Id);
             if (secondRole) ((ClaimsIdentity)principal.Identity!).AddClaim(new Claim(BlendClaims.RoleId, "role-2"));
             Context.Services.AddSingleton<AuthenticationStateProvider>(new FixedAuth(principal));
@@ -302,6 +399,27 @@ public sealed class PurchaseReportsComponentTests
     private sealed class FixedAuth(ClaimsPrincipal user) : AuthenticationStateProvider
     {
         public override Task<AuthenticationState> GetAuthenticationStateAsync() => Task.FromResult(new AuthenticationState(user));
+    }
+
+    private sealed class TestHostEnvironment : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = Environments.Production;
+        public string ApplicationName { get; set; } = "Tests";
+        public string ContentRootPath { get; set; } = ".";
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
+    }
+
+    private sealed class FakeSummaries : ISalesSummaryReportService
+    {
+        public List<(int Sale, string? CompanyName, int Company)> Calls { get; } = [];
+        public Exception? Failure { get; set; }
+        public byte[] Document { get; } = [37, 80, 68, 70];
+        public byte[] Generate(int saleId, string? companyName, int companyId)
+        {
+            Calls.Add((saleId, companyName, companyId));
+            if (Failure is not null) throw Failure;
+            return Document;
+        }
     }
 
     private sealed class FakeBrokers : IBrokerService
