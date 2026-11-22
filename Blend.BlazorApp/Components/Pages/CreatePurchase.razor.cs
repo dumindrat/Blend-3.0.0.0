@@ -30,9 +30,9 @@ public partial class CreatePurchase
     private LineInput LineForm = new();
     private Guid? CompanyId;
     private int? MappingId, UploadBroker, LoadingLinesSaleId;
-    private string? CompanyName, Error, PageError, Success, UploadFileName;
+    private string? CompanyName, Error, PageError, Success, UploadFileName, NextDocumentNumber;
     private string Search = "", AppliedSearch = "all", UploadType = "", UploadCode = "";
-    private bool Loading = true, Busy, CanView, CanCreate, CanEdit, CanDelete, OpenAfterRender, UploadAttempted;
+    private bool Loading = true, Busy, LoadingAddLine, CanView, CanCreate, CanEdit, CanDelete, OpenAfterRender, UploadAttempted;
     private DialogKind Dialog;
     private ElementReference DialogElement;
     private IJSObjectReference? DialogModule;
@@ -212,18 +212,41 @@ public partial class CreatePurchase
         catch (SqlException ex) { Logger.LogError(ex, "Unable to load purchase lines"); Error = "Purchase lines could not be loaded."; }
         finally { LoadingLinesSaleId = null; Busy = false; }
     }
-    private void LoadLookups(int mappingId)
+    private PurchaseLookups GetLookups(int mappingId) => new(
+        Brokers.GetAllBrokers("all", mappingId),
+        GardenMarks.GetGardenMarksList().Select(m => m.GardenMarkName).Where(m => !string.IsNullOrEmpty(m)).Select(m => m!).Distinct().ToArray(),
+        Grades.GetGradeList().Select(g => g.GradeName).Where(g => !string.IsNullOrEmpty(g)).Select(g => g!).Distinct().ToArray(),
+        Purchases.GetTeaCertificates().Select(c => c.CertifiedName).Where(c => !string.IsNullOrEmpty(c)).Select(c => c!).Distinct().ToArray());
+
+    private void ApplyLookups(PurchaseLookups lookups)
     {
-        BrokerItems = Brokers.GetAllBrokers("all", mappingId);
-        Marks = GardenMarks.GetGardenMarksList().Select(m => m.GardenMarkName).Where(m => !string.IsNullOrEmpty(m)).Select(m => m!).Distinct().ToArray();
-        GradeItems = Grades.GetGradeList().Select(g => g.GradeName).Where(g => !string.IsNullOrEmpty(g)).Select(g => g!).Distinct().ToArray();
-        Certificates = Purchases.GetTeaCertificates().Select(c => c.CertifiedName).Where(c => !string.IsNullOrEmpty(c)).Select(c => c!).Distinct().ToArray();
+        BrokerItems = lookups.Brokers; Marks = lookups.Marks; GradeItems = lookups.Grades; Certificates = lookups.Certificates;
     }
     private async Task BeginAddLineAsync()
     {
         if (Busy || !CanCreate || SelectedSale is null) return;
-        try { var company = await CheckContextAsync("create"); if (company is null || !CheckSale(company.MappingId, true)) return; LoadLookups(company.MappingId); SelectedLine = null; LineForm = new(); SelectedCertificates.Clear(); Dialog = DialogKind.Line; Error = null; }
-        catch (SqlException ex) { Logger.LogError(ex, "Unable to load purchase lookups"); Error = "Purchase lookups could not be loaded."; }
+        var selectedSale = SelectedSale;
+        Busy = true; LoadingAddLine = true; NextDocumentNumber = null; Error = null;
+        try
+        {
+            var company = await CheckContextAsync("create"); if (company is null) return;
+            var search = AppliedSearch;
+            var sale = await Task.Run(() => Purchases.GetAllSales(search, company.MappingId).FirstOrDefault(s => s.SaleId == selectedSale.SaleId));
+            if (sale is null || sale.SaleDate != selectedSale.SaleDate || sale.IsClosed != selectedSale.IsClosed || sale.IsClosed)
+            { Error = "The sale changed or is no longer available. Refresh and reopen it."; return; }
+            string number;
+            try
+            {
+                var formatted = await Task.Run(() => Documents.GetDocumentNo(1, company.MappingId).FormattedDocNo);
+                if (string.IsNullOrWhiteSpace(formatted) || formatted.Length > 10) throw new InvalidOperationException("The formatted purchase document number must contain at most 10 characters.");
+                number = formatted;
+            }
+            catch (InvalidOperationException ex) { Logger.LogError(ex, "Unable to obtain purchase document number for company {CompanyId}", company.MappingId); Error = "The purchase document number is unavailable or invalid. Check its configuration and try again."; return; }
+            var lookups = await Task.Run(() => GetLookups(company.MappingId));
+            ApplyLookups(lookups); NextDocumentNumber = number; SelectedLine = null; LineForm = new(); SelectedCertificates.Clear(); Dialog = DialogKind.Line;
+        }
+        catch (SqlException ex) { Logger.LogError(ex, "Unable to load purchase document number or lookups"); Error = "The purchase document number or lookups could not be loaded. Try again."; }
+        finally { LoadingAddLine = false; Busy = false; }
     }
     private async Task BeginEditLineAsync(StraightLine row)
     {
@@ -234,7 +257,7 @@ public partial class CreatePurchase
             if (!Purchases.GetAddedStraightLines(SelectedSale.SaleId).Any(l => l.Id == row.Id && !l.IsRepeated)) { Error = "The line is no longer available."; return; }
             var line = Purchases.GetStraightLineByReservedNo(row.Id);
             if (line is null || line.SaleId != SelectedSale.SaleId) { Error = "The line is no longer available."; return; }
-            LoadLookups(company.MappingId); SelectedLine = line; LineForm = LineInput.FromLine(line); SelectedCertificates.Clear();
+            ApplyLookups(GetLookups(company.MappingId)); SelectedLine = line; LineForm = LineInput.FromLine(line); SelectedCertificates.Clear();
             foreach (var value in (line.TeaCertificates ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) SelectedCertificates.Add(value);
             Certificates = Certificates.Concat(SelectedCertificates).Distinct().ToArray(); Dialog = DialogKind.Line; Error = null;
         }
@@ -391,6 +414,7 @@ public partial class CreatePurchase
     }
 
     private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private sealed record PurchaseLookups(IReadOnlyList<Broker> Brokers, IReadOnlyList<string> Marks, IReadOnlyList<string> Grades, IReadOnlyList<string> Certificates);
     private sealed record UploadResult(long RowNumber, string Lot, string Status);
     private enum DialogKind { None, Sale, Status, Lines, Line, Delete, Upload, UploadConfirm }
     private sealed class SaleInput { [Required] public DateTime? Date { get; set; } = DateTime.Today; }

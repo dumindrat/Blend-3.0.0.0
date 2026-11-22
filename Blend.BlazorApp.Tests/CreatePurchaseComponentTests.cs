@@ -3,6 +3,7 @@ using Blend.BlazorApp.Authentication;
 using Blend.BlazorApp.Components.Pages;
 using Blend.BusinessService;
 using Blend.BusinessService.Brokers;
+using Blend.BusinessService.Documents;
 using Blend.BusinessService.GardenMarks;
 using Blend.BusinessService.Grades;
 using Blend.BusinessService.Purchases;
@@ -21,13 +22,8 @@ public sealed class CreatePurchaseComponentTests
 {
     private static void Click(IRenderedComponent<CreatePurchase> page, string text)
     {
-        page.FindAll("button").Single(button => button.TextContent.Trim() == text).Click();
-        if (text == "Lines") page.WaitForAssertion(() =>
-        {
-            Assert.IsTrue(page.Find("dialog").ClassList.Contains("purchase-lines-dialog"));
-            Assert.AreEqual(0, page.FindAll("button[aria-busy='true']").Count);
-        });
-        if (text == "Upload CSV") page.WaitForAssertion(() => Assert.IsNotNull(page.FindComponent<InputFile>()));
+        page.FindAll("button").Single(button => button.TextContent.Trim() == text)
+            .ClickAsync(new Microsoft.AspNetCore.Components.Web.MouseEventArgs()).GetAwaiter().GetResult();
     }
 
     [TestMethod]
@@ -141,6 +137,8 @@ public sealed class CreatePurchaseComponentTests
         Click(page, "Lines");
         Assert.IsTrue(page.Find("dialog").ClassList.Contains("purchase-lines-dialog"));
         Assert.AreEqual(14, page.FindAll("dialog table th").Count);
+        Assert.AreEqual("Actions", page.Find("dialog th.purchase-line-actions").TextContent.Trim());
+        Assert.AreEqual(2, page.FindAll("dialog td.purchase-line-actions button").Count);
         Click(page, "Add line");
         Assert.IsFalse(page.Find("dialog").ClassList.Contains("purchase-lines-dialog"));
         Click(page, "Cancel");
@@ -186,6 +184,68 @@ public sealed class CreatePurchaseComponentTests
         CollectionAssert.AreEqual(new byte[] { 2 }, line.RowVersion2);
         Assert.AreEqual("Organic", line.TeaCertificates);
         Assert.IsTrue(page.Find("dialog").TextContent.Contains("Line saved.", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void AddLineShowsLoadingWhileDocumentNumberIsFetched()
+    {
+        using var fixture = new Fixture();
+        using var release = new ManualResetEventSlim();
+        fixture.Documents.ReadGate = release;
+        var page = fixture.Context.RenderComponent<CreatePurchase>();
+        Click(page, "Lines");
+        try
+        {
+            page.FindAll("button").Single(b => b.TextContent.Trim() == "Add line").Click();
+            page.WaitForAssertion(() =>
+            {
+                var button = page.Find("button.purchase-add-line-button[aria-busy='true']");
+                Assert.IsTrue(button.HasAttribute("disabled"));
+                Assert.IsNotNull(button.QuerySelector(".spinner"));
+                Assert.IsTrue(button.TextContent.Contains("Loading", StringComparison.Ordinal));
+                Assert.IsTrue(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Upload CSV").HasAttribute("disabled"));
+                Assert.IsTrue(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Close").HasAttribute("disabled"));
+            });
+        }
+        finally { release.Set(); }
+        page.WaitForAssertion(() => Assert.IsNotNull(page.Find("#line-type")));
+        Assert.AreEqual("0042P", page.Find(".purchase-document-preview strong").TextContent);
+    }
+
+    [TestMethod]
+    public void AddLineShowsCurrentCompanyDocumentNumberAndRefreshesOnReopen()
+    {
+        using var fixture = new Fixture();
+        var page = fixture.Context.RenderComponent<CreatePurchase>();
+        Click(page, "Lines");
+        Click(page, "Add line");
+        Assert.AreEqual((1, 2), fixture.Documents.LastRequest);
+        Assert.AreEqual("0042P", page.Find(".purchase-document-preview strong").TextContent);
+        Assert.IsTrue(page.Find(".purchase-document-preview").TextContent.Contains("may change before saving", StringComparison.Ordinal));
+        Click(page, "Cancel");
+        fixture.Documents.Number = "0043P";
+        Click(page, "Add line");
+        Assert.AreEqual("0043P", page.Find(".purchase-document-preview strong").TextContent);
+        Assert.AreEqual(2, fixture.Documents.Calls);
+        Click(page, "Cancel");
+        Click(page, "Edit line");
+        Assert.IsFalse(page.Find("dialog").TextContent.Contains("Next document number", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void MissingDocumentNumberShowsErrorAndDoesNotOpenForm()
+    {
+        using var fixture = new Fixture();
+        fixture.Documents.Fail = true;
+        var page = fixture.Context.RenderComponent<CreatePurchase>();
+        Click(page, "Lines");
+        page.FindAll("button").Single(b => b.TextContent.Trim() == "Add line").Click();
+        page.WaitForAssertion(() => Assert.IsTrue(page.Find("dialog").TextContent.Contains("document number is unavailable", StringComparison.Ordinal)));
+        Assert.IsFalse(page.Find(".purchase-add-line-button").HasAttribute("disabled"));
+        Assert.AreEqual(0, page.FindAll("#line-type").Count);
+        fixture.Documents.Fail = false;
+        Click(page, "Add line");
+        Assert.IsTrue(page.Find("dialog").TextContent.Contains("0042P", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -345,6 +405,7 @@ public sealed class CreatePurchaseComponentTests
         private readonly BlendIdentityDbContext database;
         public Bunit.TestContext Context { get; } = new();
         public FakePurchases Purchases { get; } = new();
+        public FakeDocuments Documents { get; } = new();
         public FakeLog Log { get; } = new();
         public Fixture(bool admin = true, bool grant = false)
         {
@@ -365,6 +426,7 @@ public sealed class CreatePurchaseComponentTests
             Context.JSInterop.SetupModule("./Components/Pages/Buyers.razor.js").Mode = JSRuntimeMode.Loose;
             Context.Services.AddSingleton(database);
             Context.Services.AddSingleton<IPurchaseService>(Purchases);
+            Context.Services.AddSingleton<IDocumentService>(Documents);
             Context.Services.AddSingleton<IBrokerService>(new FakeBrokers());
             Context.Services.AddSingleton<IGardenMarkService>(new FakeMarks());
             Context.Services.AddSingleton<IGradeService>(new FakeGrades());
@@ -380,6 +442,19 @@ public sealed class CreatePurchaseComponentTests
     private sealed class FixedAuth(ClaimsPrincipal user) : AuthenticationStateProvider
     {
         public override Task<AuthenticationState> GetAuthenticationStateAsync() => Task.FromResult(new AuthenticationState(user));
+    }
+    private sealed class FakeDocuments : IDocumentService
+    {
+        public string Number { get; set; } = "0042P";
+        public bool Fail { get; set; }
+        public int Calls { get; private set; }
+        public (int DocType, int CompanyId) LastRequest { get; private set; }
+        public ManualResetEventSlim? ReadGate { get; set; }
+        public DocumentNo GetDocumentNo(int docType, int companyId) { if (ReadGate is not null && !ReadGate.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException("Timed out waiting for the test to release the document read."); Calls++; LastRequest = (docType, companyId); if (Fail) throw new InvalidOperationException("Missing number"); return new() { FormattedDocNo = Number }; }
+        public IReadOnlyList<DocumentNo> GetDocumentData() => throw new NotSupportedException();
+        public IReadOnlyList<DocumentNo> GetDocumentDataByModule(int moduleId, int companyId) => throw new NotSupportedException();
+        public BusinessOperationResult ResetDocumentNo(DocumentNo documentInfo) => throw new NotSupportedException();
+        public bool IncrementDocumentNo(int docType) => throw new NotSupportedException();
     }
     private sealed class FakeBrokers : IBrokerService
     {

@@ -8,6 +8,7 @@
 @using System.Text.Json
 @using Blend.BlazorApp.Authentication
 @using Blend.BusinessService.Brokers
+@using Blend.BusinessService.Documents
 @using Blend.BusinessService.GardenMarks
 @using Blend.BusinessService.Grades
 @using Blend.BusinessService.Purchases
@@ -17,6 +18,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject BlendIdentityDbContext Database
 @inject IPurchaseService Purchases
+@inject IDocumentService Documents
 @inject IBrokerService Brokers
 @inject IGardenMarkService GardenMarks
 @inject IGradeService Grades
@@ -67,18 +69,19 @@ else
             else if (Dialog == DialogKind.Lines && SelectedSale is not null)
             {
                 <p>Sale date: @SelectedSale.SaleDate — @(SelectedSale.IsClosed ? "Closed" : "Open")</p>
-                <div class="heading-actions"><button class="button button-primary button-small" type="button" @onclick="BeginAddLineAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)">Add line</button>
+                <div class="heading-actions"><button class="button button-primary button-small purchase-add-line-button" type="button" @onclick="BeginAddLineAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)" aria-busy="@(LoadingAddLine ? "true" : "false")">@if (LoadingAddLine) { <span class="spinner button-spinner" aria-hidden="true"></span><span role="status">Loading...</span> } else { <span>Add line</span> }</button>
                     <button class="button button-quiet button-small" type="button" @onclick="BeginUploadAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)">Upload CSV</button></div>
                 @if (Lines.Count == 0) { <p class="muted">No straight lines added.</p> }
-                else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Box</th><th>Type</th><th>Invoice</th><th>Lot</th><th>Broker</th><th>Grade</th><th>Garden mark</th><th>Net</th><th>Packs</th><th>Reduction</th><th>Weight</th><th>Rate</th><th>Value</th><th>Actions</th></tr></thead><tbody>
-                    @foreach (var line in Lines) { <tr @key="line.Id"><td>@line.BoxNo</td><td>@line.SaleType @line.SaleCode</td><td>@line.Invoice</td><td>@line.LotNo</td><td>@line.BrokerCode</td><td>@line.Grade</td><td>@line.GardenMark</td><td>@FormatGridAmount(line.NetWeight)</td><td>@FormatGridAmount(line.Packs)</td><td>@FormatGridAmount(line.ReducedQty)</td><td>@FormatGridAmount(line.VirtualWeight)</td><td>@FormatGridAmount(line.Rate)</td><td>@FormatGridAmount(line.VirtualValue)</td><td class="row-actions">
+                else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Box</th><th>Type</th><th>Invoice</th><th>Lot</th><th>Broker</th><th>Grade</th><th>Garden mark</th><th>Net</th><th>Packs</th><th>Reduction</th><th>Weight</th><th>Rate</th><th>Value</th><th class="purchase-line-actions">Actions</th></tr></thead><tbody>
+                    @foreach (var line in Lines) { <tr @key="line.Id"><td>@line.BoxNo</td><td>@line.SaleType @line.SaleCode</td><td>@line.Invoice</td><td>@line.LotNo</td><td>@line.BrokerCode</td><td>@line.Grade</td><td>@line.GardenMark</td><td>@FormatGridAmount(line.NetWeight)</td><td>@FormatGridAmount(line.Packs)</td><td>@FormatGridAmount(line.ReducedQty)</td><td>@FormatGridAmount(line.VirtualWeight)</td><td>@FormatGridAmount(line.Rate)</td><td>@FormatGridAmount(line.VirtualValue)</td><td class="row-actions purchase-line-actions">
                         @if (!line.IsRepeated) { <button class="button button-quiet button-small" type="button" @onclick="() => BeginEditLineAsync(line)" disabled="@(Busy || !CanEdit || SelectedSale.IsClosed)">Edit line</button> }
                         <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDeleteLine(line)" disabled="@(Busy || !CanDelete || SelectedSale.IsClosed)">Delete line</button></td></tr> }
                 </tbody></table></div> }
-                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync">Close</button></div>
+                <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Close</button></div>
             }
             else if (Dialog == DialogKind.Line)
             {
+                @if (SelectedLine is null) { <div class="purchase-document-preview"><span>Next document number:</span> <strong>@NextDocumentNumber</strong><small>Preview; may change before saving</small></div> }
                 <EditForm Model="@LineForm" OnValidSubmit="SaveLineAsync"><DataAnnotationsValidator /><ValidationSummary /><fieldset class="broker-form-grid" disabled="@Busy">
                     <div><label for="line-type">Sale type</label><InputSelect id="line-type" class="form-control" @bind-Value="LineForm.SaleType"><option value="">Select</option><option>MS</option><option>PS</option><option>OL</option></InputSelect></div>
                     <div><label for="line-code">Sale code</label><InputText id="line-code" class="form-control" maxlength="3" @bind-Value="LineForm.SaleCode" /></div>

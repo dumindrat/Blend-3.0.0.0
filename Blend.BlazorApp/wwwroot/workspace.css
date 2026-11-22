@@ -72,10 +72,11 @@ a { color: inherit; text-decoration: none; }
 .button { display: inline-flex; min-height: 37px; align-items: center; justify-content: center; gap: 7px; padding: 0 14px; border: 1px solid transparent; border-radius: 7px; font-size: 11px; font-weight: 600; }
 .button-primary { background: var(--indigo); color: white; box-shadow: 0 3px 8px #5149d926; }
 .button-primary:hover { background: #423ac7; }
-.button-quiet { border-color: #e4e6ed; background: white; color: #535d72; }
-.button-quiet:hover { border-color: #cdd0df; background: #fafaff; }
-.button-danger-quiet { background: transparent; color: #ba5362; }
-.button-danger-quiet:hover { background: #fff1f2; }
+.button-quiet { border-color: #d7d4f7; background: #eeedff; color: #37317d; }
+.button-quiet:hover { border-color: #bdb8ed; background: #dedcff; }
+.button-danger-quiet { border-color: #f0cbd1; background: #fff0f2; color: #8d2637; }
+.button-danger-quiet:hover { border-color: #e5aab4; background: #ffdde3; }
+.button:focus-visible { outline: 2px solid #5149d9; outline-offset: 2px; }
 .button-small { min-height: 29px; padding: 0 9px; font-size: 10px; }
 .button-wide { width: 100%; margin-top: 18px; }
 .text-link { padding: 0; border: 0; background: none; color: #554edf; font-size: 11px; font-weight: 600; }
@@ -111,8 +112,14 @@ a { color: inherit; text-decoration: none; }
 .actions-heading, .row-actions { text-align: right; }
 .row-actions .button + .button { margin-left: 4px; }
 .data-table .purchase-sale-actions { width: 1%; white-space: nowrap; }
+.data-table .purchase-line-actions { width: 1%; text-align: left; white-space: nowrap; }
 .purchase-lines-button { width: 130px; }
 .purchase-lines-button .button-spinner { flex: 0 0 15px; margin-right: 0; }
+.purchase-add-line-button { min-width: 110px; }
+.purchase-add-line-button .button-spinner { flex: 0 0 15px; margin-right: 0; border-color: #bdb9ff; border-top-color: #fff; }
+.purchase-document-preview { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 18px; padding: 12px 15px; border: 1px solid #d5d2ff; border-radius: 9px; background: #f1f0ff; color: #39337e; font-size: 12px; font-weight: 600; }
+.purchase-document-preview strong { padding: 5px 10px; border-radius: 6px; background: #5149d9; color: #fff; font-size: 15px; letter-spacing: .4px; }
+.purchase-document-preview small { flex-basis: 100%; color: #595282; font-size: 11px; font-weight: 400; }
 .table-footer { display: flex; justify-content: space-between; padding: 12px 18px; border-top: 1px solid #f0f1f5; color: #9299a8; font-size: 10px; }
 .empty-state, .loading-state { display: flex; min-height: 210px; flex-direction: column; align-items: center; justify-content: center; color: #70798d; font-size: 12px; text-align: center; }
 .empty-state strong { margin-top: 10px; color: #343c50; font-size: 12px; }
