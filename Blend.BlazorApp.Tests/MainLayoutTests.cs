@@ -60,6 +60,21 @@ public sealed class MainLayoutTests
     }
 
     [TestMethod]
+    public void PurchaseReportsAppearsUnderReportOnlyForAssignedRole()
+    {
+        using var assigned = new MenuFixture();
+        assigned.Authorize("role-1");
+        var layout = assigned.Context.RenderComponent<MainLayout>();
+        var group = layout.FindAll(".module-nav-group").Single(element => element.QuerySelector("a[href='/Reports/Purchase']") is not null);
+        Assert.AreEqual("Report", group.QuerySelector(".menu-group-caption")!.TextContent.Trim());
+
+        using var unassigned = new MenuFixture();
+        unassigned.Authorize("role-2");
+        var unassignedLayout = unassigned.Context.RenderComponent<MainLayout>();
+        Assert.AreEqual(0, unassignedLayout.FindAll("a[href='/Reports/Purchase']").Count);
+    }
+
+    [TestMethod]
     public void MultipleRolesShowUnionOfAssignedMenuItems()
     {
         using var fixture = new MenuFixture();
@@ -211,14 +226,16 @@ public sealed class MainLayoutTests
                 new BlendMenuItem { Id = 3, CompanyId = otherCompany.Id, ModuleId = 2, Name = "Other", Path = "/OtherCompany" },
                 new BlendMenuItem { Id = 4, CompanyId = company.Id, ModuleId = 1, Name = "Tea Standards", Path = "/TeaStandards", GroupName = "Directory" },
                 new BlendMenuItem { Id = 5, CompanyId = company.Id, ModuleId = 3, Name = "Document Numbers", Path = "/DocumentNumbers" },
-                new BlendMenuItem { Id = 6, CompanyId = company.Id, ModuleId = 1, Name = "Orders", Path = "/Orders", GroupName = "Master data" });
+                new BlendMenuItem { Id = 6, CompanyId = company.Id, ModuleId = 1, Name = "Orders", Path = "/Orders", GroupName = "Master data" },
+                new BlendMenuItem { Id = 7, CompanyId = company.Id, ModuleId = 1, Name = "Purchase Reports", Path = "/Reports/Purchase", GroupName = "Report" });
             database.MenuItemRoles.AddRange(
                 new BlendMenuItemRole { MenuItemId = 1, RoleId = "role-1" },
                 new BlendMenuItemRole { MenuItemId = 2, RoleId = "role-2" },
                 new BlendMenuItemRole { MenuItemId = 3, RoleId = "other-role" },
                 new BlendMenuItemRole { MenuItemId = 4, RoleId = "role-1" },
                 new BlendMenuItemRole { MenuItemId = 5, RoleId = "role-2" },
-                new BlendMenuItemRole { MenuItemId = 6, RoleId = "role-1" });
+                new BlendMenuItemRole { MenuItemId = 6, RoleId = "role-1" },
+                new BlendMenuItemRole { MenuItemId = 7, RoleId = "role-1" });
             database.SaveChanges();
             Context.Services.AddSingleton<IDbContextFactory<BlendIdentityDbContext>>(factory);
             _authorization = Context.AddTestAuthorization();

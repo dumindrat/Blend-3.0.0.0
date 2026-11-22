@@ -1,0 +1,26 @@
+.report-actions {
+    flex-wrap: wrap;
+    padding: 16px 21px 0;
+}
+
+.notes-panel > .muted {
+    padding: 0 21px 16px;
+}
+
+.report-dialog {
+    width: min(100%, 560px);
+}
+
+.report-broker-field {
+    grid-column: 1 / -1;
+}
+
+.report-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.report-dialog > label:not(.report-checkbox) {
+    display: block;
+}

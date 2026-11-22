@@ -9,6 +9,7 @@ using Blend.BusinessService.Documents;
 using Blend.BusinessService.GardenMarks;
 using Blend.BusinessService.Grades;
 using Blend.BusinessService.Purchases;
+using Blend.BusinessService.Reports.Purchase;
 using Blend.BusinessService.TeaStandards;
 using Blend.DataService.Brokers;
 using Blend.DataService.Buyers;
@@ -18,6 +19,7 @@ using Blend.DataService.GardenMarks;
 using Blend.DataService.Grades;
 using Blend.DataService.Mapping;
 using Blend.DataService.Purchases;
+using Blend.DataService.Reports.Purchase;
 using Blend.DataService.TeaStandards;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -103,6 +105,8 @@ builder.Services.AddScoped<ITeaStandardService, TeaStandardService>();
 builder.Services.AddScoped<ITeaStandardDataService, TeaStandardDataService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<IPurchaseUploadLogService, PurchaseUploadLogService>();
+builder.Services.AddScoped<IPurchaseReportService, PurchaseReportService>();
+builder.Services.AddScoped<IPurchaseReportDataService, PurchaseReportDataService>();
 builder.Services.AddScoped<IPurchaseDataService>(services =>
 {
     var connectionString = services.GetRequiredService<IConfiguration>().GetConnectionString("BlendData");

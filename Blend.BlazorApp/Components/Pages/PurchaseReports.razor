@@ -1,0 +1,84 @@
+@page "/Reports/Purchase"
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@attribute [Authorize(Policy = "PasswordChangeComplete")]
+@using Blend.BlazorApp.Authentication
+@using Blend.BusinessService.Brokers
+@using Blend.BusinessService.Purchases
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BlendIdentityDbContext Database
+@inject IPurchaseService Purchases
+@inject IBrokerService Brokers
+@inject ILogger<PurchaseReports> Logger
+@inject IJSRuntime JS
+
+<PageTitle>Purchase Reports</PageTitle>
+<div class="page-heading">
+    <div><span class="eyebrow">REPORTS</span><h1>Purchase Reports</h1>@if (CompanyName is not null) { <p class="muted">Auction sales for @CompanyName</p> }</div>
+</div>
+@if (Loading) { <section class="panel loading-state" role="status"><span class="spinner" aria-hidden="true"></span>Loading sales...</section> }
+else if (CompanyId is null && Error is null) { <section class="panel empty-state">Select an active working company. <a href="/Account/WorkingCompany">Choose working company</a></section> }
+else if (!CanView && Error is null) { <section class="panel empty-state">Your role does not have access to Purchase Reports.</section> }
+else if (!CanView) { <section class="panel empty-state" role="alert">@Error</section> }
+else
+{
+    <div class="alert alert-info" role="status">Report generation is not available yet. @if (!CanPrint) { <span>Your role also requires the Purchase Reports Print permission.</span> }</div>
+    @if (Error is not null) { <div class="alert alert-error" role="alert">@Error</div> }
+    <section class="panel notes-panel">
+        <div class="panel-header">
+            <h2>Auction sales <span class="count-pill">@Sales.Count</span></h2>
+            <div class="broker-toolbar">
+                <input class="form-control broker-search" aria-label="Search sale date" placeholder="Search sale" maxlength="45" @bind="Search" @bind:event="oninput" />
+                <button class="button button-quiet button-small" type="button" @onclick="SearchAsync" disabled="@Busy">@if (Busy) { <span class="spinner button-spinner" aria-hidden="true"></span><span>Searching...</span> } else { <span>Search</span> }</button>
+            </div>
+        </div>
+        <div class="heading-actions report-actions">
+            <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Advanced)">Advanced filter options</button>
+            <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Broker)" aria-busy="@(LoadingBrokers ? "true" : "false")">@if (LoadingBrokers) { <span class="spinner button-spinner" aria-hidden="true"></span><span>Loading brokers...</span> } else { <span>Broker-wise purchases</span> }</button>
+        </div>
+        @if (Sales.Count == 0) { <div class="empty-state compact-empty">No sales found.</div> }
+        else
+        {
+            <div class="table-scroll"><table class="data-table"><thead><tr><th>Sale date</th><th>Status</th><th>Last modified</th><th class="purchase-sale-actions">Reports</th></tr></thead><tbody>
+                @foreach (var sale in Sales)
+                {
+                    <tr @key="sale.SaleId"><td>@sale.SaleDate</td><td>@sale.SaleStatus</td><td>@sale.ModifiedDate @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
+                        <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Summary, sale)">Sale Summary</button>
+                        <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Sheet, sale)">Purchase Sheet</button>
+                        <button class="button button-quiet button-small" type="button" disabled title="@ReportActionReason">Canister Sheet</button>
+                    </td></tr>
+                }
+            </tbody></table></div>
+        }
+        <p class="muted">The sale lookup returns up to 200 results. Search to narrow the list.</p>
+    </section>
+    <dialog @ref="DialogElement" class="modal-card report-dialog" aria-labelledby="report-dialog-title">
+        @if (Dialog != DialogKind.None)
+        {
+            <div class="modal-heading"><h2 id="report-dialog-title">@DialogTitle</h2><button class="icon-button" type="button" aria-label="Close" @onclick="CloseDialogAsync">&times;</button></div>
+            @if (SelectedSale is not null) { <p>Sale date: <strong>@SelectedSale.SaleDate</strong></p> }
+            @if (Dialog == DialogKind.Advanced || Dialog == DialogKind.Broker)
+            {
+                <div class="broker-form-grid">
+                    @if (Dialog == DialogKind.Broker)
+                    {
+                        <div class="report-broker-field"><label for="report-broker">Broker</label><select id="report-broker" class="form-control" @bind="BrokerId"><option value="">Select broker</option>@foreach (var broker in BrokerItems) { <option value="@broker.BrokerId">@broker.BrokerCode - @broker.BrokerName</option> }</select>@if (BrokerItems.Count == 0) { <p class="muted">No brokers found for this company.</p> }</div>
+                    }
+                    <div><label for="report-from">From sale date</label><input id="report-from" type="date" class="form-control" @bind="FromDate" @bind:format="yyyy-MM-dd" /></div>
+                    <div><label for="report-to">To sale date</label><input id="report-to" type="date" class="form-control" @bind="ToDate" @bind:format="yyyy-MM-dd" /></div>
+                    @if (Dialog == DialogKind.Advanced)
+                    {
+                        <div><label for="report-grade">Grade</label><input id="report-grade" class="form-control" @bind="Grade" /></div>
+                        <div><label for="report-standard">Standard</label><input id="report-standard" class="form-control" @bind="Standard" /></div>
+                        <div><label for="report-sale-type">Sale type</label><input id="report-sale-type" class="form-control" @bind="SaleType" /></div>
+                        <div><label for="report-broker-code">Broker code</label><input id="report-broker-code" class="form-control" @bind="BrokerCode" /></div>
+                    }
+                </div>
+            }
+            @if (Dialog != DialogKind.Broker) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
+            <label for="report-output">Output</label><select id="report-output" class="form-control" @bind="Output"><option value="print">Printable browser report</option><option value="csv">CSV download</option></select>
+            <p class="muted">Report generation is not available yet. These options are not saved.</p>
+            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync">Cancel</button><button class="button button-primary" type="button" disabled title="Report generation is not available yet">Generate report</button></div>
+        }
+    </dialog>
+}
