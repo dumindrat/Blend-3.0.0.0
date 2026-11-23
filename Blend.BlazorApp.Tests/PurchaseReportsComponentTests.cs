@@ -82,7 +82,8 @@ public sealed class PurchaseReportsComponentTests
         StringAssert.Contains(page.Find("dialog").TextContent, "2026-11-18");
         StringAssert.Contains(page.Find("dialog").TextContent, "Open the sale summary PDF with values in a new tab");
         Assert.IsFalse(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
-        Assert.AreEqual(0, page.FindAll("#report-output").Count);
+        Assert.AreEqual(1, page.FindAll("#report-output").Count);
+        Assert.IsNotNull(page.Find("#report-output option[value='excel']"));
         Assert.AreEqual(0, page.FindAll("dialog input[type=checkbox]").Count);
         page.Find("dialog button[aria-label='Close']").Click();
 
@@ -265,17 +266,23 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
         page.WaitForAssertion(() => Assert.AreEqual(1, fixture.ReportModule.Invocations.Count(call => call.Identifier == "bindGenerate")));
-        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42)).GetAwaiter().GetResult();
-        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user"), fixture.Summaries.Calls.Single()));
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42, "pdf")).GetAwaiter().GetResult();
+        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Pdf), fixture.Summaries.Calls.Single()));
         page.WaitForAssertion(() => Assert.AreEqual(1, fixture.ReportModule.Invocations.Count(call => call.Identifier == "showPdf")));
         var invocation = fixture.ReportModule.Invocations.Single(call => call.Identifier == "showPdf");
         Assert.AreEqual(42, invocation.Arguments[0]);
         CollectionAssert.AreEqual(fixture.Summaries.Document, (byte[])invocation.Arguments[1]!);
 
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(0, "excel")).GetAwaiter().GetResult();
+        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Excel), fixture.Summaries.Calls.Last()));
+        var download = fixture.ReportModule.Invocations.Single(call => call.Identifier == "downloadExcel");
+        Assert.AreEqual(17, download.Arguments[0]);
+        CollectionAssert.AreEqual(fixture.Summaries.Document, (byte[])download.Arguments[1]!);
+
         fixture.RevokePrint();
-        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(43)).GetAwaiter().GetResult();
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(43, "pdf")).GetAwaiter().GetResult();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "no longer has access"));
-        Assert.AreEqual(1, fixture.Summaries.Calls.Count);
+        Assert.AreEqual(2, fixture.Summaries.Calls.Count);
     }
 
     [TestMethod]
@@ -293,16 +300,19 @@ public sealed class PurchaseReportsComponentTests
     }
 
     [TestMethod]
-    public void SummaryPdfIsDisabledOutsideDevelopment()
+    public void SummaryExcelWorksOutsideDevelopmentWhilePdfIsDisabled()
     {
         using var fixture = new Fixture(development: false);
         fixture.GrantPrint();
         var page = fixture.Context.RenderComponent<PurchaseReports>();
         page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
-        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "only in Development"));
-        Assert.IsTrue(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
-        Assert.AreEqual(0, fixture.Summaries.Calls.Count);
+        var dialog = page.Find("dialog");
+        StringAssert.Contains(dialog.TextContent, "Download the sale summary as an Excel workbook with values.");
+        Assert.IsTrue(dialog.QuerySelector("option[value='pdf']")!.HasAttribute("disabled"));
+        Assert.IsFalse(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(0, "excel")).GetAwaiter().GetResult();
+        page.WaitForAssertion(() => Assert.AreEqual(SalesSummaryOutput.Excel, fixture.Summaries.Calls.Single().Output));
     }
 
     [TestMethod]
@@ -315,7 +325,7 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
         fixture.ChangeCompanyMapping();
-        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42)).GetAwaiter().GetResult();
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42, "pdf")).GetAwaiter().GetResult();
         page.WaitForAssertion(() => StringAssert.Contains(page.Markup, "working company changed"));
         Assert.AreEqual(0, fixture.Summaries.Calls.Count);
     }
@@ -330,10 +340,10 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
         fixture.Summaries.Failure = new SaleNotInCompanyException();
-        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42)).GetAwaiter().GetResult();
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42, "pdf")).GetAwaiter().GetResult();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "no longer available for the working company"));
         fixture.Summaries.Failure = new EmptySalesSummaryException();
-        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(43)).GetAwaiter().GetResult();
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(43, "excel")).GetAwaiter().GetResult();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "No sales summary data"));
     }
 
@@ -426,12 +436,12 @@ public sealed class PurchaseReportsComponentTests
 
     private sealed class FakeSummaries : ISalesSummaryReportService
     {
-        public List<(int Sale, string? CompanyName, int Company, string PrintedBy)> Calls { get; } = [];
+        public List<(int Sale, string? CompanyName, int Company, string PrintedBy, SalesSummaryOutput Output)> Calls { get; } = [];
         public Exception? Failure { get; set; }
         public byte[] Document { get; } = [37, 80, 68, 70];
-        public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy)
+        public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf)
         {
-            Calls.Add((saleId, companyName, companyId, printedBy));
+            Calls.Add((saleId, companyName, companyId, printedBy, output));
             if (Failure is not null) throw Failure;
             return Document;
         }

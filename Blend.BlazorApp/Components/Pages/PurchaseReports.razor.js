@@ -1,22 +1,28 @@
 const tabs = new Map();
 let nextTabId = 0;
 
-export function bindGenerate(button, callback, generateMethod, blockedMethod) {
+export function bindGenerate(button, outputSelect, callback, generateMethod, blockedMethod) {
     let pending = false;
     button.addEventListener("click", async () => {
         if (button.disabled || pending) return;
-        const tab = window.open("about:blank", "_blank");
-        if (!tab) {
-            try { await callback.invokeMethodAsync(blockedMethod); }
-            catch (error) { console.error(error); alert("The report tab was blocked. Allow pop-ups and try again."); }
+        const output = outputSelect.value;
+        let id = 0;
+        if (output === "pdf") {
+            const tab = window.open("about:blank", "_blank");
+            if (!tab) {
+                try { await callback.invokeMethodAsync(blockedMethod); }
+                catch (error) { console.error(error); alert("The report tab was blocked. Allow pop-ups and try again."); }
+                return;
+            }
+            tab.opener = null;
+            id = ++nextTabId;
+            tabs.set(id, tab);
+        } else if (output !== "excel") {
             return;
         }
-        tab.opener = null;
-        const id = ++nextTabId;
-        tabs.set(id, tab);
         pending = true;
         try {
-            await callback.invokeMethodAsync(generateMethod, id);
+            await callback.invokeMethodAsync(generateMethod, id, output);
         } catch (error) {
             console.error(error);
             alert("The report could not be generated. Please try again.");
@@ -40,4 +46,15 @@ export function showPdf(id, bytes) {
         URL.revokeObjectURL(url);
         throw error;
     }
+}
+
+export function downloadExcel(saleId, bytes) {
+    const url = URL.createObjectURL(new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sales-summary-${saleId}.xlsx`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 600000);
 }

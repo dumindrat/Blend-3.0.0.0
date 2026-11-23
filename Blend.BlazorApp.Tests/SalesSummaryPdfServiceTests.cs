@@ -26,7 +26,6 @@ public sealed class SalesSummaryPdfServiceTests
         Assert.AreEqual(400000m, totals.Value);
         Assert.AreEqual(360000m, totals.NinetyPercent);
         Assert.AreEqual(40000m, totals.TenPercent);
-        Assert.AreEqual(400000m, totals.HundredPercent);
         Assert.AreEqual(400000m / 1500m, totals.Average);
     }
 
@@ -48,8 +47,9 @@ public sealed class SalesSummaryPdfServiceTests
         var renderer = new SalesSummaryPdfService(new TestEnvironment(Environments.Development));
         using var document = PdfDocument.Open(renderer.Generate("Test Company", rows, "test-user", PrintedAt));
         var text = string.Join("\n", document.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
-        foreach (var expected in new[] { "Test Company", "2030-07-04", "Test Broker One", "Test Broker Two", "41", "42", "EA", "PB", "400.00", "7,000.00", "17.50", "6,300.00", "700.00" })
+        foreach (var expected in new[] { "Test Company", "2030-07-04", "Test Broker One", "Test Broker Two", "EA", "PB", "400.00", "7,000.00", "17.50", "6,300.00", "No Of Lots:", "5", "Total Sale Qty:", "400.00", "Total Value:", "7,000.00", "Total 10% of Adv:", "700.00", "Total 90% Bal:", "6,300.00", "Sale Avg:", "17.50" })
             StringAssert.Contains(text, expected);
+        Assert.IsFalse(text.Contains("100%", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -59,18 +59,22 @@ public sealed class SalesSummaryPdfServiceTests
         var renderer = new SalesSummaryPdfService(new TestEnvironment(Environments.Development));
         using var document = PdfDocument.Open(renderer.Generate("Company", rows, "test-user", PrintedAt));
         var words = document.GetPage(1).GetWords().ToArray();
-        foreach (var (header, value) in new[] { ("Broker", "TEABROKER"), ("ID", "41"), ("Type", "ZZ"), ("Lots", "3") })
+        foreach (var (header, value) in new[] { ("Broker", "TEABROKER"), ("Type", "ZZ"), ("Lots", "3") })
         {
             var heading = words.Single(word => word.Text == header);
             var data = words.First(word => word.Text == value);
             Assert.IsTrue(Math.Abs(heading.BoundingBox.Left - data.BoundingBox.Left) < 1.5, $"{header} should be left-aligned with {value}.");
         }
-        foreach (var (header, value) in new[] { ("Weight", "123.45"), ("Value", "234.56"), ("90%", "345.67"), ("10%", "456.78"), ("100%", "567.89") })
+        foreach (var (header, value) in new[] { ("Weight", "123.45"), ("Value", "234.56"), ("90%", "345.67"), ("10%", "456.78") })
         {
-            var heading = words.Single(word => word.Text == header);
+            var heading = words.Where(word => word.Text == header).OrderByDescending(word => word.BoundingBox.Bottom).First();
             var data = words.First(word => word.Text == value);
             Assert.IsTrue(Math.Abs(heading.BoundingBox.Right - data.BoundingBox.Right) < 1.5, $"{header} should be right-aligned with {value}.");
         }
+        Assert.IsFalse(words.Any(word => word.Text == "100%"));
+        Assert.IsFalse(words.Any(word => word.Text == "567.89"));
+        Assert.IsFalse(words.Any(word => word.Text == "ID"));
+        Assert.IsFalse(words.Any(word => word.Text == "41"));
     }
 
     [TestMethod]
@@ -87,6 +91,9 @@ public sealed class SalesSummaryPdfServiceTests
             StringAssert.Contains(text, "Printed at: 2031-02-14 12:34:56 UTC");
             StringAssert.Contains(text, $"Page {page.Number}");
         }
+        var finalPageText = ContentOrderTextExtractor.GetText(document.GetPage(document.NumberOfPages));
+        foreach (var label in new[] { "No Of Lots:", "Total Sale Qty:", "Total Value:", "Total 10% of Adv:", "Total 90% Bal:", "Sale Avg:" })
+            StringAssert.Contains(finalPageText, label);
     }
 
     [TestMethod]

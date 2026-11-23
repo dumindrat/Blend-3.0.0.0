@@ -78,15 +78,12 @@ else
                     }
                 </div>
             }
-            @if (Dialog != DialogKind.Summary)
-            {
-                @if (Dialog != DialogKind.Broker) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
-                <label for="report-output">Output</label><select id="report-output" class="form-control" @bind="Output"><option value="print">Printable browser report</option><option value="csv">CSV download</option></select>
-                <p class="muted">Report generation is not available yet. These options are not saved.</p>
-            }
-            else { <p class="muted">@(Environment.IsDevelopment() ? "Open the sale summary PDF with values in a new tab." : "Sale Summary PDF is available only in Development.")</p> }
+            @if (Dialog != DialogKind.Broker && Dialog != DialogKind.Summary) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
+            <label for="report-output">Output</label><select @ref="OutputElement" id="report-output" class="form-control" @bind="Output"><option value="excel">Excel workbook (.xlsx)</option><option value="pdf" disabled="@(!Environment.IsDevelopment())">PDF in a new tab (Development only)</option>@if (Dialog != DialogKind.Summary) { <option value="print">Printable browser report</option><option value="csv">CSV download</option> }</select>
+            @if (Dialog != DialogKind.Summary) { <p class="muted">Report generation is not available yet. These options are not saved.</p> }
+            else { <p class="muted">@(Output == "pdf" ? "Open the sale summary PDF with values in a new tab." : "Download the sale summary as an Excel workbook with values.")</p> }
             @if (DialogError is not null) { <div class="alert alert-error" role="alert">@DialogError</div> }
-            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button @ref="GenerateButton" class="button button-primary" type="button" disabled="@(Busy || !CanPrint || Dialog != DialogKind.Summary || !Environment.IsDevelopment())" title="@(PermissionReason ?? (Dialog != DialogKind.Summary ? "Report generation is not available yet" : !Environment.IsDevelopment() ? "Sale Summary PDF is available only in Development." : null))">@(Busy ? "Generating..." : "Generate report")</button></div>
+            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button @ref="GenerateButton" class="button button-primary" type="button" disabled="@(Busy || !CanPrint || Dialog != DialogKind.Summary || (Output == "pdf" && !Environment.IsDevelopment()))" title="@(PermissionReason ?? (Dialog != DialogKind.Summary ? "Report generation is not available yet" : Output == "pdf" && !Environment.IsDevelopment() ? "Sale Summary PDF is available only in Development." : null))">@(Busy ? "Generating..." : "Generate report")</button></div>
         }
     </dialog>
 }

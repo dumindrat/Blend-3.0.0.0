@@ -1,3 +1,5 @@
+using System.IO.Compression;
+using System.Xml.Linq;
 using Blend.BlazorApp.Services;
 using Blend.BusinessService.Reports.Purchase;
 using Microsoft.Extensions.FileProviders;
@@ -36,6 +38,48 @@ public sealed class SalesSummaryReportServiceTests
         foreach (var expected in new[] { "Test Company", "2031-02-14", "Example Test Broker", "2,500.00", "25.00" })
             StringAssert.Contains(text, expected);
         Assert.IsFalse(text.Contains("SAMPLE - NOT REAL DATA", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void GeneratesExcelWorkbookWithSummaryAndNumericCells()
+    {
+        var purchases = new FakePurchaseReports
+        {
+            Rows = [new() { SaleDate = "2031-02-14", BrokerId = 19, BrokerName = "Example Test Broker", SaleType = "MS", NoOfLots = 4, Weight = 100, Value = 2500, NinetyPercVal = 2250, TenPercVal = 250, HundredPercVal = 2500 }]
+        };
+        var service = CreateService(purchases, Environments.Production);
+        var bytes = service.Generate(123, "Test Company", 2, "report-user", SalesSummaryOutput.Excel);
+        using var archive = new ZipArchive(new MemoryStream(bytes), ZipArchiveMode.Read);
+        foreach (var entry in archive.Entries.Where(entry => entry.FullName.EndsWith(".xml", StringComparison.Ordinal) || entry.FullName.EndsWith(".rels", StringComparison.Ordinal)))
+        {
+            using var entryStream = entry.Open();
+            _ = XDocument.Load(entryStream);
+        }
+        var workbookEntry = archive.GetEntry("xl/workbook.xml");
+        Assert.IsNotNull(workbookEntry);
+        using var workbookStream = workbookEntry.Open();
+        var workbook = XDocument.Load(workbookStream);
+        XNamespace workbookNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        Assert.AreEqual("Sales Summary", (string?)workbook.Descendants(workbookNs + "sheet").Single().Attribute("name"));
+        var worksheetEntry = archive.GetEntry("xl/worksheets/sheet1.xml");
+        Assert.IsNotNull(worksheetEntry);
+        using var worksheetStream = worksheetEntry.Open();
+        var worksheet = XDocument.Load(worksheetStream);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var text = worksheet.Descendants(ns + "t").Select(element => element.Value).ToArray();
+        foreach (var value in new[] { "Broker", "Type", "Lots", "Weight", "Value", "90%", "10%", "Example Test Broker", "No Of Lots:", "Total Sale Qty:", "Total Value:", "Total 10% of Adv:", "Total 90% Bal:", "Sale Avg:", "Printed by", "report-user" })
+            CollectionAssert.Contains(text, value);
+        CollectionAssert.DoesNotContain(text, "BrokerId");
+        CollectionAssert.DoesNotContain(text, "100%");
+        var cells = worksheet.Descendants(ns + "c").ToDictionary(cell => (string)cell.Attribute("r")!, cell => cell);
+        foreach (var (reference, expected) in new[] { ("C6", "4"), ("D6", "100"), ("E6", "2500"), ("F6", "2250"), ("G6", "250"), ("B9", "4"), ("B10", "100"), ("B11", "2500"), ("B12", "250"), ("B13", "2250"), ("B14", "25") })
+            Assert.AreEqual(expected, (string?)cells[reference].Element(ns + "v"), reference);
+        var stylesEntry = archive.GetEntry("xl/styles.xml");
+        Assert.IsNotNull(stylesEntry);
+        using var stylesStream = stylesEntry.Open();
+        var styles = XDocument.Load(stylesStream);
+        Assert.AreEqual("none", (string?)styles.Descendants(ns + "patternFill").First().Attribute("patternType"));
+        Assert.AreEqual(123, purchases.SaleId);
     }
 
     [TestMethod]

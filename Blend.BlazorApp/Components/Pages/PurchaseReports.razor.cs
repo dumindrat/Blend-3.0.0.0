@@ -24,9 +24,9 @@ public partial class PurchaseReports
     private IReadOnlyList<Broker> BrokerItems = [];
     private int? BrokerId;
     private DateTime FromDate = DateTime.Today, ToDate = DateTime.Today;
-    private string Grade = "", Standard = "", SaleType = "MS", BrokerCode = "", Output = "print";
+    private string Grade = "", Standard = "", SaleType = "MS", BrokerCode = "", Output = "pdf";
     private bool WithValues;
-    private ElementReference DialogElement, GenerateButton;
+    private ElementReference DialogElement, GenerateButton, OutputElement;
     private IJSObjectReference? DialogModule, ReportModule;
     private DotNetObjectReference<PurchaseReports>? DialogCallback;
     private string? PermissionReason => CanPrint ? null : "Your role does not have the Purchase Reports Print permission.";
@@ -60,10 +60,10 @@ public partial class PurchaseReports
         OpenAfterRender = false;
         DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
         DialogCallback ??= DotNetObjectReference.Create(this);
-        if (Dialog == DialogKind.Summary && Environment.IsDevelopment())
+        if (Dialog == DialogKind.Summary)
         {
             ReportModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/PurchaseReports.razor.js");
-            await ReportModule.InvokeVoidAsync("bindGenerate", GenerateButton, DialogCallback, nameof(GenerateSummaryAsync), nameof(ReportPopupBlockedAsync));
+            await ReportModule.InvokeVoidAsync("bindGenerate", GenerateButton, OutputElement, DialogCallback, nameof(GenerateSummaryAsync), nameof(ReportPopupBlockedAsync));
         }
         await DialogModule.InvokeVoidAsync("show", DialogElement, DialogCallback, nameof(CancelFromDialogAsync));
     }
@@ -119,7 +119,7 @@ public partial class PurchaseReports
             FromDate = ToDate = DateTime.Today;
             Grade = Standard = BrokerCode = "";
             SaleType = "MS";
-            Output = "print";
+            Output = kind == DialogKind.Summary ? (Environment.IsDevelopment() ? "pdf" : "excel") : "print";
             WithValues = kind == DialogKind.Summary;
             Dialog = kind;
             OpenAfterRender = true;
@@ -140,7 +140,7 @@ public partial class PurchaseReports
     });
 
     [JSInvokable]
-    public Task GenerateSummaryAsync(int tabId) => InvokeAsync(async () =>
+    public Task GenerateSummaryAsync(int tabId, string output) => InvokeAsync(async () =>
     {
         if (Busy || Dialog != DialogKind.Summary || SelectedSale is null) return;
         Busy = true;
@@ -167,11 +167,12 @@ public partial class PurchaseReports
                 DialogError = "Your role no longer has access to print Purchase Reports.";
                 return;
             }
-            if (!Environment.IsDevelopment())
+            var reportOutput = output switch
             {
-                DialogError = "Sale Summary PDF is available only in Development.";
-                return;
-            }
+                "pdf" => SalesSummaryOutput.Pdf,
+                "excel" => SalesSummaryOutput.Excel,
+                _ => throw new ArgumentException("Select PDF or Excel as the report output.", nameof(output))
+            };
             var printedBy = user.Identity?.Name;
             if (string.IsNullOrWhiteSpace(printedBy))
             {
@@ -180,9 +181,12 @@ public partial class PurchaseReports
                 return;
             }
             var saleId = SelectedSale.SaleId;
-            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy));
+            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy, reportOutput));
             if (ReportModule is null) throw new InvalidOperationException("The report viewer is not initialized.");
-            await ReportModule.InvokeVoidAsync("showPdf", tabId, document);
+            if (reportOutput == SalesSummaryOutput.Pdf)
+                await ReportModule.InvokeVoidAsync("showPdf", tabId, document);
+            else
+                await ReportModule.InvokeVoidAsync("downloadExcel", saleId, document);
         }
         catch (SqlException ex)
         {
@@ -203,6 +207,11 @@ public partial class PurchaseReports
         {
             Logger.LogError(ex, "Invalid sale summary data for {CompanyId}", CompanyId);
             DialogError = "The report contains invalid or inconsistent data.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            Logger.LogError(ex, "Unable to generate sale summary for {CompanyId}", CompanyId);
+            DialogError = "The selected report format is unavailable. Please try again.";
         }
         catch (JSException ex)
         {
