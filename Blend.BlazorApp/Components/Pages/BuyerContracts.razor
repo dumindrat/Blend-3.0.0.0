@@ -53,7 +53,7 @@ else
             <div class="table-scroll"><table class="data-table"><thead><tr><th>Contract</th><th>Buyer</th><th>Completion</th><th>Status</th><th>Actions</th></tr></thead><tbody>
             @foreach (var item in Items)
             {
-                <tr @key="item.ContractId"><td>@item.ContractName</td><td>@item.BuyerCode @item.BuyerName</td><td>@item.CompletionDate</td><td>@item.CloseStatus</td><td class="row-actions">
+                <tr @key="item.ContractId"><td>@item.ContractName</td><td>@item.BuyerCode @item.BuyerName</td><td>@FormatCompanyDate(item.CompletionDate)</td><td>@item.CloseStatus</td><td class="row-actions">
                     <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(item)" disabled="@(Busy || !CanEdit)">Edit</button>
                     <button class="button button-quiet button-small" type="button" @onclick="() => OpenDetailsAsync(item)" disabled="@Busy">Standards</button>
                     <button class="button button-danger-quiet button-small" type="button" @onclick="() => BeginDelete(item)" disabled="@(Busy || !CanDelete)">Delete</button>
@@ -122,6 +122,7 @@ else
     private Guid? CompanyId;
     private int? MappingId;
     private string? CompanyName;
+    private string DateFormat = CompanyDateFormats.MonthFirst;
     private string Search = "";
     private string StandardSearch = "";
     private string? Error;
@@ -141,7 +142,7 @@ else
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             var company = await GetCompanyAsync(user);
             if (company is null) return;
-            CompanyId = company.Id; MappingId = company.MappingId; CompanyName = company.Name;
+            CompanyId = company.Id; MappingId = company.MappingId; CompanyName = company.Name; DateFormat = company.DateFormat;
             await LoadPermissionsAsync(user, company.Id);
             if (CanView) Items = Contracts.GetContractList("all", company.MappingId);
         }
@@ -169,7 +170,7 @@ else
     private async Task<WorkingCompany?> GetCompanyAsync(ClaimsPrincipal user)
     {
         if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var id)) return null;
-        var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id).Select(c => new { c.Id, c.Name, c.CompanyNumber, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
+        var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id).Select(c => new { c.Id, c.Name, c.CompanyNumber, c.DateFormat, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate) return null;
         if (!user.IsInRole(BlendRoles.Admin))
@@ -177,7 +178,7 @@ else
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId is null || !await Database.UserCompanies.AsNoTracking().AnyAsync(m => m.CompanyId == id && m.UserId == userId)) return null;
         }
-        return new(company.Id, company.Name, company.CompanyNumber);
+        return new(company.Id, company.Name, company.CompanyNumber, company.DateFormat);
     }
 
     private async Task LoadPermissionsAsync(ClaimsPrincipal user, Guid companyId)
@@ -334,7 +335,8 @@ else
         catch (SqlException ex) { Logger.LogError(ex, "Unable to save contract standard for {CompanyId}", CompanyId); Error = "The standard could not be saved. It may have changed; reopen the contract and try again."; }
         finally { Busy = false; }
     }
-    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private string FormatCompanyDate(string? value) => CompanyDateFormats.Format(value, DateFormat);
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId, string DateFormat);
     private enum DialogKind { None, Editor, Delete, Details }
     private sealed class ContractInput
     {

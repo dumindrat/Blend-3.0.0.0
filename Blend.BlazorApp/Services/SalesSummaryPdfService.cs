@@ -1,4 +1,5 @@
 using System.Globalization;
+using Blend.BlazorApp.Authentication;
 using Blend.BusinessService.Reports.Purchase;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -8,19 +9,21 @@ namespace Blend.BlazorApp.Services;
 
 public sealed class SalesSummaryPdfService(IHostEnvironment environment)
 {
-    public byte[] Generate(string? companyName, IReadOnlyList<SaleSummary> rows, string printedBy, DateTimeOffset printedAt)
+    public byte[] Generate(string? companyName, IReadOnlyList<SaleSummary> rows, string printedBy, DateTimeOffset printedAt, string dateFormat = CompanyDateFormats.MonthFirst)
     {
         if (!environment.IsDevelopment())
             throw new InvalidOperationException("The QuestPDF evaluation report is available only in Development.");
         ArgumentException.ThrowIfNullOrWhiteSpace(printedBy);
+        if (!CompanyDateFormats.IsSupported(dateFormat)) throw new ArgumentOutOfRangeException(nameof(dateFormat));
         ArgumentNullException.ThrowIfNull(rows);
         if (rows.Count == 0)
             throw new ArgumentException("The sales summary contains no data.", nameof(rows));
         if (rows.Any(row => row is null || string.IsNullOrWhiteSpace(row.SaleDate)))
             throw new ArgumentException("Every sales summary row must have a sale date.", nameof(rows));
-        var saleDate = rows[0].SaleDate!;
-        if (rows.Any(row => !string.Equals(row.SaleDate, saleDate, StringComparison.Ordinal)))
+        var rawSaleDate = rows[0].SaleDate!;
+        if (rows.Any(row => !string.Equals(row.SaleDate, rawSaleDate, StringComparison.Ordinal)))
             throw new ArgumentException("Sales summary rows must have the same sale date.", nameof(rows));
+        var saleDate = CompanyDateFormats.Format(rawSaleDate, dateFormat);
 
         QuestPDF.Settings.License = LicenseType.Evaluation;
         var totals = CalculateTotals(rows);

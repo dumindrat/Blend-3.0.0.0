@@ -47,6 +47,12 @@ namespace Blend.BlazorApp.Authentication.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("DateFormat")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasDefaultValue("MM/dd/yyyy")
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 

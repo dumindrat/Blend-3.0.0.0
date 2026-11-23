@@ -2,6 +2,7 @@ using System.Data;
 using System.Globalization;
 using System.IO.Compression;
 using System.Xml;
+using Blend.BlazorApp.Authentication;
 using Blend.BusinessService.Reports.Purchase;
 using Dapper;
 
@@ -11,7 +12,7 @@ public enum SalesSummaryOutput { Pdf, Excel }
 
 public interface ISalesSummaryReportService
 {
-    byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf);
+    byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf, string dateFormat = CompanyDateFormats.MonthFirst);
 }
 
 public sealed class SaleNotInCompanyException() : Exception("The selected sale is no longer available for the working company.");
@@ -23,11 +24,12 @@ public sealed class SalesSummaryReportService(
     IHostEnvironment environment,
     Func<IDbConnection> connectionFactory) : ISalesSummaryReportService
 {
-    public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf)
+    public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf, string dateFormat = CompanyDateFormats.MonthFirst)
     {
         if (output == SalesSummaryOutput.Pdf && !environment.IsDevelopment())
             throw new InvalidOperationException("The QuestPDF evaluation report is available only in Development.");
         if (!Enum.IsDefined(output)) throw new ArgumentOutOfRangeException(nameof(output));
+        if (!CompanyDateFormats.IsSupported(dateFormat)) throw new ArgumentOutOfRangeException(nameof(dateFormat));
         if (saleId <= 0) throw new ArgumentOutOfRangeException(nameof(saleId));
         if (companyId <= 0) throw new ArgumentOutOfRangeException(nameof(companyId));
         ArgumentException.ThrowIfNullOrWhiteSpace(printedBy);
@@ -50,15 +52,15 @@ public sealed class SalesSummaryReportService(
         var printedAt = DateTimeOffset.UtcNow;
         var result = output switch
         {
-            SalesSummaryOutput.Pdf => pdf.Generate(companyName, rows, printedBy, printedAt),
-            SalesSummaryOutput.Excel => GenerateExcel(saleId, companyName, rows, printedBy, printedAt),
+            SalesSummaryOutput.Pdf => pdf.Generate(companyName, rows, printedBy, printedAt, dateFormat),
+            SalesSummaryOutput.Excel => GenerateExcel(saleId, companyName, rows, printedBy, printedAt, dateFormat),
             _ => throw new ArgumentOutOfRangeException(nameof(output))
         };
         transaction.Commit();
         return result;
     }
 
-    private static byte[] GenerateExcel(int saleId, string? companyName, IReadOnlyList<SaleSummary> rows, string printedBy, DateTimeOffset printedAt)
+    private static byte[] GenerateExcel(int saleId, string? companyName, IReadOnlyList<SaleSummary> rows, string printedBy, DateTimeOffset printedAt, string dateFormat)
     {
         var totals = SalesSummaryPdfService.CalculateTotals(rows);
         using var stream = new MemoryStream();
@@ -97,12 +99,12 @@ public sealed class SalesSummaryReportService(
                 writer.WriteEndElement();
             });
             AddEntry(archive, "xl/styles.xml", WriteStyles);
-            AddEntry(archive, "xl/worksheets/sheet1.xml", writer => WriteWorksheet(writer, saleId, companyName, rows, totals, printedBy, printedAt));
+            AddEntry(archive, "xl/worksheets/sheet1.xml", writer => WriteWorksheet(writer, saleId, companyName, rows, totals, printedBy, printedAt, dateFormat));
         }
         return stream.ToArray();
     }
 
-    private static void WriteWorksheet(XmlWriter writer, int saleId, string? companyName, IReadOnlyList<SaleSummary> rows, SummaryTotals totals, string printedBy, DateTimeOffset printedAt)
+    private static void WriteWorksheet(XmlWriter writer, int saleId, string? companyName, IReadOnlyList<SaleSummary> rows, SummaryTotals totals, string printedBy, DateTimeOffset printedAt, string dateFormat)
     {
         const string ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
         writer.WriteStartElement("worksheet", ns);
@@ -114,7 +116,7 @@ public sealed class SalesSummaryReportService(
         writer.WriteStartElement("sheetData", ns);
         var row = 1;
         WriteTextRow(writer, row++, ("A", $"Sales Summary - {companyName ?? string.Empty}", 1));
-        WriteTextRow(writer, row++, ("A", "Sale date", 1), ("B", rows[0].SaleDate ?? string.Empty, 0), ("D", "Sale number", 1), ("E", saleId.ToString(CultureInfo.InvariantCulture), 0));
+        WriteTextRow(writer, row++, ("A", "Sale date", 1), ("B", CompanyDateFormats.Format(rows[0].SaleDate, dateFormat), 0), ("D", "Sale number", 1), ("E", saleId.ToString(CultureInfo.InvariantCulture), 0));
         row++;
         WriteTextRow(writer, row++, ("A", "Broker", 1), ("B", "Type", 1), ("C", "Lots", 1), ("D", "Weight", 1), ("E", "Value", 1), ("F", "90%", 1), ("G", "10%", 1));
         foreach (var item in rows)

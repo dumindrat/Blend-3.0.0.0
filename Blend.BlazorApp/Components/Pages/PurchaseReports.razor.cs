@@ -17,7 +17,7 @@ public partial class PurchaseReports
     private Guid? CompanyId;
     private int? MappingId;
     private string? CompanyName, Error, DialogError;
-    private string Search = "";
+    private string Search = "", DateFormat = CompanyDateFormats.MonthFirst;
     private bool Loading = true, Busy, CanView, CanPrint, LoadingBrokers, OpenAfterRender;
     private DialogKind Dialog;
     private PurchaseSale? SelectedSale;
@@ -43,6 +43,7 @@ public partial class PurchaseReports
             CompanyId = company.Id;
             MappingId = company.MappingId;
             CompanyName = company.Name;
+            DateFormat = company.DateFormat;
             await LoadPermissionsAsync(user, company.Id);
             if (CanView) Sales = await Task.Run(() => Purchases.GetAllSales("all", company.MappingId));
         }
@@ -181,7 +182,7 @@ public partial class PurchaseReports
                 return;
             }
             var saleId = SelectedSale.SaleId;
-            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy, reportOutput));
+            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy, reportOutput, company.DateFormat));
             if (ReportModule is null) throw new InvalidOperationException("The report viewer is not initialized.");
             if (reportOutput == SalesSummaryOutput.Pdf)
                 await ReportModule.InvokeVoidAsync("showPdf", tabId, document);
@@ -260,7 +261,7 @@ public partial class PurchaseReports
     {
         if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var id)) return null;
         var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id)
-            .Select(c => new { c.Id, c.Name, c.CompanyNumber, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
+            .Select(c => new { c.Id, c.Name, c.CompanyNumber, c.DateFormat, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate) return null;
         if (!user.IsInRole(BlendRoles.Admin))
@@ -268,7 +269,7 @@ public partial class PurchaseReports
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId is null || !await Database.UserCompanies.AsNoTracking().AnyAsync(m => m.CompanyId == id && m.UserId == userId)) return null;
         }
-        return new(company.Id, company.Name, company.CompanyNumber);
+        return new(company.Id, company.Name, company.CompanyNumber, company.DateFormat);
     }
 
     private async Task LoadPermissionsAsync(ClaimsPrincipal user, Guid companyId)
@@ -291,6 +292,8 @@ public partial class PurchaseReports
         CanPrint = keys.Contains("print", StringComparer.OrdinalIgnoreCase);
     }
 
+    private string FormatSaleDate(string? value) => CompanyDateFormats.Format(value, DateFormat);
+
     private enum DialogKind { None, Summary, Sheet, Advanced, Broker }
-    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId, string DateFormat);
 }

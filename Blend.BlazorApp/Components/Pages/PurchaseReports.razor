@@ -45,7 +45,7 @@ else
             <div class="table-scroll"><table class="data-table"><thead><tr><th>Sale date</th><th>Status</th><th>Last modified</th><th class="purchase-sale-actions">Reports</th></tr></thead><tbody>
                 @foreach (var sale in Sales)
                 {
-                    <tr @key="sale.SaleId"><td>@sale.SaleDate</td><td>@sale.SaleStatus</td><td>@sale.ModifiedDate @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
+                    <tr @key="sale.SaleId"><td>@FormatSaleDate(sale.SaleDate)</td><td>@sale.SaleStatus</td><td>@FormatSaleDate(sale.ModifiedDate) @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
                         <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Summary, sale)">Sale Summary</button>
                         <button class="button button-quiet button-small" type="button" disabled="@(Busy || !CanPrint)" title="@PermissionReason" @onclick="() => OpenOptionsAsync(DialogKind.Sheet, sale)">Purchase Sheet</button>
                         <button class="button button-quiet button-small" type="button" disabled title="@ReportActionReason">Canister Sheet</button>
@@ -59,7 +59,7 @@ else
         @if (Dialog != DialogKind.None)
         {
             <div class="modal-heading"><h2 id="report-dialog-title">@DialogTitle</h2><button class="icon-button" type="button" aria-label="Close" @onclick="CloseDialogAsync">&times;</button></div>
-            @if (SelectedSale is not null) { <p>Sale date: <strong>@SelectedSale.SaleDate</strong></p> }
+            @if (SelectedSale is not null) { <p>Sale date: <strong>@FormatSaleDate(SelectedSale.SaleDate)</strong></p> }
             @if (Dialog == DialogKind.Advanced || Dialog == DialogKind.Broker)
             {
                 <div class="broker-form-grid">

@@ -47,7 +47,7 @@ public sealed class SalesSummaryPdfServiceTests
         var renderer = new SalesSummaryPdfService(new TestEnvironment(Environments.Development));
         using var document = PdfDocument.Open(renderer.Generate("Test Company", rows, "test-user", PrintedAt));
         var text = string.Join("\n", document.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
-        foreach (var expected in new[] { "Test Company", "2030-07-04", "Test Broker One", "Test Broker Two", "EA", "PB", "400.00", "7,000.00", "17.50", "6,300.00", "No Of Lots:", "5", "Total Sale Qty:", "400.00", "Total Value:", "7,000.00", "Total 10% of Adv:", "700.00", "Total 90% Bal:", "6,300.00", "Sale Avg:", "17.50" })
+        foreach (var expected in new[] { "Test Company", "07/04/2030", "Test Broker One", "Test Broker Two", "EA", "PB", "400.00", "7,000.00", "17.50", "6,300.00", "No Of Lots:", "5", "Total Sale Qty:", "400.00", "Total Value:", "7,000.00", "Total 10% of Adv:", "700.00", "Total 90% Bal:", "6,300.00", "Sale Avg:", "17.50" })
             StringAssert.Contains(text, expected);
         Assert.IsFalse(text.Contains("100%", StringComparison.Ordinal));
     }

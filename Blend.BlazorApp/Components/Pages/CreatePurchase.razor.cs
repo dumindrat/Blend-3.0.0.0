@@ -31,7 +31,7 @@ public partial class CreatePurchase
     private Guid? CompanyId;
     private int? MappingId, UploadBroker, LoadingLinesSaleId;
     private string? CompanyName, Error, PageError, Success, UploadFileName, NextDocumentNumber;
-    private string Search = "", AppliedSearch = "all", UploadType = "", UploadCode = "";
+    private string Search = "", AppliedSearch = "all", UploadType = "", UploadCode = "", DateFormat = CompanyDateFormats.MonthFirst;
     private bool Loading = true, Busy, LoadingAddLine, CanView, CanCreate, CanEdit, CanDelete, OpenAfterRender, UploadAttempted;
     private DialogKind Dialog;
     private ElementReference DialogElement;
@@ -40,6 +40,7 @@ public partial class CreatePurchase
     private string SearchText => string.IsNullOrWhiteSpace(Search) ? "all" : Search.Trim();
     private string DialogTitle => Dialog switch { DialogKind.Sale => SelectedSale is null ? "Create sale" : "Edit sale", DialogKind.Status => "Confirm sale status", DialogKind.Lines => "Straight lines", DialogKind.Line => SelectedLine is null ? "Add straight line" : "Edit straight line", DialogKind.Delete => "Confirm deletion", DialogKind.Upload or DialogKind.UploadConfirm => "Upload purchase CSV", _ => "Purchase" };
     private static string FormatGridAmount(decimal? value) => value?.ToString("N2", CultureInfo.InvariantCulture) ?? string.Empty;
+    private string FormatSaleDate(string? value) => CompanyDateFormats.Format(value, DateFormat);
     private decimal? PreviewWeight
     {
         get { try { return LineForm.Net1 * LineForm.Pack1 + LineForm.Net2 * LineForm.Pack2 - (LineForm.ReducedQty ?? 0); } catch (OverflowException) { return null; } }
@@ -56,7 +57,7 @@ public partial class CreatePurchase
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
             var company = await GetCompanyAsync(user);
             if (company is null) return;
-            CompanyId = company.Id; MappingId = company.MappingId; CompanyName = company.Name;
+            CompanyId = company.Id; MappingId = company.MappingId; CompanyName = company.Name; DateFormat = company.DateFormat;
             await LoadPermissionsAsync(user, company.Id);
             if (CanView) Sales = Purchases.GetAllSales("all", company.MappingId);
         }
@@ -84,7 +85,7 @@ public partial class CreatePurchase
     private async Task<WorkingCompany?> GetCompanyAsync(ClaimsPrincipal user)
     {
         if (!Guid.TryParse(user.FindFirst(BlendClaims.CompanyId)?.Value, out var id)) return null;
-        var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id).Select(c => new { c.Id, c.Name, c.CompanyNumber, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
+        var company = await Database.Companies.AsNoTracking().Where(c => c.Id == id).Select(c => new { c.Id, c.Name, c.CompanyNumber, c.DateFormat, c.IsEnabled, c.SubscriptionStartDate, c.SubscriptionEndDate }).SingleOrDefaultAsync();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         if (company is null || !company.IsEnabled || today < company.SubscriptionStartDate || today > company.SubscriptionEndDate) return null;
         if (!user.IsInRole(BlendRoles.Admin))
@@ -92,7 +93,7 @@ public partial class CreatePurchase
             var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId is null || !await Database.UserCompanies.AsNoTracking().AnyAsync(m => m.CompanyId == id && m.UserId == userId)) return null;
         }
-        return new(company.Id, company.Name, company.CompanyNumber);
+        return new(company.Id, company.Name, company.CompanyNumber, company.DateFormat);
     }
 
     private async Task LoadPermissionsAsync(ClaimsPrincipal user, Guid companyId)
@@ -413,7 +414,7 @@ public partial class CreatePurchase
         finally { Busy = false; }
     }
 
-    private sealed record WorkingCompany(Guid Id, string Name, int MappingId);
+    private sealed record WorkingCompany(Guid Id, string Name, int MappingId, string DateFormat);
     private sealed record PurchaseLookups(IReadOnlyList<Broker> Brokers, IReadOnlyList<string> Marks, IReadOnlyList<string> Grades, IReadOnlyList<string> Certificates);
     private sealed record UploadResult(long RowNumber, string Lot, string Status);
     private enum DialogKind { None, Sale, Status, Lines, Line, Delete, Upload, UploadConfirm }

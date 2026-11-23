@@ -35,6 +35,7 @@
                 <div asp-validation-summary="All" class="alert alert-error" role="alert"></div>
                 <form method="post" asp-page-handler="Create" class="company-create-form">
                     <div class="company-modal-field"><label asp-for="Input.Name">Company name</label><input asp-for="Input.Name" class="form-control" required maxlength="160" /></div>
+                    <div class="company-modal-field"><label asp-for="Input.DateFormat">Date format</label><select asp-for="Input.DateFormat" class="form-control"><option value="MM/dd/yyyy">MM/DD/YYYY (month/day/year)</option><option value="dd/MM/yyyy">DD/MM/YYYY (day/month/year)</option></select></div>
                     <div class="company-modal-field"><label asp-for="Input.AddressLine1">Address line 1</label><input asp-for="Input.AddressLine1" class="form-control" maxlength="200" /></div>
                     <div class="company-modal-field"><label asp-for="Input.AddressLine2">Address line 2</label><input asp-for="Input.AddressLine2" class="form-control" maxlength="200" /></div>
                     <div class="company-modal-field"><label asp-for="Input.City">City</label><input asp-for="Input.City" class="form-control" maxlength="100" /></div>
@@ -87,6 +88,7 @@
                                         </div>
                                         <form method="post" asp-page-handler="Update" asp-route-id="@company.Id" class="company-create-form">
                                             <div class="company-modal-field"><label>Company name</label><input class="form-control" name="Input.Name" value="@company.Name" required maxlength="160" /></div>
+                                            <div class="company-modal-field"><label for="@dialogId-date-format">Date format</label><select class="form-control" id="@dialogId-date-format" name="Input.DateFormat"><option value="MM/dd/yyyy" selected="@(company.DateFormat == "MM/dd/yyyy" ? "selected" : null)">MM/DD/YYYY (month/day/year)</option><option value="dd/MM/yyyy" selected="@(company.DateFormat == "dd/MM/yyyy" ? "selected" : null)">DD/MM/YYYY (day/month/year)</option></select></div>
                                             <div class="company-modal-field"><label>Address line 1</label><input class="form-control" name="Input.AddressLine1" value="@company.AddressLine1" maxlength="200" /></div>
                                             <div class="company-modal-field"><label>Address line 2</label><input class="form-control" name="Input.AddressLine2" value="@company.AddressLine2" maxlength="200" /></div>
                                             <div class="company-modal-field"><label>City</label><input class="form-control" name="Input.City" value="@company.City" maxlength="100" /></div>

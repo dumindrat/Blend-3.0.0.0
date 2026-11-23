@@ -51,6 +51,7 @@ public sealed class CompaniesModel : PageModel
                 Id = Guid.NewGuid(),
                 CompanyNumber = companyNumber.Value,
                 Name = Input.Name,
+                DateFormat = Input.DateFormat,
                 AddressLine1 = Input.AddressLine1,
                 AddressLine2 = Input.AddressLine2,
                 City = Input.City,
@@ -106,6 +107,7 @@ public sealed class CompaniesModel : PageModel
         }
 
         company.Name = Input.Name;
+        company.DateFormat = Input.DateFormat;
         company.AddressLine1 = Input.AddressLine1;
         company.AddressLine2 = Input.AddressLine2;
         company.City = Input.City;
@@ -178,6 +180,8 @@ public sealed class CompaniesModel : PageModel
         Input.Region = Clean(Input.Region);
         Input.PostalCode = Clean(Input.PostalCode);
         Input.Country = Clean(Input.Country);
+        if (!CompanyDateFormats.IsSupported(Input.DateFormat))
+            ModelState.AddModelError(nameof(Input.DateFormat), "Select a supported company date format.");
     }
 
     private void ValidateSubscriptionDates()
@@ -203,6 +207,10 @@ public sealed class CompaniesModel : PageModel
         [Required]
         [StringLength(160)]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(10)]
+        public string DateFormat { get; set; } = CompanyDateFormats.MonthFirst;
 
         [StringLength(200)]
         public string? AddressLine1 { get; set; }

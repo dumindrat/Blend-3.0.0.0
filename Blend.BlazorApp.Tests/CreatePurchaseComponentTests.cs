@@ -33,7 +33,7 @@ public sealed class CreatePurchaseComponentTests
         using var fixture = new Fixture(admin: false);
         var page = fixture.Context.RenderComponent<CreatePurchase>();
         Assert.AreEqual(2, fixture.Purchases.LastCompany);
-        Assert.IsTrue(page.Markup.Contains("2026-11-18", StringComparison.Ordinal));
+        Assert.IsTrue(page.Markup.Contains("11/18/2026", StringComparison.Ordinal));
         Assert.IsTrue(page.FindAll("button").Single(b => b.TextContent.Trim() == "Create sale").HasAttribute("disabled"));
         Assert.IsTrue(page.FindAll("button").Single(b => b.TextContent.Trim() == "Edit").HasAttribute("disabled"));
     }

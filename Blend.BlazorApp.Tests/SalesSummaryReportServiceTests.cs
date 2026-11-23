@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Xml.Linq;
+using Blend.BlazorApp.Authentication;
 using Blend.BlazorApp.Services;
 using Blend.BusinessService.Reports.Purchase;
 using Microsoft.Extensions.FileProviders;
@@ -25,7 +26,7 @@ public sealed class SalesSummaryReportServiceTests
         purchases.OnQuery = () => { Assert.IsNotNull(connection.Transaction); Assert.IsFalse(connection.Transaction.Disposed); Assert.IsFalse(connection.Transaction.Committed); };
         var service = CreateService(purchases, Environments.Development, connection);
         var before = DateTimeOffset.UtcNow;
-        using var document = PdfDocument.Open(service.Generate(123, "Test Company", 2, "report-user"));
+        using var document = PdfDocument.Open(service.Generate(123, "Test Company", 2, "report-user", SalesSummaryOutput.Pdf, CompanyDateFormats.DayFirst));
         var after = DateTimeOffset.UtcNow;
         var text = string.Join("\n", document.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
         StringAssert.Contains(text, "Printed by: report-user");
@@ -35,7 +36,7 @@ public sealed class SalesSummaryReportServiceTests
         Assert.AreEqual(2, connection.Arguments["CompanyId"]);
         Assert.AreEqual(System.Data.IsolationLevel.Serializable, connection.Transaction!.IsolationLevel);
         Assert.IsTrue(connection.Transaction.Committed);
-        foreach (var expected in new[] { "Test Company", "2031-02-14", "Example Test Broker", "2,500.00", "25.00" })
+        foreach (var expected in new[] { "Test Company", "14/02/2031", "Example Test Broker", "2,500.00", "25.00" })
             StringAssert.Contains(text, expected);
         Assert.IsFalse(text.Contains("SAMPLE - NOT REAL DATA", StringComparison.Ordinal));
     }
@@ -48,7 +49,7 @@ public sealed class SalesSummaryReportServiceTests
             Rows = [new() { SaleDate = "2031-02-14", BrokerId = 19, BrokerName = "Example Test Broker", SaleType = "MS", NoOfLots = 4, Weight = 100, Value = 2500, NinetyPercVal = 2250, TenPercVal = 250, HundredPercVal = 2500 }]
         };
         var service = CreateService(purchases, Environments.Production);
-        var bytes = service.Generate(123, "Test Company", 2, "report-user", SalesSummaryOutput.Excel);
+        var bytes = service.Generate(123, "Test Company", 2, "report-user", SalesSummaryOutput.Excel, CompanyDateFormats.DayFirst);
         using var archive = new ZipArchive(new MemoryStream(bytes), ZipArchiveMode.Read);
         foreach (var entry in archive.Entries.Where(entry => entry.FullName.EndsWith(".xml", StringComparison.Ordinal) || entry.FullName.EndsWith(".rels", StringComparison.Ordinal)))
         {
@@ -67,6 +68,7 @@ public sealed class SalesSummaryReportServiceTests
         var worksheet = XDocument.Load(worksheetStream);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
         var text = worksheet.Descendants(ns + "t").Select(element => element.Value).ToArray();
+        CollectionAssert.Contains(text, "14/02/2031");
         foreach (var value in new[] { "Broker", "Type", "Lots", "Weight", "Value", "90%", "10%", "Example Test Broker", "No Of Lots:", "Total Sale Qty:", "Total Value:", "Total 10% of Adv:", "Total 90% Bal:", "Sale Avg:", "Printed by", "report-user" })
             CollectionAssert.Contains(text, value);
         CollectionAssert.DoesNotContain(text, "BrokerId");

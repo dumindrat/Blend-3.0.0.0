@@ -54,6 +54,11 @@ public sealed class BlendIdentityDbContext : IdentityDbContext<BlendIdentityUser
             .HasFilter("[CompanyId] IS NOT NULL");
 
         builder.Entity<BlendCompany>()
+            .Property(company => company.DateFormat)
+            .HasMaxLength(10)
+            .HasDefaultValue(CompanyDateFormats.MonthFirst);
+
+        builder.Entity<BlendCompany>()
             .HasIndex(company => company.CompanyNumber)
             .IsUnique();
 

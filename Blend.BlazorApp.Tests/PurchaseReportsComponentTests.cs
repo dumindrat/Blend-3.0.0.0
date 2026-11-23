@@ -24,8 +24,8 @@ public sealed class PurchaseReportsComponentTests
         var page = fixture.Context.RenderComponent<PurchaseReports>();
         page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
         Assert.AreEqual(("all", 2), fixture.Purchases.Calls.Single());
-        StringAssert.Contains(page.Markup, "2026-11-18");
-        StringAssert.Contains(page.Markup, "2026-11-19");
+        StringAssert.Contains(page.Markup, "11/18/2026");
+        StringAssert.Contains(page.Markup, "11/19/2026");
         StringAssert.Contains(page.Markup, "Closed");
         StringAssert.Contains(page.Markup, "operator");
         StringAssert.Contains(page.Markup, "Other report generation is not available yet");
@@ -79,7 +79,7 @@ public sealed class PurchaseReportsComponentTests
         page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
         page.FindAll("button").First(b => b.TextContent.Trim() == "Sale Summary").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
-        StringAssert.Contains(page.Find("dialog").TextContent, "2026-11-18");
+        StringAssert.Contains(page.Find("dialog").TextContent, "11/18/2026");
         StringAssert.Contains(page.Find("dialog").TextContent, "Open the sale summary PDF with values in a new tab");
         Assert.IsFalse(page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
         Assert.AreEqual(1, page.FindAll("#report-output").Count);
@@ -89,7 +89,7 @@ public sealed class PurchaseReportsComponentTests
 
         page.FindAll("button").Last(b => b.TextContent.Trim() == "Purchase Sheet").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Purchase Sheet options"));
-        StringAssert.Contains(page.Find("dialog").TextContent, "2026-11-19");
+        StringAssert.Contains(page.Find("dialog").TextContent, "11/19/2026");
         Assert.IsFalse(page.Find("dialog input[type=checkbox]").HasAttribute("checked"));
         page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Cancel").Click();
 
@@ -267,14 +267,14 @@ public sealed class PurchaseReportsComponentTests
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Sale Summary options"));
         page.WaitForAssertion(() => Assert.AreEqual(1, fixture.ReportModule.Invocations.Count(call => call.Identifier == "bindGenerate")));
         page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(42, "pdf")).GetAwaiter().GetResult();
-        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Pdf), fixture.Summaries.Calls.Single()));
+        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Pdf, CompanyDateFormats.MonthFirst), fixture.Summaries.Calls.Single()));
         page.WaitForAssertion(() => Assert.AreEqual(1, fixture.ReportModule.Invocations.Count(call => call.Identifier == "showPdf")));
         var invocation = fixture.ReportModule.Invocations.Single(call => call.Identifier == "showPdf");
         Assert.AreEqual(42, invocation.Arguments[0]);
         CollectionAssert.AreEqual(fixture.Summaries.Document, (byte[])invocation.Arguments[1]!);
 
         page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(0, "excel")).GetAwaiter().GetResult();
-        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Excel), fixture.Summaries.Calls.Last()));
+        page.WaitForAssertion(() => Assert.AreEqual((17, "Test Company", 2, "test-user", SalesSummaryOutput.Excel, CompanyDateFormats.MonthFirst), fixture.Summaries.Calls.Last()));
         var download = fixture.ReportModule.Invocations.Single(call => call.Identifier == "downloadExcel");
         Assert.AreEqual(17, download.Arguments[0]);
         CollectionAssert.AreEqual(fixture.Summaries.Document, (byte[])download.Arguments[1]!);
@@ -283,6 +283,20 @@ public sealed class PurchaseReportsComponentTests
         page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(43, "pdf")).GetAwaiter().GetResult();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "no longer has access"));
         Assert.AreEqual(2, fixture.Summaries.Calls.Count);
+    }
+
+    [TestMethod]
+    public void UsesCompanyDateFormatForSalesAndSummaryExport()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        fixture.SetDateFormat(CompanyDateFormats.DayFirst);
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Markup, "18/11/2026"));
+        page.FindAll("button").First(button => button.TextContent.Trim() == "Sale Summary").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "18/11/2026"));
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(0, "excel")).GetAwaiter().GetResult();
+        Assert.AreEqual(CompanyDateFormats.DayFirst, fixture.Summaries.Calls.Single().DateFormat);
     }
 
     [TestMethod]
@@ -418,6 +432,7 @@ public sealed class PurchaseReportsComponentTests
         }
         public void RemoveMembership() { _database.UserCompanies.Remove(_database.UserCompanies.Single()); _database.SaveChanges(); }
         public void ChangeCompanyMapping() { _database.Companies.Single().CompanyNumber = 3; _database.SaveChanges(); }
+        public void SetDateFormat(string format) { _database.Companies.Single().DateFormat = format; _database.SaveChanges(); }
         public void Dispose() { Context.Dispose(); _database.Dispose(); }
     }
 
@@ -436,12 +451,12 @@ public sealed class PurchaseReportsComponentTests
 
     private sealed class FakeSummaries : ISalesSummaryReportService
     {
-        public List<(int Sale, string? CompanyName, int Company, string PrintedBy, SalesSummaryOutput Output)> Calls { get; } = [];
-        public Exception? Failure { get; set; }
+        public List<(int Sale, string? CompanyName, int Company, string PrintedBy, SalesSummaryOutput Output, string DateFormat)> Calls { get; } = [];
+        public Exception? Failure { get; set;}
         public byte[] Document { get; } = [37, 80, 68, 70];
-        public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf)
+        public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf, string dateFormat = CompanyDateFormats.MonthFirst)
         {
-            Calls.Add((saleId, companyName, companyId, printedBy, output));
+            Calls.Add((saleId, companyName, companyId, printedBy, output, dateFormat));
             if (Failure is not null) throw Failure;
             return Document;
         }

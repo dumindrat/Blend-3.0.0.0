@@ -41,7 +41,7 @@ else
         <div class="broker-toolbar"><input class="form-control broker-search" aria-label="Search sale date" maxlength="45" @bind="Search" @bind:event="oninput" /><button class="button button-quiet button-small" type="button" @onclick="SearchAsync" disabled="@Busy">Search</button></div></div>
         @if (Sales.Count == 0) { <div class="empty-state compact-empty">No sales found.</div> }
         else { <div class="table-scroll"><table class="data-table"><thead><tr><th>Sale date</th><th>Status</th><th>Last modified</th><th class="purchase-sale-actions">Actions</th></tr></thead><tbody>
-            @foreach (var sale in Sales) { <tr @key="sale.SaleId"><td>@sale.SaleDate</td><td>@sale.SaleStatus</td><td>@sale.ModifiedDate @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
+            @foreach (var sale in Sales) { <tr @key="sale.SaleId"><td>@FormatSaleDate(sale.SaleDate)</td><td>@sale.SaleStatus</td><td>@FormatSaleDate(sale.ModifiedDate) @sale.ModifiedUser</td><td class="row-actions purchase-sale-actions">
                 <button class="button button-quiet button-small" type="button" @onclick="() => BeginEdit(sale)" disabled="@(Busy || !CanEdit || sale.IsClosed)">Edit</button>
                 <button class="button button-quiet button-small purchase-lines-button" type="button" @onclick="() => OpenLinesAsync(sale)" disabled="@Busy" aria-busy="@(LoadingLinesSaleId == sale.SaleId ? "true" : "false")">@if (LoadingLinesSaleId == sale.SaleId) { <span class="spinner button-spinner" aria-hidden="true"></span><span role="status">Loading lines...</span> } else { <span>Lines</span> }</button>
                 <button class="button button-quiet button-small" type="button" @onclick="() => BeginStatus(sale)" disabled="@(Busy || !CanEdit)">@(sale.IsClosed ? "Open sale" : "Close sale")</button>
@@ -63,12 +63,12 @@ else
             }
             else if (Dialog == DialogKind.Status && SelectedSale is not null)
             {
-                <p>@(SelectedSale.IsClosed ? "Open" : "Close") the sale dated <strong>@SelectedSale.SaleDate</strong>?</p>
+                <p>@(SelectedSale.IsClosed ? "Open" : "Close") the sale dated <strong>@FormatSaleDate(SelectedSale.SaleDate)</strong>?</p>
                 <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button class="button button-primary" type="button" @onclick="ChangeStatusAsync" disabled="@Busy">Confirm</button></div>
             }
             else if (Dialog == DialogKind.Lines && SelectedSale is not null)
             {
-                <p>Sale date: @SelectedSale.SaleDate — @(SelectedSale.IsClosed ? "Closed" : "Open")</p>
+                <p>Sale date: @FormatSaleDate(SelectedSale.SaleDate) — @(SelectedSale.IsClosed ? "Closed" : "Open")</p>
                 <div class="heading-actions"><button class="button button-primary button-small purchase-add-line-button" type="button" @onclick="BeginAddLineAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)" aria-busy="@(LoadingAddLine ? "true" : "false")">@if (LoadingAddLine) { <span class="spinner button-spinner" aria-hidden="true"></span><span role="status">Loading...</span> } else { <span>Add line</span> }</button>
                     <button class="button button-quiet button-small" type="button" @onclick="BeginUploadAsync" disabled="@(Busy || !CanCreate || SelectedSale.IsClosed)">Upload CSV</button></div>
                 @if (Lines.Count == 0) { <p class="muted">No straight lines added.</p> }
