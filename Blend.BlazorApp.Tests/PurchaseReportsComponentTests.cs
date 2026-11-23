@@ -90,12 +90,13 @@ public sealed class PurchaseReportsComponentTests
         page.FindAll("button").Last(b => b.TextContent.Trim() == "Purchase Sheet").Click();
         page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Purchase Sheet options"));
         StringAssert.Contains(page.Find("dialog").TextContent, "11/19/2026");
-        Assert.IsFalse(page.Find("dialog input[type=checkbox]").HasAttribute("checked"));
+        Assert.IsTrue(page.Find("dialog input[type=checkbox]").HasAttribute("checked"));
         page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Cancel").Click();
 
         page.FindAll("button").Single(b => b.TextContent.Trim() == "Advanced filter options").Click();
         page.WaitForAssertion(() => Assert.AreEqual(1, page.FindAll("#report-grade").Count));
-        foreach (var id in new[] { "report-from", "report-to", "report-grade", "report-standard", "report-sale-type", "report-broker-code", "report-output" }) Assert.IsNotNull(page.Find("#" + id));
+        foreach (var id in new[] { "report-from", "report-to", "report-grade", "report-standard", "report-sale-type", "report-broker-code" }) Assert.IsNotNull(page.Find("#" + id));
+        Assert.AreEqual(0, page.FindAll("#report-output").Count);
         Assert.AreEqual("MS", page.Find("#report-sale-type").GetAttribute("value"));
         page.Find("#report-grade").Change("BOP");
         page.FindAll("dialog button").Single(b => b.TextContent.Trim() == "Cancel").Click();
@@ -286,6 +287,28 @@ public sealed class PurchaseReportsComponentTests
     }
 
     [TestMethod]
+    public void PurchaseSheetButtonGeneratesSelectedSaleReport()
+    {
+        using var fixture = new Fixture();
+        fixture.GrantPrint();
+        var page = fixture.Context.RenderComponent<PurchaseReports>();
+        page.WaitForAssertion(() => Assert.AreEqual(2, page.FindAll("tbody tr").Count));
+        page.FindAll("button").First(button => button.TextContent.Trim() == "Purchase Sheet").Click();
+        page.WaitForAssertion(() => StringAssert.Contains(page.Find("dialog").TextContent, "Purchase Sheet options"));
+        Assert.IsFalse(page.FindAll("dialog button").Single(button => button.TextContent.Trim() == "Generate report").HasAttribute("disabled"));
+        Assert.IsTrue(page.Find("dialog input[type=checkbox]").HasAttribute("checked"));
+        page.InvokeAsync(() => page.Instance.GenerateSummaryAsync(0, "excel")).GetAwaiter().GetResult();
+        var call = fixture.PurchaseSheets.Calls.Single();
+        Assert.AreEqual(17, call.Sale);
+        Assert.AreEqual(PurchaseSheetReportOutput.Excel, call.Output);
+        Assert.AreEqual(CompanyDateFormats.MonthFirst, call.DateFormat);
+        Assert.IsTrue(call.WithValues);
+        Assert.AreEqual(0, fixture.Summaries.Calls.Count);
+        var download = fixture.ReportModule.Invocations.Single(invocation => invocation.Identifier == "downloadExcel");
+        Assert.AreEqual("purchase-sheet", download.Arguments[2]);
+    }
+
+    [TestMethod]
     public void UsesCompanyDateFormatForSalesAndSummaryExport()
     {
         using var fixture = new Fixture();
@@ -382,6 +405,7 @@ public sealed class PurchaseReportsComponentTests
         public FakePurchases Purchases { get; } = new();
         public FakeBrokers Brokers { get; } = new();
         public FakeSummaries Summaries { get; } = new();
+        public FakePurchaseSheets PurchaseSheets { get; } = new();
         public BunitJSModuleInterop ReportModule { get; }
 
         public Fixture(bool admin = false, bool secondRole = false, bool development = true)
@@ -412,6 +436,7 @@ public sealed class PurchaseReportsComponentTests
             Context.Services.AddSingleton<IPurchaseService>(Purchases);
             Context.Services.AddSingleton<IBrokerService>(Brokers);
             Context.Services.AddSingleton<ISalesSummaryReportService>(Summaries);
+            Context.Services.AddSingleton<IPurchaseSheetReportService>(PurchaseSheets);
             var principal = TestData.Principal(company.Id, admin, role.Id);
             if (secondRole) ((ClaimsIdentity)principal.Identity!).AddClaim(new Claim(BlendClaims.RoleId, "role-2"));
             Context.Services.AddSingleton<AuthenticationStateProvider>(new FixedAuth(principal));
@@ -452,12 +477,23 @@ public sealed class PurchaseReportsComponentTests
     private sealed class FakeSummaries : ISalesSummaryReportService
     {
         public List<(int Sale, string? CompanyName, int Company, string PrintedBy, SalesSummaryOutput Output, string DateFormat)> Calls { get; } = [];
-        public Exception? Failure { get; set;}
+        public Exception? Failure { get; set; }
         public byte[] Document { get; } = [37, 80, 68, 70];
         public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, SalesSummaryOutput output = SalesSummaryOutput.Pdf, string dateFormat = CompanyDateFormats.MonthFirst)
         {
             Calls.Add((saleId, companyName, companyId, printedBy, output, dateFormat));
             if (Failure is not null) throw Failure;
+            return Document;
+        }
+    }
+
+    private sealed class FakePurchaseSheets : IPurchaseSheetReportService
+    {
+        public List<(int Sale, string? CompanyName, int Company, string PrintedBy, PurchaseSheetReportOutput Output, string DateFormat, bool WithValues)> Calls { get; } = [];
+        public byte[] Document { get; } = [37, 80, 68, 70];
+        public byte[] Generate(int saleId, string? companyName, int companyId, string printedBy, PurchaseSheetReportOutput output, string dateFormat, bool withValues)
+        {
+            Calls.Add((saleId, companyName, companyId, printedBy, output, dateFormat, withValues));
             return Document;
         }
     }

@@ -48,11 +48,11 @@ export function showPdf(id, bytes) {
     }
 }
 
-export function downloadExcel(saleId, bytes) {
+export function downloadExcel(saleId, bytes, reportName = "sales-summary") {
     const url = URL.createObjectURL(new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `sales-summary-${saleId}.xlsx`;
+    link.download = `${reportName}-${saleId}.xlsx`;
     document.body.append(link);
     link.click();
     link.remove();

@@ -11,6 +11,7 @@
 @inject IPurchaseService Purchases
 @inject IBrokerService Brokers
 @inject ISalesSummaryReportService Summaries
+@inject IPurchaseSheetReportService PurchaseSheets
 @inject IHostEnvironment Environment
 @inject ILogger<PurchaseReports> Logger
 @inject IJSRuntime JS
@@ -25,7 +26,7 @@ else if (!CanView && Error is null) { <section class="panel empty-state">Your ro
 else if (!CanView) { <section class="panel empty-state" role="alert">@Error</section> }
 else
 {
-    <div class="alert alert-info" role="status">@(Environment.IsDevelopment() ? "Sale Summary PDF is available in Development." : "Sale Summary PDF is available only in Development.") Other report generation is not available yet. @if (!CanPrint) { <span>Your role also requires the Purchase Reports Print permission.</span> }</div>
+    <div class="alert alert-info" role="status">@(Environment.IsDevelopment() ? "Sale Summary and Purchase Sheet PDFs are available in Development." : "PDF reports are available only in Development.") Other report generation is not available yet. @if (!CanPrint) { <span>Your role also requires the Purchase Reports Print permission.</span> }</div>
     @if (Error is not null) { <div class="alert alert-error" role="alert">@Error</div> }
     <section class="panel notes-panel">
         <div class="panel-header">
@@ -78,12 +79,17 @@ else
                     }
                 </div>
             }
-            @if (Dialog != DialogKind.Broker && Dialog != DialogKind.Summary) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> With values</label> }
-            <label for="report-output">Output</label><select @ref="OutputElement" id="report-output" class="form-control" @bind="Output"><option value="excel">Excel workbook (.xlsx)</option><option value="pdf" disabled="@(!Environment.IsDevelopment())">PDF in a new tab (Development only)</option>@if (Dialog != DialogKind.Summary) { <option value="print">Printable browser report</option><option value="csv">CSV download</option> }</select>
-            @if (Dialog != DialogKind.Summary) { <p class="muted">Report generation is not available yet. These options are not saved.</p> }
-            else { <p class="muted">@(Output == "pdf" ? "Open the sale summary PDF with values in a new tab." : "Download the sale summary as an Excel workbook with values.")</p> }
+            @if (Dialog == DialogKind.Sheet) { <label class="report-checkbox"><input type="checkbox" @bind="WithValues" /> Include values</label> }
+            @if (Dialog is DialogKind.Summary or DialogKind.Sheet)
+            {
+                <label for="report-output">Output</label><select @ref="OutputElement" id="report-output" class="form-control" @bind="Output"><option value="excel">Excel workbook (.xlsx)</option><option value="pdf" disabled="@(!Environment.IsDevelopment())">PDF in a new tab (Development only)</option></select>
+                <p class="muted">@(Dialog == DialogKind.Summary
+                    ? Output == "pdf" ? "Open the sale summary PDF with values in a new tab." : "Download the sale summary as an Excel workbook with values."
+                    : Output == "pdf" ? "Open the purchase sheet PDF in a new tab." : $"Download the purchase sheet as an Excel workbook {(WithValues ? "with" : "without")} values.")</p>
+            }
+            else { <p class="muted">Report generation is not available yet. These options are not saved.</p> }
             @if (DialogError is not null) { <div class="alert alert-error" role="alert">@DialogError</div> }
-            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button @ref="GenerateButton" class="button button-primary" type="button" disabled="@(Busy || !CanPrint || Dialog != DialogKind.Summary || (Output == "pdf" && !Environment.IsDevelopment()))" title="@(PermissionReason ?? (Dialog != DialogKind.Summary ? "Report generation is not available yet" : Output == "pdf" && !Environment.IsDevelopment() ? "Sale Summary PDF is available only in Development." : null))">@(Busy ? "Generating..." : "Generate report")</button></div>
+            <div class="modal-actions"><button class="button button-quiet" type="button" @onclick="CloseDialogAsync" disabled="@Busy">Cancel</button><button @ref="GenerateButton" class="button button-primary" type="button" disabled="@(Busy || !CanPrint || (Dialog != DialogKind.Summary && Dialog != DialogKind.Sheet) || (Output == "pdf" && !Environment.IsDevelopment()))" title="@(PermissionReason ?? (Dialog != DialogKind.Summary && Dialog != DialogKind.Sheet ? "Report generation is not available yet" : Output == "pdf" && !Environment.IsDevelopment() ? "PDF reports are available only in Development." : null))">@(Busy ? "Generating..." : "Generate report")</button></div>
         }
     </dialog>
 }

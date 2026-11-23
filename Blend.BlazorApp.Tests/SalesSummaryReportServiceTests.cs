@@ -85,6 +85,126 @@ public sealed class SalesSummaryReportServiceTests
     }
 
     [TestMethod]
+    public void GeneratesPurchaseSheetExcelAndPdfForRequestedSale()
+    {
+        var purchases = new FakePurchaseReports
+        {
+            SheetRows = [
+                new() { BoxNo = "B-01", TinNo = "T-02", LotNo = "L-03", Invoice = "INV-4", Grade = "BOP", Standard = "S1", GardenMark = "Garden", SaleDate = "2031-02-14", SaleType = "MS", SaleCode = "M", BrokerName = "Example Broker", NetWeight = 8, Packs = 2, Weight = 16, Rate = 4.5m, Value = 72, IsRepeated = true, VirtualValue = 7, VirtualWeight = 3, TeaCertificates = "ORG" },
+                new() { BoxNo = "B-02", LotNo = "L-04", Invoice = "INV-5", Grade = "BOPF", Standard = "S2", GardenMark = "Garden", SaleDate = "2031-02-14", SaleType = "MS", SaleCode = "M", BrokerName = "Example Broker", NetWeight = 6, Packs = 3, Rate = 10, Value = 30, VirtualValue = 3, VirtualWeight = 4 }
+            ]
+        };
+        var productionService = CreatePurchaseSheetService(purchases, Environments.Production);
+        var bytes = productionService.Generate(123, "Test Company", 2, "report-user", PurchaseSheetReportOutput.Excel, CompanyDateFormats.DayFirst, withValues: true);
+        using var archive = new ZipArchive(new MemoryStream(bytes), ZipArchiveMode.Read);
+        foreach (var packageEntry in archive.Entries.Where(item => item.FullName.EndsWith(".xml", StringComparison.Ordinal) || item.FullName.EndsWith(".rels", StringComparison.Ordinal)))
+        {
+            using var packageStream = packageEntry.Open();
+            _ = XDocument.Load(packageStream);
+        }
+        var workbookEntry = archive.GetEntry("xl/workbook.xml");
+        Assert.IsNotNull(workbookEntry);
+        using var workbookStream = workbookEntry.Open();
+        var workbook = XDocument.Load(workbookStream);
+        XNamespace workbookNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        Assert.AreEqual("Purchase Sheet", (string?)workbook.Descendants(workbookNs + "sheet").Single().Attribute("name"));
+        var entry = archive.GetEntry("xl/worksheets/sheet1.xml");
+        Assert.IsNotNull(entry);
+        using var stream = entry.Open();
+        var worksheet = XDocument.Load(stream);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var values = worksheet.Descendants(ns + "t").Select(element => element.Value).ToArray();
+        foreach (var expected in new[] { "Purchase Sheet - Test Company", "Sale date", "Box", "Sale Date", "Type", "Code", "Broker", "Lot", "Invoice", "Garden Mark", "Standard", "Grade", "Packs", "Net Weight", "Weight", "Rate", "Value", "B-01", "Example Broker", "14/02/2031", "Printed by", "report-user" })
+            CollectionAssert.Contains(values, expected);
+        foreach (var removedHeader in new[] { "Tin", "Virtual Value", "Virtual Weight", "Repeated", "Tea Certificates" })
+            CollectionAssert.DoesNotContain(values, removedHeader);
+        var headerOrder = worksheet.Descendants(ns + "row").Single(row => (string?)row.Attribute("r") == "4")
+            .Elements(ns + "c").Select(cell => cell.Descendants(ns + "t").Single().Value).ToArray();
+        CollectionAssert.AreEqual(new[] { "No", "Box", "Sale Date", "Type", "Code", "Broker", "Lot", "Invoice", "Garden Mark", "Standard", "Grade", "Packs", "Net Weight", "Weight", "Rate", "Value" }, headerOrder);
+        var cells = worksheet.Descendants(ns + "c").ToDictionary(cell => (string)cell.Attribute("r")!, cell => cell);
+        Assert.AreEqual("14/02/2031", cells["B2"].Descendants(ns + "t").Single().Value);
+        Assert.AreEqual("1", cells["A5"].Descendants(ns + "t").Single().Value);
+        Assert.AreEqual("2", cells["A6"].Descendants(ns + "t").Single().Value);
+        Assert.AreEqual("2", (string?)cells["L5"].Element(ns + "v"));
+        Assert.AreEqual("8", (string?)cells["M5"].Element(ns + "v"));
+        Assert.AreEqual("3", (string?)cells["N5"].Element(ns + "v"));
+        Assert.AreEqual("4.5", (string?)cells["O5"].Element(ns + "v"));
+        Assert.AreEqual("7", (string?)cells["P5"].Element(ns + "v"));
+        Assert.AreEqual("7", (string?)cells["N7"].Element(ns + "v"));
+        Assert.AreEqual("10", (string?)cells["P7"].Element(ns + "v"));
+        Assert.AreEqual("Total", cells["F7"].Descendants(ns + "t").Single().Value);
+        CollectionAssert.Contains(values, "No of Lots :");
+        CollectionAssert.Contains(values, "Tot No of Chests :");
+        CollectionAssert.Contains(values, "Total Purchase Qty :");
+        CollectionAssert.Contains(values, "Total Purchase Value :");
+        Assert.AreEqual("2", (string?)cells["B8"].Element(ns + "v"));
+        Assert.AreEqual("5", (string?)cells["B9"].Element(ns + "v"));
+        Assert.AreEqual("7", (string?)cells["B10"].Element(ns + "v"));
+        Assert.AreEqual("10", (string?)cells["B11"].Element(ns + "v"));
+        var columnWidths = worksheet.Descendants(ns + "col").Select(column =>
+            ((string?)column.Attribute("min"), (string?)column.Attribute("max"), (string?)column.Attribute("width"))).ToArray();
+        CollectionAssert.Contains(columnWidths, ("1", "1", "5"));
+        CollectionAssert.Contains(columnWidths, ("2", "3", "9"));
+        CollectionAssert.Contains(columnWidths, ("4", "6", "4"));
+        CollectionAssert.Contains(columnWidths, ("7", "7", "9"));
+        CollectionAssert.Contains(columnWidths, ("8", "8", "11"));
+        CollectionAssert.Contains(columnWidths, ("9", "9", "20"));
+        CollectionAssert.Contains(columnWidths, ("12", "12", "6"));
+        CollectionAssert.Contains(columnWidths, ("13", "13", "9"));
+        Assert.AreEqual(123, purchases.SaleId);
+
+        var pdfService = CreatePurchaseSheetService(purchases, Environments.Development);
+        using var document = PdfDocument.Open(pdfService.Generate(123, "Test Company", 2, "report-user", PurchaseSheetReportOutput.Pdf, CompanyDateFormats.DayFirst, withValues: false));
+        var text = string.Join("\n", document.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
+        foreach (var expected in new[] { "Purchase Sheet - Test Company", "Sale date: 14/02/2031", "No", "B-01", "INV-4", "Example", "Broker", "Printed by: report-user" })
+            StringAssert.Contains(text, expected);
+        Assert.IsFalse(text.Contains("72.00", StringComparison.Ordinal));
+
+        using var valuedDocument = PdfDocument.Open(pdfService.Generate(123, "Test Company", 2, "report-user", PurchaseSheetReportOutput.Pdf, CompanyDateFormats.DayFirst, withValues: true));
+        var valuedText = string.Join("\n", valuedDocument.GetPages().Select(page => ContentOrderTextExtractor.GetText(page)));
+        var titlePosition = valuedText.IndexOf("Purchase Sheet - Test Company", StringComparison.Ordinal);
+        var datePosition = valuedText.IndexOf("Sale date: 14/02/2031", StringComparison.Ordinal);
+        var lotsPosition = valuedText.IndexOf("No of Lots", StringComparison.Ordinal);
+        var chestsPosition = valuedText.IndexOf("Tot No of Chests", StringComparison.Ordinal);
+        var quantityPosition = valuedText.IndexOf("Total Purchase Qty", StringComparison.Ordinal);
+        var valuePosition = valuedText.IndexOf("Total Purchase Value", StringComparison.Ordinal);
+        Assert.IsTrue(titlePosition >= 0 && titlePosition < datePosition && datePosition < lotsPosition && lotsPosition < chestsPosition && chestsPosition < quantityPosition && quantityPosition < valuePosition);
+        StringAssert.Contains(valuedText, "2");
+        StringAssert.Contains(valuedText, "5.00");
+        StringAssert.Contains(valuedText, "7.00");
+        StringAssert.Contains(valuedText, "10.00");
+    }
+
+    [TestMethod]
+    public void RejectsEmptyPurchaseSheetResults()
+    {
+        var purchases = new FakePurchaseReports();
+        var service = CreatePurchaseSheetService(purchases, Environments.Production);
+        var exception = Assert.ThrowsExactly<EmptyPurchaseSheetException>(() => service.Generate(7, "Company", 2, "user", PurchaseSheetReportOutput.Excel, CompanyDateFormats.MonthFirst, withValues: true));
+        StringAssert.Contains(exception.Message, "No purchase sheet data");
+        Assert.AreEqual(7, purchases.SaleId);
+    }
+
+    [TestMethod]
+    public void PurchaseSheetServiceChecksSaleOwnershipAndCommitsSuccessfulGeneration()
+    {
+        var purchases = new FakePurchaseReports
+        {
+            SheetRows = [new() { BoxNo = "B-01", SaleDate = "2031-02-14" }]
+        };
+        var connection = new SalesSummaryTestConnection();
+        var service = CreatePurchaseSheetService(purchases, Environments.Production, connection);
+
+        var result = service.Generate(123, "Company", 2, "user", PurchaseSheetReportOutput.Excel, CompanyDateFormats.MonthFirst, withValues: false);
+
+        Assert.IsTrue(result.Length > 0);
+        Assert.AreEqual(123, connection.Arguments["SaleId"]);
+        Assert.AreEqual(2, connection.Arguments["CompanyId"]);
+        Assert.AreEqual(123, purchases.SaleId);
+        Assert.IsTrue(connection.Transaction!.Committed);
+    }
+
+    [TestMethod]
     public void RejectsEmptyResultsAndPropagatesQueryFailures()
     {
         var purchases = new FakePurchaseReports();
@@ -130,10 +250,18 @@ public sealed class SalesSummaryReportServiceTests
             () => connection ?? new SalesSummaryTestConnection());
     }
 
+    private static PurchaseSheetReportService CreatePurchaseSheetService(FakePurchaseReports purchases, string environmentName, SalesSummaryTestConnection? connection = null)
+    {
+        var environment = new TestEnvironment(environmentName);
+        return new PurchaseSheetReportService(purchases, new PurchaseSheetPdfService(environment), new PurchaseSheetExcelService(), environment,
+            () => connection ?? new SalesSummaryTestConnection());
+    }
+
     private sealed class FakePurchaseReports : IPurchaseReportService
     {
         public int? SaleId { get; private set; }
         public IReadOnlyList<SaleSummary> Rows { get; set; } = [];
+        public IReadOnlyList<PurchaseSheet> SheetRows { get; set; } = [];
         public Exception? Failure { get; set; }
         public Action? OnQuery { get; set; }
         public IReadOnlyList<SaleSummary> GetSaleSummary(int saleId)
@@ -143,7 +271,7 @@ public sealed class SalesSummaryReportServiceTests
             if (Failure is not null) throw Failure;
             return Rows;
         }
-        public IReadOnlyList<PurchaseSheet> GetPurchaseSheet(int saleId) => throw new NotSupportedException();
+        public IReadOnlyList<PurchaseSheet> GetPurchaseSheet(int saleId) { SaleId = saleId; if (Failure is not null) throw Failure; return SheetRows; }
         public IReadOnlyList<CanisterSheet> GetCanisterSheet(int saleId) => throw new NotSupportedException();
         public IReadOnlyList<PurchaseSheet> GetPurchaseSheetByAdvanceFilter(PurchaseSheetFilter filter) => throw new NotSupportedException();
         public IReadOnlyList<PurchaseSheet> GetPurchaseSheetByBroker(BrokerPurchaseFilter filter) => throw new NotSupportedException();

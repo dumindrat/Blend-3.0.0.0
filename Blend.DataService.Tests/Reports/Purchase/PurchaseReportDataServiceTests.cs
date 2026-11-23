@@ -23,7 +23,7 @@ public sealed class PurchaseReportDataServiceTests
         var sheets = new[] { new PurchaseSheetRecord { BoxNo = "B01" } };
         mapper.Result = sheets;
         Assert.AreSame(sheets, service.GetPurchaseSheet(17));
-        Check<PurchaseSheetRecord>(mapper, "rpt_PurchaseSheetBySaleId", ("SaleId", 17));
+        Check<PurchaseSheetRecord>(mapper, "rpt_PurchaseSheetBySaleId", ("sale", 17));
 
         var canisters = new[] { new CanisterSheetRecord { TinNo = "T01" } };
         mapper.Result = canisters;

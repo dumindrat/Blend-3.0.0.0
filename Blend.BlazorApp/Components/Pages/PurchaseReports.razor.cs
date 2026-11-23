@@ -61,7 +61,7 @@ public partial class PurchaseReports
         OpenAfterRender = false;
         DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Buyers.razor.js");
         DialogCallback ??= DotNetObjectReference.Create(this);
-        if (Dialog == DialogKind.Summary)
+        if (Dialog is DialogKind.Summary or DialogKind.Sheet)
         {
             ReportModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/PurchaseReports.razor.js");
             await ReportModule.InvokeVoidAsync("bindGenerate", GenerateButton, OutputElement, DialogCallback, nameof(GenerateSummaryAsync), nameof(ReportPopupBlockedAsync));
@@ -120,8 +120,8 @@ public partial class PurchaseReports
             FromDate = ToDate = DateTime.Today;
             Grade = Standard = BrokerCode = "";
             SaleType = "MS";
-            Output = kind == DialogKind.Summary ? (Environment.IsDevelopment() ? "pdf" : "excel") : "print";
-            WithValues = kind == DialogKind.Summary;
+            Output = kind is DialogKind.Summary or DialogKind.Sheet ? (Environment.IsDevelopment() ? "pdf" : "excel") : "print";
+            WithValues = kind is DialogKind.Summary or DialogKind.Sheet;
             Dialog = kind;
             OpenAfterRender = true;
         }
@@ -143,7 +143,7 @@ public partial class PurchaseReports
     [JSInvokable]
     public Task GenerateSummaryAsync(int tabId, string output) => InvokeAsync(async () =>
     {
-        if (Busy || Dialog != DialogKind.Summary || SelectedSale is null) return;
+        if (Busy || Dialog is not (DialogKind.Summary or DialogKind.Sheet) || SelectedSale is null) return;
         Busy = true;
         DialogError = null;
         StateHasChanged();
@@ -168,26 +168,28 @@ public partial class PurchaseReports
                 DialogError = "Your role no longer has access to print Purchase Reports.";
                 return;
             }
-            var reportOutput = output switch
-            {
-                "pdf" => SalesSummaryOutput.Pdf,
-                "excel" => SalesSummaryOutput.Excel,
-                _ => throw new ArgumentException("Select PDF or Excel as the report output.", nameof(output))
-            };
+            if (output is not ("pdf" or "excel"))
+                throw new ArgumentException("Select PDF or Excel as the report output.", nameof(output));
             var printedBy = user.Identity?.Name;
             if (string.IsNullOrWhiteSpace(printedBy))
             {
-                Logger.LogWarning("Cannot generate sale summary without an authenticated user name for {CompanyId}", CompanyId);
+                Logger.LogWarning("Cannot generate purchase report without an authenticated user name for {CompanyId}", CompanyId);
                 DialogError = "Your user name is unavailable. Sign in again and retry.";
                 return;
             }
             var saleId = SelectedSale.SaleId;
-            var document = await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy, reportOutput, company.DateFormat));
+            var isSheet = Dialog == DialogKind.Sheet;
+            var isPdf = output == "pdf";
+            var document = isSheet
+                ? await Task.Run(() => PurchaseSheets.Generate(saleId, company.Name, company.MappingId, printedBy,
+                    isPdf ? PurchaseSheetReportOutput.Pdf : PurchaseSheetReportOutput.Excel, company.DateFormat, WithValues))
+                : await Task.Run(() => Summaries.Generate(saleId, company.Name, company.MappingId, printedBy,
+                    isPdf ? SalesSummaryOutput.Pdf : SalesSummaryOutput.Excel, company.DateFormat));
             if (ReportModule is null) throw new InvalidOperationException("The report viewer is not initialized.");
-            if (reportOutput == SalesSummaryOutput.Pdf)
+            if (isPdf)
                 await ReportModule.InvokeVoidAsync("showPdf", tabId, document);
             else
-                await ReportModule.InvokeVoidAsync("downloadExcel", saleId, document);
+                await ReportModule.InvokeVoidAsync("downloadExcel", saleId, document, isSheet ? "purchase-sheet" : "sales-summary");
         }
         catch (SqlException ex)
         {
@@ -202,6 +204,11 @@ public partial class PurchaseReports
         catch (EmptySalesSummaryException ex)
         {
             Logger.LogInformation(ex, "No sale summary data for {CompanyId}", CompanyId);
+            DialogError = ex.Message;
+        }
+        catch (EmptyPurchaseSheetException ex)
+        {
+            Logger.LogInformation(ex, "No purchase sheet data for {CompanyId}", CompanyId);
             DialogError = ex.Message;
         }
         catch (ArgumentException ex)
